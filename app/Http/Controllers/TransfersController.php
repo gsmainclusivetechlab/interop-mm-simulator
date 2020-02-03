@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferUpdate;
 use \GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Log;
@@ -28,23 +29,15 @@ class TransfersController extends Controller
             'Accept' => 'application/vnd.interoperability.quotes+json;version=1',
             'Content-Type' => 'application/vnd.interoperability.quotes+json;version=1.0',
             'Cache-Control' => 'no-cache', //
-            'Date' => date('D, d M Y H:i:s ').'GMT',
+            'Date' => date('D, d M Y H:i:s ') . 'GMT',
             'FSPIOP-Source' => 'payerfsp',
             'FSPIOP-Destination' => 'payeefsp',
+            'FSPIOP-Signature' => '{\"signature\":\"iU4GBXSfY8twZMj1zXX1CTe3LDO8Zvgui53icrriBxCUF_wltQmnjgWLWI4ZUEueVeOeTbDPBZazpBWYvBYpl5WJSUoXi14nVlangcsmu2vYkQUPmHtjOW-yb2ng6_aPfwd7oHLWrWzcsjTF-S4dW7GZRPHEbY_qCOhEwmmMOnE1FWF1OLvP0dM0r4y7FlnrZNhmuVIFhk_pMbEC44rtQmMFv4pm4EVGqmIm3eyXz0GkX8q_O1kGBoyIeV_P6RRcZ0nL6YUVMhPFSLJo6CIhL2zPm54Qdl2nVzDFWn_shVyV0Cl5vpcMJxJ--O_Zcbmpv6lxqDdygTC782Ob3CNMvg\\\",\\\"protectedHeader\\\":\\\"eyJhbGciOiJSUzI1NiIsIkZTUElPUC1VUkkiOiIvdHJhbnNmZXJzIiwiRlNQSU9QLUhUVFAtTWV0aG9kIjoiUE9TVCIsIkZTUElPUC1Tb3VyY2UiOiJPTUwiLCJGU1BJT1AtRGVzdGluYXRpb24iOiJNVE5Nb2JpbGVNb25leSIsIkRhdGUiOiIifQ\"}',
+            'FSPIOP-URI' => '/transfers',
+            'FSPIOP-HTTP-Method' => 'POST',
         ];
 
-        $data = [
-            'transferId' => Str::uuid(),
-            'payeeFsp' => 'payeefsp',
-            'payerFsp' => 'payerfsp',
-            'amount' => [
-                'amount' => '2',
-                'currency' => 'USD'
-            ],
-            'ilpPacket' => 'AQAAAAAAAABkEGcuZXdwMjEuaWQuODAwMjCCAhd7InRyYW5zYWN0aW9uSWQiOiJmODU0NzdkYi0xMzVkLTRlMDgtYThiNy0xMmIyMmQ4MmMwZDYiLCJxdW90ZUlkIjoiOWU2NGYzMjEtYzMyNC00ZDI0LTg5MmYtYzQ3ZWY0ZThkZTkxIiwicGF5ZWUiOnsicGFydHlJZEluZm8iOnsicGFydHlJZFR5cGUiOiJNU0lTRE4iLCJwYXJ0eUlkZW50aWZpZXIiOiIyNTYxMjM0NTYiLCJmc3BJZCI6IjIxIn19LCJwYXllciI6eyJwYXJ0eUlkSW5mbyI6eyJwYXJ0eUlkVHlwZSI6Ik1TSVNETiIsInBhcnR5SWRlbnRpZmllciI6IjI1NjIwMTAwMDAxIiwiZnNwSWQiOiIyMCJ9LCJwZXJzb25hbEluZm8iOnsiY29tcGxleE5hbWUiOnsiZmlyc3ROYW1lIjoiTWF0cyIsImxhc3ROYW1lIjoiSGFnbWFuIn0sImRhdGVPZkJpcnRoIjoiMTk4My0xMC0yNSJ9fSwiYW1vdW50Ijp7ImFtb3VudCI6IjEwMCIsImN1cnJlbmN5IjoiVVNEIn0sInRyYW5zYWN0aW9uVHlwZSI6eyJzY2VuYXJpbyI6IlRSQU5TRkVSIiwiaW5pdGlhdG9yIjoiUEFZRVIiLCJpbml0aWF0b3JUeXBlIjoiQ09OU1VNRVIifSwibm90ZSI6ImhlaiJ9',
-            'condition' => 'otTwY9oJKLBrWmLI4h0FEw4ksdZtoAkX3qOVAygUlTI',
-            'expiration' => '2020-10-05T14:48:00.000Z',
-        ];
+        $data = $request->getData();
 
         $client = new Client();
         try {
@@ -57,7 +50,7 @@ class TransfersController extends Controller
                     'debug' => true,
                 ]
             );
-        } catch (GuzzleException $e) {
+        } catch (BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
 

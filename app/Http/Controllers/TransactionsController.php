@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionCreate;
 use \GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\URL;
@@ -38,7 +39,6 @@ class TransactionsController extends Controller
         try {
             $response = $client->request(
                 'POST',
-//                URL::to('/test'),
                 Env::get('HOST_TRANSACTION_REQUESTS_SERVICE') . '/transactionRequests',
                 [
                     'headers' => $headers,
@@ -46,7 +46,7 @@ class TransactionsController extends Controller
                     'debug' => true,
                 ]
             );
-        } catch (GuzzleException $e) {
+        } catch (BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
 

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteUpdate;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
+use Illuminate\Support\Env;
 
 /**
  * Class TransfersController
@@ -18,7 +21,31 @@ class QuotesController extends Controller
      */
     public function store(QuoteCreate $request)
     {
-        // TODO quotes mapping and request to mojaloop
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Date' => date('D, d M Y H:i:s T'),
+            'FSPIOP-Source' => 'payerfsp',
+            'FSPIOP-Destination' => 'payeefsp',
+        ];
+        $data = $request->getData();
+
+        $client = new Client();
+        try {
+            $response = $client->request(
+                'POST',
+                Env::get('HOST_QUOTING_SERVICE') . '/quotes',
+                [
+                    'headers' => $headers,
+                    'json' => \GuzzleHttp\json_encode($data),
+                    'debug' => true,
+                ]
+            );
+        } catch (BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+
+        return $response->getBody()->getContents();
     }
 
 
