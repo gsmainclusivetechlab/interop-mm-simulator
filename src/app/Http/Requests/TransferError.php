@@ -5,10 +5,10 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Class QuoteCreate
+ * Class TransferError
  * @package App\Http\Requests
  */
-class QuoteCreate extends FormRequest
+class TransferError extends FormRequest
 {
     /**
      * @return array

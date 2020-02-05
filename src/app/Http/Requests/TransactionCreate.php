@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
@@ -146,45 +147,43 @@ class TransactionCreate extends FormRequest
      *
      * @return array
      */
-    public function dataMapping()
+    public function mapInTo()
     {
-        $id = rand(1000000, 9999999);
         $result = [
-//            'transactionRequestId' => "249d49c9-c804-4d0b-801d-663edc6dbae2",
-            'transactionRequestId' => "$id",
+            'transactionRequestId' => Str::uuid(),
             'payee' => [
-//                'partyIdInfo' => [
-//                    'partyIdType' => strtoupper($this->creditParty[0]['key']),
-//                    'partyIdentifier' => $this->creditParty[0]['value'],
-//                ],
+                'partyIdInfo' => [
+                    'partyIdType' => strtoupper($this->creditParty[0]['key']),
+                    'partyIdentifier' => $this->creditParty[0]['value'],
+                ],
 
                 // testing
-                'partyIdInfo' => [
-                    'partyIdType' => 'PERSONAL_ID',
-                    'partyIdentifier' => '16135551212',
-                    'partySubIdOrType' => 'DRIVING_LICENSE',
-                    'fspId' => '1234',
-                ],
-                'merchantClassificationCode' => '4321',
-                'name' => 'Justin Trudeau',
-                'personalInfo' => [
-                    'complexName' => [
-                        'firstName' => 'Justin',
-                        'middleName' => 'Pierre',
-                        'lastName' => 'Trudeau'
-                    ],
-                    'dateOfBirth' => '1971-12-25'
-                ]
+//                'partyIdInfo' => [
+//                    'partyIdType' => 'PERSONAL_ID',
+//                    'partyIdentifier' => '16135551212',
+//                    'partySubIdOrType' => 'DRIVING_LICENSE',
+//                    'fspId' => '1234',
+//                ],
+//                'merchantClassificationCode' => '4321',
+//                'name' => 'Justin Trudeau',
+//                'personalInfo' => [
+//                    'complexName' => [
+//                        'firstName' => 'Justin',
+//                        'middleName' => 'Pierre',
+//                        'lastName' => 'Trudeau'
+//                    ],
+//                    'dateOfBirth' => '1971-12-25'
+//                ]
             ],
             'payer' => [
-//                'partyIdType' => strtoupper($this->debitParty[0]['key']),
-//                'partyIdentifier' => $this->debitParty[0]['value'],
+                'partyIdType' => strtoupper($this->debitParty[0]['key']),
+                'partyIdentifier' => $this->debitParty[0]['value'],
 
             // testing
-                'partyIdType' => 'PERSONAL_ID',
-                'partyIdentifier' => '16135551212',
-                'partySubIdOrType' => 'DRIVING_LICENSE',
-                'fspId' => '1234'
+//                'partyIdType' => 'PERSONAL_ID',
+//                'partyIdentifier' => '16135551212',
+//                'partySubIdOrType' => 'DRIVING_LICENSE',
+//                'fspId' => '1234'
             ],
             'amount' => [
                 'currency' => $this->currency,
@@ -210,9 +209,11 @@ class TransactionCreate extends FormRequest
 //            'expiration' => 'exp', //
             'extensionList' => [
                 'extension' => [
-                    ['key' => $this->metadata[0]['key'],
-                    'value' => $this->metadata[0]['value']]
-                ]
+                    [
+                        'key' => $this->metadata[0]['key'],
+                        'value' => $this->metadata[0]['value'],
+                    ],
+                ],
             ],
         ];
 
