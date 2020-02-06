@@ -21,71 +21,8 @@ use Illuminate\Validation\Rule;
 class TransactionCreate extends FormRequest
 {
     /**
-     * Postman collection example
-     * @var string
+     * Available currency
      */
-    public $postmanData = '{
-        "transactionRequestId": "a46be97d-fc0a-4613-91c4-4115f6da10be",
-        "payee": {
-            "partyIdInfo": {
-                "partyIdType": "PERSONAL_ID",
-                "partyIdentifier": "16135551212",
-                "partySubIdOrType": "DRIVING_LICENSE",
-                "fspId": "1234"
-            },
-            "merchantClassificationCode": "4321",
-            "name": "Justin Trudeau",
-            "personalInfo": {
-                "complexName": {
-                    "firstName": "Justin",
-                    "middleName": "Pierre",
-                    "lastName": "Trudeau"
-                },
-                "dateOfBirth": "1971-12-25"
-            }
-        },
-        "payer": {
-            "partyIdType": "PERSONAL_ID",
-            "partyIdentifier": "16135551212",
-            "partySubIdOrType": "DRIVING_LICENSE",
-            "fspId": "1234"
-        },
-        "amount": {
-            "currency": "USD",
-            "amount": "123.45"
-        },
-        "transactionType": {
-            "scenario": "DEPOSIT",
-            "subScenario": "locally defined sub-scenario",
-            "initiator": "PAYEE",
-            "initiatorType": "CONSUMER",
-            "refundInfo": {
-                "originalTransactionId": "a46be97d-fc0a-4613-91c4-4115f6da10be",
-                "refundReason": "free text indicating reason for the refund"
-            },
-            "balanceOfPayments": "123"
-        },
-        "note": "Free-text memo",
-        "geoCode": {
-            "latitude": "+45.4215",
-            "longitude": "+75.6972"
-        },
-        "authenticationType": "OTP",
-        "expiration": "2016-05-24T08:38:08.699-04:00",
-        "extensionList": {
-            "extension": [
-                {
-                    "key": "errorDescription",
-                    "value": "This is a more detailed error description"
-                },
-                {
-                    "key": "errorDescription",
-                    "value": "This is a more detailed error description"
-                }
-            ]
-        }
-    }';
-
     const CURRENCY = ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF',
         'BMD', 'BND', 'BOB', 'BOV', 'BRL', 'BSD', 'BTN', 'BWP', 'BYR', 'BZD', 'CAD', 'CDF', 'CHE', 'CHF', 'CHW', 'CLF', 'CLP', 'CNY',
         'COP', 'COU', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP',
@@ -97,9 +34,13 @@ class TransactionCreate extends FormRequest
         'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'USN', 'UYI', 'UYU', 'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU',
         'XBA', 'XBB', 'XBC', 'XBD', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'XSU', 'XTS', 'XUA', 'XXX', 'YER', 'ZAR', 'ZMW', 'ZWL'];
 
+    /**
+     * Available scenario type
+     */
     const TYPE = [
         'billpay', 'deposit', 'disbursement', 'transfer', 'merchantpay', 'inttransfer', 'adjustment', 'reversal', 'withdrawal',
     ];
+
     /**
      * Get the validation rules that apply to the request.
      * TODO debitParty creditParty and metadata array size
@@ -156,34 +97,10 @@ class TransactionCreate extends FormRequest
                     'partyIdType' => strtoupper($this->creditParty[0]['key']),
                     'partyIdentifier' => $this->creditParty[0]['value'],
                 ],
-
-                // testing
-//                'partyIdInfo' => [
-//                    'partyIdType' => 'PERSONAL_ID',
-//                    'partyIdentifier' => '16135551212',
-//                    'partySubIdOrType' => 'DRIVING_LICENSE',
-//                    'fspId' => '1234',
-//                ],
-//                'merchantClassificationCode' => '4321',
-//                'name' => 'Justin Trudeau',
-//                'personalInfo' => [
-//                    'complexName' => [
-//                        'firstName' => 'Justin',
-//                        'middleName' => 'Pierre',
-//                        'lastName' => 'Trudeau'
-//                    ],
-//                    'dateOfBirth' => '1971-12-25'
-//                ]
             ],
             'payer' => [
                 'partyIdType' => strtoupper($this->debitParty[0]['key']),
                 'partyIdentifier' => $this->debitParty[0]['value'],
-
-            // testing
-//                'partyIdType' => 'PERSONAL_ID',
-//                'partyIdentifier' => '16135551212',
-//                'partySubIdOrType' => 'DRIVING_LICENSE',
-//                'fspId' => '1234'
             ],
             'amount' => [
                 'currency' => $this->currency,

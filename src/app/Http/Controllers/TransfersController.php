@@ -18,8 +18,10 @@ use Illuminate\Support\Facades\Log;
 class TransfersController extends Controller
 {
     /**
+     * TODO initiate PUT transfer to mojaloop
+     *
      * @param TransferCreate $request
-     * @return string
+     * @return array|string
      * @throws \Exception
      */
     public function store(TransferCreate $request)
@@ -32,23 +34,23 @@ class TransfersController extends Controller
             'FSPIOP-Destination' => 'payeefsp',
             'FSPIOP-Signature'   => '{"signature":"iU4GBXSfY8twZMj1zXX1CTe3LDO8Zvgui53icrriBxCUF_wltQmnjgWLWI4ZUEueVeOeTbDPBZazpBWYvBYpl5WJSUoXi14nVlangcsmu2vYkQUPmHtjOW-yb2ng6_aPfwd7oHLWrWzcsjTF-S4dW7GZRPHEbY_qCOhEwmmMOnE1FWF1OLvP0dM0r4y7FlnrZNhmuVIFhk_pMbEC44rtQmMFv4pm4EVGqmIm3eyXz0GkX8q_O1kGBoyIeV_P6RRcZ0nL6YUVMhPFSLJo6CIhL2zPm54Qdl2nVzDFWn_shVyV0Cl5vpcMJxJ--O_Zcbmpv6lxqDdygTC782Ob3CNMvg\\",\\"protectedHeader\\":\\"eyJhbGciOiJSUzI1NiIsIkZTUElPUC1VUkkiOiIvdHJhbnNmZXJzIiwiRlNQSU9QLUhUVFAtTWV0aG9kIjoiUE9TVCIsIkZTUElPUC1Tb3VyY2UiOiJPTUwiLCJGU1BJT1AtRGVzdGluYXRpb24iOiJNVE5Nb2JpbGVNb25leSIsIkRhdGUiOiIifQ"}',
         ];
-
-        $data = $request->getData();
         $client = new Client();
+
         try {
-            $response = $client->request(
+            $client->request(
                 'POST',
                 Env::get('HOST_ML_API_ADAPTER') . '/transfers',
                 [
                     'headers' => $headers,
-                    'json' => $data,
+                    'json' => $request->getData(),
                     'debug' => true,
                 ]
             );
+
+            return $request->all();
         } catch (BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
-        return $response->getBody()->getContents();
     }
 
 
@@ -60,7 +62,8 @@ class TransfersController extends Controller
     {
         Log::info(
             'PUT /transfers' . PHP_EOL
-            . 'body: ' . $request->getContent() . PHP_EOL
+            . 'h: ' . $request->headers . PHP_EOL
+            . 'b: ' . $request->getContent() . PHP_EOL
             . 'id = ' . $id . PHP_EOL
         );
     }
@@ -74,7 +77,7 @@ class TransfersController extends Controller
     {
         Log::info(
             'PUT /transfer/{id}/error' . PHP_EOL
-            . 'body: ' . $request->getContent() . PHP_EOL
+            . 'b: ' . $request->getContent() . PHP_EOL
             . 'id = ' . $id . PHP_EOL
         );
     }

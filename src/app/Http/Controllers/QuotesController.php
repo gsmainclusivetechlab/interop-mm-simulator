@@ -34,30 +34,27 @@ class QuotesController extends Controller
             'authorization'      => 'Bearer {{TESTFSP1_BEARER_TOKEN}}',
             'FSPIOP-Signature'   => '{"signature":"iU4GBXSfY8twZMj1zXX1CTe3LDO8Zvgui53icrriBxCUF_wltQmnjgWLWI4ZUEueVeOeTbDPBZazpBWYvBYpl5WJSUoXi14nVlangcsmu2vYkQUPmHtjOW-yb2ng6_aPfwd7oHLWrWzcsjTF-S4dW7GZRPHEbY_qCOhEwmmMOnE1FWF1OLvP0dM0r4y7FlnrZNhmuVIFhk_pMbEC44rtQmMFv4pm4EVGqmIm3eyXz0GkX8q_O1kGBoyIeV_P6RRcZ0nL6YUVMhPFSLJo6CIhL2zPm54Qdl2nVzDFWn_shVyV0Cl5vpcMJxJ--O_Zcbmpv6lxqDdygTC782Ob3CNMvg\\",\\"protectedHeader\\":\\"eyJhbGciOiJSUzI1NiIsIkZTUElPUC1VUkkiOiIvdHJhbnNmZXJzIiwiRlNQSU9QLUhUVFAtTWV0aG9kIjoiUE9TVCIsIkZTUElPUC1Tb3VyY2UiOiJPTUwiLCJGU1BJT1AtRGVzdGluYXRpb24iOiJNVE5Nb2JpbGVNb25leSIsIkRhdGUiOiIifQ"}',
         ];
+        $client = new Client();
 
-        $data = $request->mapInTo();
+        try {
+            $client->request(
+                'POST',
+                Env::get('HOST_QUOTING_SERVICE') . '/quotes',
+                [
+                    'headers' => $headers,
+                    'json' => $request->mapInTo(),
+                    'debug' => true,
+                ]
+            );
 
-//        request to mojaloop
-//        $client = new Client();
-//        try {
-//            $response = $client->request(
-//                'POST',
-//                Env::get('HOST_QUOTING_SERVICE') . '/quotes',
-//                [
-//                    'headers' => $headers,
-//                    'json' => $data,
-//                    'debug' => true,
-//                ]
-//            );
-//        } catch (BadResponseException $e) {
-//            return $e->getResponse()->getBody()->getContents();
-//        }
-//        return $response->getBody()->getContents();
-
-        return $data;
+            return $request->all();
+        } catch (BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
     }
 
     /**
+     * TODO initiate PUT quotes to mojaloop
      * @param QuoteCreate $request
      * @return string
      */
