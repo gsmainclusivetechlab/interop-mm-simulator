@@ -71,8 +71,3 @@ services:
 #      CHOKIDAR_USEPOLLING: 1
     volumes:
       - ./src:/var/www/html
-
-  mailhog:
-    image: mailhog/mailhog
-    ports:
-      - "${HOST_MAILHOG_PORT}:8025"

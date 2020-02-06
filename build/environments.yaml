@@ -1,4 +1,4 @@
-projectname: gsma-itp-test-control
+projectname: gsma-itp-mmo-api
 
 defaults:
     instance: &default-instance
@@ -14,9 +14,6 @@ defaults:
                 app: &vhost-app
                     app_service: web
                     app_service_port: 80
-                mail: &vhost-mailhog
-                    app_service: mailhog
-                    app_service_port: 8025
             volumes:
                 x-php-defaults:
                     - ./auth.json:/root/.composer/auth.json
@@ -50,34 +47,26 @@ instances:
         project:
             env_variables:
                 <<: *default-env-vars
-                APP_URL: http://gsma-itp-test-control.develop.s8.jc
+                APP_URL: http://gsma-itp-mmo-api.develop.s8.jc
         docker_server:
             <<: *default-docker-server
             vhosts:
                 app:
                     <<: *vhost-app
-                    domain_name: gsma-itp-test-control.develop.s8.jc
-                    https: no
-                mail:
-                    <<: *vhost-mailhog
-                    domain_name: mail.gsma-itp-test-control.develop.s8.jc
+                    domain_name: gsma-itp-mmo-api.develop.s8.jc
                     https: no
     build:
         <<: *default-instance
         project:
             env_variables:
                 <<: *default-env-vars
-                APP_URL: http://gsma-itp-test-control.build.s8.jc
+                APP_URL: http://gsma-itp-mmo-api.build.s8.jc
         docker_server:
             <<: *default-docker-server
             vhosts:
                 app:
                     <<: *vhost-app
-                    domain_name: gsma-itp-test-control.build.s8.jc
-                    https: no
-                mail:
-                    <<: *vhost-mailhog
-                    domain_name: mail.gsma-itp-test-control.build.s8.jc
+                    domain_name: gsma-itp-mmo-api.build.s8.jc
                     https: no
 
     staging:
@@ -85,15 +74,11 @@ instances:
         project:
             env_variables:
                 <<: *default-env-vars
-                APP_URL: http://gsma-itp-test-control.staging.s8.justcoded.com
+                APP_URL: http://gsma-itp-mmo-api.staging.s8.justcoded.com
         docker_server:
             <<: *default-docker-server
             vhosts:
                 app:
                     <<: *vhost-app
-                    domain_name: gsma-itp-test-control.staging.s8.justcoded.com
-                    https: no
-                mail:
-                    <<: *vhost-mailhog
-                    domain_name: mail.gsma-itp-test-control.staging.s8.justcoded.com
+                    domain_name: gsma-itp-mmo-api.staging.s8.justcoded.com
                     https: no
