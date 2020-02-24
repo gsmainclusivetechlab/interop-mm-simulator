@@ -1,7 +1,7 @@
 .PHONY: info init build run test-run install update stop xdebug-init chown npm-i npm-build npm-watch php-bash nodejs-bash
 
 info:
-	@echo "LenderKit Server Configuration/Launcher"
+	@echo "MMO API Server Configuration/Launcher"
 	@echo " "
 	@echo "Usage:"
 	@echo "	make command [V=1]"

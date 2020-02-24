@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 /**
  * Class QuotationsCreate
@@ -104,7 +103,6 @@ class QuotationsCreate extends FormRequest
 
             'requestAmount' => 'required',                                   // !
             'requestCurrency' => 'required',                                 // !
-//            'type' => 'required',                                            // !
             'subType' => 'string',
             'chosenDeliveryMethod' => 'string',
             'quotes'  => 'array',

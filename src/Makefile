@@ -1,7 +1,7 @@
 .PHONY: info install update composer-install ci composer-update composer-init cu composer-autoload ca chmod cache-clear
 
 info:
-	@echo "LenderKit Application Utility (PHP-FPM Container)"
+	@echo "MMO API Application Utility (PHP-FPM Container)"
 	@echo " "
 	@echo "Usage:"
 	@echo "	make command"
