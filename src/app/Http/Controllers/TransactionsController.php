@@ -5,11 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionCreate;
 use \GuzzleHttp\Client;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
-use Laravel\Telescope\IncomingEntry;
-use Laravel\Telescope\Telescope;
 
 /**
  * Class TransactionsController
@@ -48,14 +45,6 @@ class TransactionsController extends Controller
                 ]
             );
 
-            Telescope::recordLog(
-                IncomingEntry::make([
-                    'level' => 'level',
-                    'message' => 'message',
-                    'context' => 'context',
-                ])->tags(['tag1'])
-            );
-
             \Illuminate\Support\Facades\Log::info(
                 'POST /transactionRequests ' . $response->getStatusCode() . PHP_EOL
                 . \GuzzleHttp\json_encode($data) . PHP_EOL
@@ -63,20 +52,5 @@ class TransactionsController extends Controller
         });
 
         return $request->all();
-    }
-
-    public function partiesUpdate(Request $request, $type, $id)
-    {
-        //
-    }
-
-    public function partiesGet(Request $request, $type, $id)
-    {
-        //
-    }
-
-    public function partiesError(Request $request, $type, $id)
-    {
-        //
     }
 }
