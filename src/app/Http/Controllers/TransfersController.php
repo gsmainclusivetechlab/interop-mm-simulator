@@ -26,6 +26,7 @@ class TransfersController extends Controller
     public function store(TransferCreate $request)
     {
         app()->terminating(function() use ($request) {
+            $data = $request->mapInTo();
             $client = new Client();
             $response = $client->request(
                 'PUT',
@@ -38,11 +39,12 @@ class TransfersController extends Controller
                         'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                         'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
                     ],
-                    'json' => $request->mapInTo(),
+                    'json' => $data,
                 ]
             );
             \Illuminate\Support\Facades\Log::info(
                 'PUT /transfers ' . $response->getStatusCode() . PHP_EOL
+                . \GuzzleHttp\json_encode($data) . PHP_EOL
             );
         });
 

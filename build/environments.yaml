@@ -48,6 +48,9 @@ instances:
             env_variables:
                 <<: *default-env-vars
                 APP_URL: http://gsma-itp-mmo-api.develop.s8.jc
+                HOST_TRANSACTION_REQUESTS_SERVICE: http://mojaloop.s9.jc
+                HOST_ML_API_ADAPTER: http://mojaloop.s9.jc
+                HOST_QUOTING_SERVICE: http://mojaloop.s9.jc
         docker_server:
             <<: *default-docker-server
             vhosts:
