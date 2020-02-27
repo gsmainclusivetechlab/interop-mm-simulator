@@ -31,7 +31,7 @@ class TransferCreate extends FormRequest
     public function mapInTo()
     {
         return [
-            'fulfilment' => Str::random(43),
+            'fulfilment' => 'XoSz1cL0tljJSCp_VtIYmPNw-zFUgGfbUqf69AagUzY',
             'completedTimestamp' => (new Carbon())->toIso8601ZuluString('millisecond'),
             'transferState' => 'COMMITTED',
         ];

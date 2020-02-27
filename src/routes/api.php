@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,7 +25,3 @@ Route::put('/quotes/{id}/error', 'QuotesController@error')->name('quotes.error')
 Route::post('/transfers', 'TransfersController@store')->name('transfers.store');
 Route::put('/transfers/{id}', 'TransfersController@update')->name('transfers.update');
 Route::put('/transfers/{id}/error', 'TransfersController@error')->name('transfers.error');
-
-Route::put('/parties/{type}/{id}', 'PartiesController@partiesUpdate')->name('parties.update');
-Route::get('/parties/{type}/{id}', 'PartiesController@partiesGet')->name('parties.get');
-Route::put('/parties/{type}/{id}/error', 'PartiesController@partiesError')->name('parties.error');
