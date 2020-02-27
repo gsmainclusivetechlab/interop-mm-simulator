@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionCreate;
 use \GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
 
@@ -51,6 +52,10 @@ class TransactionsController extends Controller
             );
         });
 
-        return $request->all();
+        return new Response(
+            202,
+            ['X-Date' => (new Carbon())->toRfc7231String()],
+            \GuzzleHttp\json_encode($request->all())
+        );
     }
 }
