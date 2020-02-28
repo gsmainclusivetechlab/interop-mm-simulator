@@ -54,7 +54,7 @@ class TransactionCreate extends FormRequest
     public function rules()
     {
         return [
-            'amount'           => ['required', 'string', 'min:4', 'max:256', 'regex:\'^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$\''],
+            'amount'           => ['required', 'string', 'min:4', 'max:256', 'regex:\'^\d+\.\d{2}$\''],
             'currency'         => ['required', Rule::in(self::CURRENCY)],
             'type'             => ['required', Rule::in(self::TYPE)],
             'subType'          => 'string|min:0|max:256',
@@ -94,7 +94,7 @@ class TransactionCreate extends FormRequest
             'payee' => [
                 'partyIdInfo'  => [
                     'partyIdType'     => strtoupper($this->creditParty[0]['key']),
-                    'partyIdentifier' => $this->creditParty[0]['value'],
+                    'partyIdentifier' => $this->creditParty[0]['value'] != '16135551213' ? $this->creditParty[0]['value'] : null,
                 ],
                 'name' => $this->recipientKyc['subjectName']['fullName'] ?? '',
                 'personalInfo' => [
@@ -108,7 +108,7 @@ class TransactionCreate extends FormRequest
             ],
             'payer' => [
                 'partyIdType'     => strtoupper($this->debitParty[0]['key']),
-                'partyIdentifier' => $this->debitParty[0]['value'],
+                'partyIdentifier' => $this->debitParty[0]['value'] != '16135551213' ? $this->debitParty[0]['value'] : null,
             ],
             'amount' => [
                 'currency' => $this->currency,
