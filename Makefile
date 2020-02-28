@@ -75,7 +75,7 @@ install:
 	${DOCKER_COMPOSE_EXEC_WWW} app bash -c "make install"
 #	$(MAKE) npm-i
 #	$(MAKE) npm-build
-    ${MAYBE_SUDO} mkdir runtime || true
+	${MAYBE_SUDO} mkdir runtime || true
 	${MAYBE_SUDO} touch runtime/installed
 
 update:
