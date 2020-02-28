@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,6 +11,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('/transactions', 'TransactionsController@store')->name('transactions.store');
+
+Route::put('/transactionRequests/{id}', 'TransactionRequestsController@update')->name('transaction_requests.update');
+Route::post('/transactionRequests', 'TransactionRequestsController@store')->name('transaction_requests.store');
+Route::put('/transactionRequests/{id}/error', 'TransactionRequestsController@error')->name('transaction_requests.error');
+
+Route::post('/quotations', 'QuotesController@storeQuotations')->name('quotations.store');
+Route::put('/quotes/{id}', 'QuotesController@update')->name('quotes.update');
+Route::post('/quotes', 'QuotesController@store')->name('quotes.store');
+Route::put('/quotes/{id}/error', 'QuotesController@error')->name('quotes.error');
+
+Route::post('/transfers', 'TransfersController@store')->name('transfers.store');
+Route::put('/transfers/{id}', 'TransfersController@update')->name('transfers.update');
+Route::put('/transfers/{id}/error', 'TransfersController@error')->name('transfers.error');

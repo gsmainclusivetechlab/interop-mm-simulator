@@ -1,7 +1,7 @@
 .PHONY: info install update composer-install ci composer-update composer-init cu composer-autoload ca chmod cache-clear
 
 info:
-	@echo "LenderKit Application Utility (PHP-FPM Container)"
+	@echo "MMO API Application Utility (PHP-FPM Container)"
 	@echo " "
 	@echo "Usage:"
 	@echo "	make command"
@@ -25,11 +25,11 @@ endif
 # INSTALL AFTER CLONE
 install: chmod composer-install
 	php artisan key:generate
-	php artisan migrate:fresh --seed
+#	php artisan migrate:fresh --seed
 
 update: chmod composer-install cache-clear
 	php artisan key:generate
-	php artisan migrate
+#	php artisan migrate
 	php artisan queue:restart
 
 # Composer helpers

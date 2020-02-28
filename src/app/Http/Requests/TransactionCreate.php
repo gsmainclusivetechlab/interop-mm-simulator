@@ -3,9 +3,13 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
+ * Class TransactionCreate
+ * @package App\Http\Requests
+ *
  * @property string $currency
  * @property string $amount
  * @property string $type
@@ -13,78 +17,17 @@ use Illuminate\Validation\Rule;
  * @property string $requestingOrganisationTransactionReference
  * @property string $descriptionText
  * @property string $geoCode
+ * @property string $oneTimeCode
  * @property array $metadata
  * @property array $creditParty
  * @property array $debitParty
+ * @property array $recipientKyc
  */
 class TransactionCreate extends FormRequest
 {
     /**
-     * Postman collection example
-     * @var string
+     * Available currency
      */
-    public $postmanData = '{
-        "transactionRequestId": "a46be97d-fc0a-4613-91c4-4115f6da10be",
-        "payee": {
-            "partyIdInfo": {
-                "partyIdType": "PERSONAL_ID",
-                "partyIdentifier": "16135551212",
-                "partySubIdOrType": "DRIVING_LICENSE",
-                "fspId": "1234"
-            },
-            "merchantClassificationCode": "4321",
-            "name": "Justin Trudeau",
-            "personalInfo": {
-                "complexName": {
-                    "firstName": "Justin",
-                    "middleName": "Pierre",
-                    "lastName": "Trudeau"
-                },
-                "dateOfBirth": "1971-12-25"
-            }
-        },
-        "payer": {
-            "partyIdType": "PERSONAL_ID",
-            "partyIdentifier": "16135551212",
-            "partySubIdOrType": "DRIVING_LICENSE",
-            "fspId": "1234"
-        },
-        "amount": {
-            "currency": "USD",
-            "amount": "123.45"
-        },
-        "transactionType": {
-            "scenario": "DEPOSIT",
-            "subScenario": "locally defined sub-scenario",
-            "initiator": "PAYEE",
-            "initiatorType": "CONSUMER",
-            "refundInfo": {
-                "originalTransactionId": "a46be97d-fc0a-4613-91c4-4115f6da10be",
-                "refundReason": "free text indicating reason for the refund"
-            },
-            "balanceOfPayments": "123"
-        },
-        "note": "Free-text memo",
-        "geoCode": {
-            "latitude": "+45.4215",
-            "longitude": "+75.6972"
-        },
-        "authenticationType": "OTP",
-        "expiration": "2016-05-24T08:38:08.699-04:00",
-        "extensionList": {
-            "extension": [
-                {
-                    "key": "errorDescription",
-                    "value": "This is a more detailed error description"
-                },
-                {
-                    "key": "errorDescription",
-                    "value": "This is a more detailed error description"
-                }
-            ]
-        }
-    }';
-
     const CURRENCY = ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF',
         'BMD', 'BND', 'BOB', 'BOV', 'BRL', 'BSD', 'BTN', 'BWP', 'BYR', 'BZD', 'CAD', 'CDF', 'CHE', 'CHF', 'CHW', 'CLF', 'CLP', 'CNY',
         'COP', 'COU', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP',
@@ -96,9 +39,13 @@ class TransactionCreate extends FormRequest
         'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'USN', 'UYI', 'UYU', 'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU',
         'XBA', 'XBB', 'XBC', 'XBD', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'XSU', 'XTS', 'XUA', 'XXX', 'YER', 'ZAR', 'ZMW', 'ZWL'];
 
+    /**
+     * Available scenario type
+     */
     const TYPE = [
         'billpay', 'deposit', 'disbursement', 'transfer', 'merchantpay', 'inttransfer', 'adjustment', 'reversal', 'withdrawal',
     ];
+
     /**
      * Get the validation rules that apply to the request.
      * TODO debitParty creditParty and metadata array size
@@ -106,38 +53,31 @@ class TransactionCreate extends FormRequest
      */
     public function rules()
     {
-        return [                                                                              //// transform to mojaloop
-            'amount'           => 'required|string|min:4|max:256|regex:\'^\d+\.\d{2}$\'',     //// transform to amount['amount'=>]
-            'currency'         => ['required', Rule::in(self::CURRENCY)],              //// transform to amount['currency'=>]
-            'type'             => ['required', Rule::in(self::TYPE)],                  //// transform to transactionType['scenario'=>]
-            ///
-            'subType'          => 'string|min:0|max:256',                                     //// to transactionType['subScenario'=>]
-            'descriptionText'  => 'string|min:0|max:160',                                     //// to `note`
-            'requestDate'      => '',                 // no need
-
-            'requestingOrganisationTransactionReference' => 'required|string|min:0|max:256',  //// transform to transactionType['refundInfo'=>['originalTransactionId'=>]]
-            ///
-            'oneTimeCode'      => 'string|min:0|max:256',                                     ///// authenticationType = 'OTP'
-            'geoCode'          => ['required', 'string', 'min:0', 'max:256', 'regex:\'^(-?(90|(\d|[1-8]\d)(\.\d{1,6}){0,1}))\,{1}(-?(180|(\d|\d\d|1[0-7]\d)(\.\d{1,6}){0,1}))$\''],  //// geoCode['latitude'=>,'longitude'=>]
-            'debitParty'       => 'required|array|max:1',                                           //// transform to payer['partyIdType'=>,'partyIdentifier'=>]
-                'debitParty.*.key'    => 'required|string|min:1|max:256',                              //// transform to payer['partyIdType'=>]
-                'debitParty.*.value'  => 'required|string|min:1|max:256',                              //// transform to payer['partyIdentifier'=>]
-            'creditParty'      => 'required|array|max:1',                                           //// transform to payee['partyIdInfo'=>['partyIdType'=>,'partyIdentifier'=>]]
-                'creditParty.*.key'   => 'required|string|min:1|max:256',                              //// transform to payee['partyIdInfo'=>['partyIdType'=>]]
-                'creditParty.*.value' => 'required|string|min:1|max:256',                              //// transform to payee['partyIdInfo'=>['partyIdentifier'=>]]
-            ///
-            'senderKyc'        => '',                 // no need
-            'recipientKyc'     => '',                                                         //// transform to payee['name'=>,'personalInfo'=>['complexName'=>,'dateOfBirth'=>]]
-            'originalTransactionReference'=> '',      // no need
-            'servicingIdentity'=> '',                 // no need
-            'fees'             => '',                 // no need
-            'requestingLei'    => '',                 // no need
-            'receivingLei'     => '',                 // no need
-            'metadata'         => 'required|array|max:1',                                           ////  extensionList['extension'=>['key'=>,'value'=>]]
-                'metadata.*.key'   => 'required|string|min:1|max:256',                              //// transform to extensionList['extension'=>['key'=>]]
-                'metadata.*.value' => 'required|string|min:1|max:256',                              //// transform to extensionList['extension'=>['value'=>]]
-            'transactionStatus'=> '',                 // ?
-            'internationalTransferInformation' => '', // no need
+        return [
+            'amount'           => ['required', 'string', 'min:4', 'max:256', 'regex:\'^\d+\.\d{2}$\''],
+            'currency'         => ['required', Rule::in(self::CURRENCY)],
+            'type'             => ['required', Rule::in(self::TYPE)],
+            'subType'          => 'string|min:0|max:256',
+            'descriptionText'  => 'string|min:0|max:160',
+            'requestingOrganisationTransactionReference' => 'string|min:0|max:256',
+            'oneTimeCode'      => 'string|min:0|max:256',
+            'geoCode'          => ['string', 'min:0', 'max:256', 'regex:\'^(-?(90|(\d|[1-8]\d)(\.\d{1,6}){0,1}))\,{1}(-?(180|(\d|\d\d|1[0-7]\d)(\.\d{1,6}){0,1}))$\''],
+            'debitParty'       => 'required|array|max:1',
+                'debitParty.*.key'    => 'required|string|min:1|max:256',
+                'debitParty.*.value'  => 'required|string|min:1|max:256',
+            'creditParty'      => 'required|array|max:1',
+                'creditParty.*.key'   => 'required|string|min:1|max:256',
+                'creditParty.*.value' => 'required|string|min:1|max:256',
+            'recipientKyc'     => 'array',
+                'recipientKyc.dateOfBirth' => 'string',
+                'recipientKyc.subjectName' => 'array',
+                    'recipientKyc.subjectName.fullName'   => 'string|min:0|max:256',
+                    'recipientKyc.subjectName.firstName'  => 'string|min:0|max:256',
+                    'recipientKyc.subjectName.middleName' => 'string|min:0|max:256',
+                    'recipientKyc.subjectName.lastName'   => 'string|min:0|max:256',
+            'metadata'         => 'array|max:1',
+                'metadata.*.key'   => 'string|min:1|max:256',
+                'metadata.*.value' => 'string|min:1|max:256',
         ];
     }
 
@@ -146,73 +86,56 @@ class TransactionCreate extends FormRequest
      *
      * @return array
      */
-    public function dataMapping()
+    public function mapInTo()
     {
-        $id = rand(1000000, 9999999);
+        $amount = floatval($this->amount);
         $result = [
-//            'transactionRequestId' => "249d49c9-c804-4d0b-801d-663edc6dbae2",
-            'transactionRequestId' => "$id",
+            'transactionRequestId' => Str::uuid(),
             'payee' => [
-//                'partyIdInfo' => [
-//                    'partyIdType' => strtoupper($this->creditParty[0]['key']),
-//                    'partyIdentifier' => $this->creditParty[0]['value'],
-//                ],
-
-                // testing
-                'partyIdInfo' => [
-                    'partyIdType' => 'PERSONAL_ID',
-                    'partyIdentifier' => '16135551212',
-                    'partySubIdOrType' => 'DRIVING_LICENSE',
-                    'fspId' => '1234',
+                'partyIdInfo'  => [
+                    'partyIdType'     => strtoupper($this->creditParty[0]['key']),
+                    'partyIdentifier' => $this->creditParty[0]['value'] != '16135551213' ? $this->creditParty[0]['value'] : null,
                 ],
-                'merchantClassificationCode' => '4321',
-                'name' => 'Justin Trudeau',
+                'name' => $this->recipientKyc['subjectName']['fullName'] ?? '',
                 'personalInfo' => [
                     'complexName' => [
-                        'firstName' => 'Justin',
-                        'middleName' => 'Pierre',
-                        'lastName' => 'Trudeau'
+                        'firstName'  => $this->recipientKyc['subjectName']['firstName'] ?? '',
+                        'middleName' => $this->recipientKyc['subjectName']['middleName'] ?? '',
+                        'lastName'   => $this->recipientKyc['subjectName']['lastName'] ?? '',
                     ],
-                    'dateOfBirth' => '1971-12-25'
+                    'dateOfBirth' => $this->recipientKyc['dateOfBirth'] ?? '',
                 ]
             ],
             'payer' => [
-//                'partyIdType' => strtoupper($this->debitParty[0]['key']),
-//                'partyIdentifier' => $this->debitParty[0]['value'],
-
-            // testing
-                'partyIdType' => 'PERSONAL_ID',
-                'partyIdentifier' => '16135551212',
-                'partySubIdOrType' => 'DRIVING_LICENSE',
-                'fspId' => '1234'
+                'partyIdType'     => strtoupper($this->debitParty[0]['key']),
+                'partyIdentifier' => $this->debitParty[0]['value'] != '16135551213' ? $this->debitParty[0]['value'] : null,
             ],
             'amount' => [
                 'currency' => $this->currency,
-                'amount' => $this->amount,
+                'amount'   => "$amount",
             ],
             'transactionType' => [
-                'scenario' => strtoupper($this->type),
-//                'subScenario' => $this->subType, //
-                'initiator' => 'PAYEE',
+                'scenario'      => strtoupper($this->type),
+                'subScenario'   => $this->subType ?? '',
+                'initiator'     => 'PAYEE',
                 'initiatorType' => 'BUSINESS',
-                'refundInfo' => [
-                    'originalTransactionId' => $this->requestingOrganisationTransactionReference,
-//                    'refundReason' => 'reason', //
+                'refundInfo'    => [
+                    'originalTransactionId' => $this->requestingOrganisationTransactionReference ?? '',
                 ],
-//                'balanceOfPayments' => 'balance' //
             ],
-//            'note' => $this->descriptionText, //
+            'note'    => $this->descriptionText ?? '',
             'geoCode' => [
-                'latitude' => explode(',', $this->geoCode)[0],
-                'longitude' => explode(',', $this->geoCode)[1],
+                'latitude'  => $this->geoCode ? explode(',', $this->geoCode)[0] : '',
+                'longitude' => $this->geoCode ? explode(',', $this->geoCode)[1] : '',
             ],
-            'authenticationType' => 'OTP',
-//            'expiration' => 'exp', //
-            'extensionList' => [
+            'authenticationType' => $this->oneTimeCode ? 'OTP' : '',
+            'extensionList'      => [
                 'extension' => [
-                    ['key' => $this->metadata[0]['key'],
-                    'value' => $this->metadata[0]['value']]
-                ]
+                    [
+                        'key'   => $this->metadata[0]['key'] ?? '',
+                        'value' => $this->metadata[0]['value'] ?? '',
+                    ],
+                ],
             ],
         ];
 
