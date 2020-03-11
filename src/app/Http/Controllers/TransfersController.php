@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
+use App\Requests\Callback;
 use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
@@ -18,7 +19,8 @@ use Illuminate\Support\Env;
 class TransfersController extends Controller
 {
     /**
-     * // TODO make PUT /X-Callback-URL
+     * Handle transfer request
+     *
      * @param TransferCreate $request
      * @return array|string
      * @throws \Exception
@@ -27,6 +29,9 @@ class TransfersController extends Controller
     {
         app()->terminating(function() use ($request) {
             $data = $request->mapInTo();
+
+            Callback::send($request, $data);
+
             $client = new Client();
             $response = $client->request(
                 'PUT',
@@ -65,5 +70,6 @@ class TransfersController extends Controller
      */
     public function error(TransferError $request, $id)
     {
+        Callback::send($request, $data);
     }
 }

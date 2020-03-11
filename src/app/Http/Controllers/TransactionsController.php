@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionCreate;
+use App\Models\Transaction;
 use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
@@ -25,6 +26,11 @@ class TransactionsController extends Controller
      */
     public function store(TransactionCreate $request)
     {
+        Transaction::create([
+            'traceparent' => $request->header('traceparent'),
+            'callback_url' => $request->header('x-callback-url')
+        ]);
+
         app()->terminating(function() use ($request) {
             $data = $request->mapInTo();
 
