@@ -6,6 +6,9 @@ namespace App\Requests;
 
 use App\Models\Transaction;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -34,17 +37,28 @@ class Callback
 
         $client = new Client();
 
-        $response = $client->request(
-            'PUT',
-            $url,
-            $data
-        );
+        try {
+            $response = $client->request(
+                'PUT',
+                $url,
+                $data
+            );
+
+            $responseLog = $response->getBody()->getContents();
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $responseLog = $e->getMessage();
+        } catch (ServerException $e) {
+            $response = $e->getResponse();
+            $responseLog = $e->getMessage();
+        }
 
         $transaction->delete();
 
         Log::info(
             'PUT ' . $url . ' ' . $response->getStatusCode() . PHP_EOL
             . \GuzzleHttp\json_encode($data) . PHP_EOL
+            . $responseLog
         );
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
 use App\Requests\Callback;
 use \GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
@@ -70,6 +71,5 @@ class TransfersController extends Controller
      */
     public function error(TransferError $request, $id)
     {
-        Callback::send($request, $data);
     }
 }

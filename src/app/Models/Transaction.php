@@ -11,6 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'traceparent';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
