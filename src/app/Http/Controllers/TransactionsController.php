@@ -67,7 +67,11 @@ class TransactionsController extends Controller
         return new Response(
             202,
             ['X-Date' => (new Carbon())->toRfc7231String()],
-            \GuzzleHttp\json_encode($request->all())
+            \GuzzleHttp\json_encode([
+                'serverCorrelationId' => $request->header('X-CorrelationID'),
+                'status' => 'pending',
+                'notificationMethod' => "callback",
+            ])
         );
     }
 }
