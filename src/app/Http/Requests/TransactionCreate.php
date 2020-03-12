@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Transaction;
+use App\Rules\Traceparent;
+use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -30,6 +34,10 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  */
 class TransactionCreate extends FormRequest
 {
+    use ParseTraceId;
+
+    public $traceId;
+
     /**
      * Available currency
      */
@@ -54,6 +62,7 @@ class TransactionCreate extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      * TODO debitParty creditParty and metadata array size
+     *
      * @return array
      */
     public function rules()
@@ -91,7 +100,7 @@ class TransactionCreate extends FormRequest
      *
      * @return array
      */
-    public function mapInTo()
+    public function mapInTo(): array
     {
         $amount = floatval($this->amount);
         $result = [
@@ -169,6 +178,28 @@ class TransactionCreate extends FormRequest
                 default:
                     break;
             }
+
+            $headerValidator = \Illuminate\Support\Facades\Validator::make($this->headers->all(), [
+                'traceparent.0' => [
+                    'required',
+                    new Traceparent(),
+                ],
+                'x-callback-url.0' => [
+                    'required',
+                    'url',
+                ]
+            ], [
+                'traceparent.0.required' => __('Header traceparent is required!'),
+                'x-callback-url.0.required' => __('Header X-Callback-URL is required!'),
+                'x-callback-url.0.url' => __('Header X-Callback-URL has wrong format!'),
+            ]);
+
+            if ($headerValidator->fails()) {
+                $validator->messages()->merge($headerValidator->messages());
+                return;
+            }
+
+            $this->traceId = self::parseTraceId($this->headers->get('traceparent'));
         });
     }
 }

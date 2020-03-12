@@ -1,14 +1,13 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
+use App\Models\Transaction;
 use App\Requests\Callback;
 use \GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
@@ -23,15 +22,18 @@ class TransfersController extends Controller
      * Handle transfer request
      *
      * @param TransferCreate $request
-     * @return array|string
-     * @throws \Exception
+     * @param Transaction $transaction
+     *
+     * @return Response
      */
-    public function store(TransferCreate $request)
+    public function store(TransferCreate $request, Transaction $transaction): Response
     {
-        app()->terminating(function() use ($request) {
-            $data = $request->mapInTo();
+        app()->terminating(function() use ($request, $transaction) {
+            $callbackData = $request->mapInToCallback($transaction);
 
-            Callback::send($request, $data);
+            Callback::send($transaction->callback_url, [], $callbackData);
+
+            $data = $request->mapInTo();
 
             $client = new Client();
             $response = $client->request(

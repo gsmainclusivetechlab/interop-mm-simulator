@@ -1,14 +1,16 @@
 <?php
 
-
 namespace App\Requests;
 
-
 use App\Models\Transaction;
+use App\Traits\ParseTraceId;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -18,21 +20,21 @@ use Illuminate\Support\Facades\Log;
  */
 class Callback
 {
+    use ParseTraceId;
+
     /**
      * Send
      *
-     * @param Request $request
+     * @param string $url
+     * @param array $headers
+     * @param array $data
+     *
+     * @return bool
      */
-    public static function send(Request $request, array $data)
+    public static function send(string $url, array $headers, array $data): bool
     {
-        $traceparentParts = explode('-', $request->header('traceparent'), 3);
-        $traceparent = $traceparentParts[0] . '-' . $traceparentParts[1];
-        $transaction = Transaction::where('traceparent', '=', $traceparent)->firstOrFail();
-
-        $url = $transaction->callback_url;
-
         if (!$url) {
-            return;
+            return false;
         }
 
         $client = new Client();
@@ -41,24 +43,24 @@ class Callback
             $response = $client->request(
                 'PUT',
                 $url,
-                $data
+                [
+                    'headers' => $headers,
+                    'json' => $data
+                ]
             );
 
             $responseLog = $response->getBody()->getContents();
-        } catch (ClientException $e) {
-            $response = $e->getResponse();
-            $responseLog = $e->getMessage();
-        } catch (ServerException $e) {
+        } catch (BadResponseException $e) {
             $response = $e->getResponse();
             $responseLog = $e->getMessage();
         }
 
-        $transaction->delete();
-
         Log::info(
             'PUT ' . $url . ' ' . $response->getStatusCode() . PHP_EOL
-            . \GuzzleHttp\json_encode($data) . PHP_EOL
+            . json_encode($data) . PHP_EOL
             . $responseLog
         );
+
+        return true;
     }
 }
