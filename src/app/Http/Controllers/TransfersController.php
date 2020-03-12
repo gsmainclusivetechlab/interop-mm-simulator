@@ -22,12 +22,13 @@ class TransfersController extends Controller
      * Handle transfer request
      *
      * @param TransferCreate $request
-     * @param Transaction $transaction
      *
      * @return Response
      */
-    public function store(TransferCreate $request, Transaction $transaction): Response
+    public function store(TransferCreate $request): Response
     {
+        $transaction = Transaction::getCurrent();
+
         app()->terminating(function() use ($request, $transaction) {
             $callbackData = $request->mapInToCallback($transaction);
 
