@@ -75,7 +75,12 @@ class TransactionCreate extends FormRequest
             'descriptionText'  => 'string|min:0|max:160',
             'requestingOrganisationTransactionReference' => 'string|min:0|max:256',
             'oneTimeCode'      => 'string|min:0|max:256',
-            'geoCode'          => ['string', 'min:0', 'max:256', 'regex:\'^(-?(90|(\d|[1-8]\d)(\.\d{1,6}){0,1}))\,{1}(-?(180|(\d|\d\d|1[0-7]\d)(\.\d{1,6}){0,1}))$\''],
+            'geoCode'          => [
+                'string',
+                'min:0',
+                'max:256',
+                'regex:\'^(-?(90|(\d|[1-8]\d)(\.\d{1,6}){0,1}))\,{1}(-?(180|(\d|\d\d|1[0-7]\d)(\.\d{1,6}){0,1}))$\''
+            ],
             'debitParty'       => 'required|array|max:1',
                 'debitParty.*.key'    => 'required|string|min:1|max:256',
                 'debitParty.*.value'  => 'required|string|min:1|max:256',
@@ -108,21 +113,12 @@ class TransactionCreate extends FormRequest
             'payee' => [
                 'partyIdInfo'  => [
                     'partyIdType'     => strtoupper($this->creditParty[0]['key']),
-                    'partyIdentifier' => $this->creditParty[0]['value'] != '16135551213' ? $this->creditParty[0]['value'] : null,
+                    'partyIdentifier' => $this->creditParty[0]['value'] != '16135551213' ? $this->creditParty[0]['value'] : '',
                 ],
-                'name' => $this->recipientKyc['subjectName']['fullName'] ?? '',
-                'personalInfo' => [
-                    'complexName' => [
-                        'firstName'  => $this->recipientKyc['subjectName']['firstName'] ?? '',
-                        'middleName' => $this->recipientKyc['subjectName']['middleName'] ?? '',
-                        'lastName'   => $this->recipientKyc['subjectName']['lastName'] ?? '',
-                    ],
-                    'dateOfBirth' => $this->recipientKyc['dateOfBirth'] ?? '',
-                ]
             ],
             'payer' => [
                 'partyIdType'     => strtoupper($this->debitParty[0]['key']),
-                'partyIdentifier' => $this->debitParty[0]['value'] != '16135551213' ? $this->debitParty[0]['value'] : null,
+                'partyIdentifier' => $this->debitParty[0]['value'] != '16135551213' ? $this->debitParty[0]['value'] : '',
             ],
             'amount' => [
                 'currency' => $this->currency,
@@ -130,28 +126,64 @@ class TransactionCreate extends FormRequest
             ],
             'transactionType' => [
                 'scenario'      => strtoupper($this->type),
-                'subScenario'   => $this->subType ?? '',
                 'initiator'     => 'PAYEE',
                 'initiatorType' => 'BUSINESS',
-                'refundInfo'    => [
-                    'originalTransactionId' => $this->requestingOrganisationTransactionReference ?? '',
-                ],
-            ],
-            'note'    => $this->descriptionText ?? '',
-            'geoCode' => [
-                'latitude'  => $this->geoCode ? explode(',', $this->geoCode)[0] : '',
-                'longitude' => $this->geoCode ? explode(',', $this->geoCode)[1] : '',
-            ],
-            'authenticationType' => $this->oneTimeCode ? 'OTP' : '',
-            'extensionList'      => [
-                'extension' => [
-                    [
-                        'key'   => $this->metadata[0]['key'] ?? '',
-                        'value' => $this->metadata[0]['value'] ?? '',
-                    ],
-                ],
             ],
         ];
+
+        if ($fullName = Arr::get($this->recipientKyc, 'subjectName.fullName')) {
+            $result['payee']['name'] = $fullName;
+        }
+
+        if ($firstName = Arr::get($this->recipientKyc, 'subjectName.firstName')) {
+            $result['payee']['personalInfo']['complexName']['firstName'] = $firstName;
+        }
+
+        if ($middleName = Arr::get($this->recipientKyc, 'subjectName.middleName')) {
+            $result['payee']['personalInfo']['complexName']['middleName'] = $middleName;
+        }
+
+        if ($lastName = Arr::get($this->recipientKyc, 'subjectName.lastName')) {
+            $result['payee']['personalInfo']['complexName']['lastName'] = $lastName;
+        }
+
+        if ($dateOfBirth = Arr::get($this->recipientKyc, 'dateOfBirth')) {
+            $result['payee']['personalInfo']['dateOfBirth'] = $dateOfBirth;
+        }
+
+        if ($this->subType) {
+            $result['transactionType']['subScenario'] = $this->subType;
+        }
+
+        if ($this->requestingOrganisationTransactionReference) {
+            $result['transactionType']['refundInfo']['originalTransactionId'] = $this->requestingOrganisationTransactionReference;
+        }
+
+        if ($this->descriptionText) {
+            $result['note'] = $this->descriptionText;
+        }
+
+        if ($this->geoCode) {
+            $geoCodeParts = explode(',', $this->geoCode);
+
+            $result['geoCode'] = [
+                'latitude'  => $geoCodeParts[0],
+                'longitude' => $geoCodeParts[1],
+            ];
+        }
+
+        if ($this->oneTimeCode) {
+            $result['authenticationType'] = 'OTP';
+        }
+
+        if ($this->metadata) {
+            $result['extensionList']['extension'] = [
+                [
+                    'key'   => Arr::get($this->metadata, '0.key'),
+                    'value' => Arr::get($this->metadata, '0.value'),
+                ],
+            ];
+        }
 
         return $result;
     }
