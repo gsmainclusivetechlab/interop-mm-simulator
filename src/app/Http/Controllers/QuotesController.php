@@ -50,39 +50,37 @@ class QuotesController extends Controller
 
     /**
      * POST /quotes from mojaloop
+     *
      * @param QuoteCreate $request
      * @return string
      */
     public function store(QuoteCreate $request)
     {
         app()->terminating(function() use ($request) {
-            $client = new Client();
-            $data = $request->mapInTo();
+            if ($request->amount['amount'] === '51.03') {
+                (new \App\Requests\QuoteError([
+                    'errorInformation' => [
+                        'errorCode' => '5103',
+                        'errorDescription' => ''
+                    ]
+                ], [
+                    'traceparent'        => $request->header('traceparent'),
+                    'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
+                    'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
+                ], $request->quoteId))->send();
 
-            $response = $client->request(
-                'PUT',
-                Env::get('HOST_QUOTING_SERVICE') . '/quotes/' . $request->quoteId,
-                [
-                    'headers' => [
-                        'traceparent'        => $request->header('traceparent'),
-                        'Content-Type'       => 'application/vnd.interoperability.quotes+json;version=1.0',
-                        'Date'               => (new Carbon())->toRfc7231String(),
-                        'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
-                        'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
-                        'FSPIOP-Signature'   => '{"signature":"iU4GBXSfY8twZMj1zXX1CTe3LDO8Zvgui53icrriBxCUF_wltQmnjgWLWI4ZUEueVeOeTbDPBZazpBWYvBYpl5WJSUoXi14nVlangcsmu2vYkQUPmHtjOW-yb2ng6_aPfwd7oHLWrWzcsjTF-S4dW7GZRPHEbY_qCOhEwmmMOnE1FWF1OLvP0dM0r4y7FlnrZNhmuVIFhk_pMbEC44rtQmMFv4pm4EVGqmIm3eyXz0GkX8q_O1kGBoyIeV_P6RRcZ0nL6YUVMhPFSLJo6CIhL2zPm54Qdl2nVzDFWn_shVyV0Cl5vpcMJxJ--O_Zcbmpv6lxqDdygTC782Ob3CNMvg\\",\\"protectedHeader\\":\\"eyJhbGciOiJSUzI1NiIsIkZTUElPUC1VUkkiOiIvdHJhbnNmZXJzIiwiRlNQSU9QLUhUVFAtTWV0aG9kIjoiUE9TVCIsIkZTUElPUC1Tb3VyY2UiOiJPTUwiLCJGU1BJT1AtRGVzdGluYXRpb24iOiJNVE5Nb2JpbGVNb25leSIsIkRhdGUiOiIifQ"}',
-                    ],
-                    'json' => $data,
-                ]
-            );
-            \Illuminate\Support\Facades\Log::info(
-                'PUT /quotes ' . $response->getStatusCode() . PHP_EOL
-                . \GuzzleHttp\json_encode($data) . PHP_EOL
-            );
+                return;
+            }
+
+            (new \App\Requests\QuoteUpdate($request->mapInTo(), [
+                'traceparent'        => $request->header('traceparent'),
+                'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
+                'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
+            ], $request->quoteId))->send();
         });
 
         return new Response(202);
     }
-
 
     /**
      * @param QuoteUpdate $request
@@ -91,7 +89,6 @@ class QuotesController extends Controller
     public function update(QuoteUpdate $request, $id)
     {
     }
-
 
     /**
      * @param QuoteError $request

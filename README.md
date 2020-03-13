@@ -29,7 +29,7 @@ Project can be setup with Docker.
 5. Login to JC docker hub: `docker login hub.jcdev.net:24000`
 6. Run a test run to build containers and init DB: `make test-run`. After containers up press "Ctrl+C" to exit.
 7. Run containers with `make run`
-7. Add to your `/etc/hosts` file: `127.0.0.1 httpproxy.test`
+7. Add to your `/etc/hosts` file: `127.0.0.1 itp-mmo-api.test`
 9. Run installation `make install`  
 
 ### Docker PHP Container
@@ -52,13 +52,25 @@ To open nodejs container permanently just run:
 
 `make nodejs-bash`
 
+### Using telescope for check incoming requests
+
+Run
+
+`make php-bash`
+
+Inside PHP container run
+
+`php artisan telescope:install`
+
+`php artisan telescope:publish`
+
+`php artisan migrate`
+
 ### Site access:
 
-Access your site via URL: http://httpproxy.test:8082
+Access your site via URL: http://itp-mmo-api.test:8084
 
-Mail catcher: http://httpproxy.test:8086
-
-Admin login: admin@domain.com / 123456
+Mail catcher: http://itp-mmo-api.test:8086
 
 You're ready to write your code!
 ------------

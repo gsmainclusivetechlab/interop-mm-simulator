@@ -1,11 +1,12 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
+use App\Models\Transaction;
+use App\Requests\Callback;
 use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
@@ -18,15 +19,23 @@ use Illuminate\Support\Env;
 class TransfersController extends Controller
 {
     /**
-     * // TODO make PUT /X-Callback-URL
+     * Handle transfer request
+     *
      * @param TransferCreate $request
-     * @return array|string
-     * @throws \Exception
+     *
+     * @return Response
      */
-    public function store(TransferCreate $request)
+    public function store(TransferCreate $request): Response
     {
-        app()->terminating(function() use ($request) {
+        $transaction = Transaction::getCurrent();
+
+        app()->terminating(function() use ($request, $transaction) {
+            if ($transaction) {
+                (new Callback($request->mapInToCallback($transaction), [], $transaction->callback_url))->send();
+            }
+
             $data = $request->mapInTo();
+
             $client = new Client();
             $response = $client->request(
                 'PUT',

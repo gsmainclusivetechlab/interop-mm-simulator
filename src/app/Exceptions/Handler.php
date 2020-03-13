@@ -17,6 +17,11 @@ class Handler extends ExceptionHandler
             'errorCode' => 'formatError',
             'errorDescription' => 'The specified property contents do not conform to the format required for this Property.',
         ],
+        401 => [
+            'errorCategory' => 'unauthorized',
+            'errorCode' => 'AuthnorizeError',
+            'errorDescription' => 'The user does not have valid authentication credentials for the target resource',
+        ],
         404 => [
             'errorCategory'    => 'Identification',
             'errorCode'        => 'IdentifierError',
