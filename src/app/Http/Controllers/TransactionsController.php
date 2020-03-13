@@ -4,8 +4,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionCreate;
+use App\Models\Transaction;
 use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
 
@@ -21,10 +23,20 @@ class TransactionsController extends Controller
      * Create A Transaction
      *
      * @param TransactionCreate $request
-     * @return mixed
+     *
+     * @return Response
      */
-    public function store(TransactionCreate $request)
+    public function store(TransactionCreate $request): Response
     {
+        Transaction::create([
+            'trace_id' => $request->traceId,
+            'callback_url' => $request->header('x-callback-url'),
+            'type' => $request->type,
+            'debitParty' => $request->debitParty,
+            'creditParty' => $request->creditParty,
+
+        ]);
+
         app()->terminating(function() use ($request) {
             $data = $request->mapInTo();
 
@@ -55,7 +67,11 @@ class TransactionsController extends Controller
         return new Response(
             202,
             ['X-Date' => (new Carbon())->toRfc7231String()],
-            \GuzzleHttp\json_encode($request->all())
+            \GuzzleHttp\json_encode([
+                'serverCorrelationId' => $request->header('X-CorrelationID'),
+                'status' => 'pending',
+                'notificationMethod' => "callback",
+            ])
         );
     }
 }
