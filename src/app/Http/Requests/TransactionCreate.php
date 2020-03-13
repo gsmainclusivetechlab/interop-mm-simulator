@@ -25,12 +25,19 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  * @property string $subType
  * @property string $requestingOrganisationTransactionReference
  * @property string $descriptionText
+ * @property string $requestDate
  * @property string $geoCode
+ * @property array $senderKyc
+ * @property string $originalTransactionReference
+ * @property string $servicingIdentity
+ * @property string $transactionStatus
  * @property string $oneTimeCode
  * @property array $metadata
  * @property array $creditParty
  * @property array $debitParty
  * @property array $recipientKyc
+ * @property string $transactionReceipt
+ * @property string $traceId
  */
 class TransactionCreate extends FormRequest
 {

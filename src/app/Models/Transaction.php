@@ -13,8 +13,20 @@ use Illuminate\Http\Request;
  * @property int $trace_id
  * @property string $callback_url
  * @property string $type
+ * @property string|null $subType
+ * @property string|null $descriptionText
+ * @property mixed|null $requestDate
+ * @property string|null $requestingOrganisationTransactionReference
+ * @property string|null $geoCode
  * @property array $debitParty
  * @property array $creditParty
+ * @property array|null $senderKyc
+ * @property mixed|null $recipientKyc
+ * @property string|null $originalTransactionReference
+ * @property string|null $servicingIdentity
+ * @property string $transactionStatus
+ * @property string|null $transactionReceipt
+ * @property array $metadata
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction newModelQuery()
@@ -27,6 +39,18 @@ use Illuminate\Http\Request;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereTraceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereDescriptionText($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereGeoCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereOriginalTransactionReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereRecipientKyc($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereRequestDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereRequestingOrganisationTransactionReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereSenderKyc($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereServicingIdentity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereSubType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereTransactionReceipt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereTransactionStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereMatadata($value)
  * @mixin \Eloquent
  */
 class Transaction extends Model
@@ -49,8 +73,20 @@ class Transaction extends Model
         'trace_id',
         'callback_url',
         'type',
+        'subType',
+        'descriptionText',
+        'requestDate',
+        'requestingOrganisationTransactionReference',
+        'geoCode',
         'debitParty',
         'creditParty',
+        'senderKyc',
+        'recipientKyc',
+        'originalTransactionReference',
+        'servicingIdentity',
+        'transactionStatus',
+        'transactionReceipt',
+        'metadata',
     ];
 
     /**
@@ -61,6 +97,9 @@ class Transaction extends Model
     protected $casts = [
         'debitParty' => 'array',
         'creditParty' => 'array',
+        'senderKyc' => 'array',
+        'metadata' => 'array',
+        'requestDate' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**
