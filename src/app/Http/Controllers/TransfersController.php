@@ -30,9 +30,9 @@ class TransfersController extends Controller
         $transaction = Transaction::getCurrent();
 
         app()->terminating(function() use ($request, $transaction) {
-            $callbackData = $request->mapInToCallback($transaction);
-
-            Callback::send($transaction->callback_url, [], $callbackData);
+            if ($transaction) {
+                (new Callback($request->mapInToCallback($transaction), [], $transaction->callback_url))->send();
+            }
 
             $data = $request->mapInTo();
 
