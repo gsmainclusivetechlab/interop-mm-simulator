@@ -80,6 +80,7 @@ instances:
             env_variables:
                 <<: *default-env-vars
                 APP_URL: http://gsma-itp-mmo-api.staging.s8.justcoded.com
+                APP_DEBUG: false
                 HOST_TRANSACTION_REQUESTS_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/c32ab451-9301-4a0d-9fb8-ab5ad9e68468/test
                 HOST_ML_API_ADAPTER: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/c32ab451-9301-4a0d-9fb8-ab5ad9e68468/test
                 HOST_QUOTING_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/c32ab451-9301-4a0d-9fb8-ab5ad9e68468/test

@@ -28,14 +28,18 @@ class TransactionsController extends Controller
      */
     public function store(TransactionCreate $request): Response
     {
-        Transaction::create([
-            'trace_id' => $request->traceId,
-            'callback_url' => $request->header('x-callback-url'),
-            'type' => $request->type,
-            'debitParty' => $request->debitParty,
-            'creditParty' => $request->creditParty,
+        if ($request->traceId) {
+            $data = $request->all();
 
-        ]);
+            $data['trace_id'] = $request->traceId;
+            $data['callback_url'] = $request->header('x-callback-url');
+
+            if (!$request->transactionStatus) {
+                $data['transactionStatus'] = 'pending';
+            }
+
+            Transaction::create($data);
+        }
 
         app()->terminating(function() use ($request) {
             $data = $request->mapInTo();

@@ -29,6 +29,8 @@ class TransfersController extends Controller
     {
         $transaction = Transaction::getCurrent();
 
+        $transaction->update(['transactionStatus' => $request->transferState ?? 'commited']);
+
         app()->terminating(function() use ($request, $transaction) {
             if ($transaction) {
                 (new Callback($request->mapInToCallback($transaction), [], $transaction->callback_url))->send();

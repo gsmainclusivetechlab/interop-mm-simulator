@@ -52,18 +52,60 @@ class TransferCreate extends FormRequest
      */
     public function mapInToCallback(Transaction $transaction): array
     {
-        return [
+        $return = [
             'amount' => Arr::get($this->amount, 'amount'),
             'currency' => Arr::get($this->amount, 'currency'),
             'type' => $transaction->type,
             'debitParty' => $transaction->debitParty,
             'creditParty' => $transaction->creditParty,
-            'transactionStatus' => $this->transferState,
-            /*'metadata' => [
-                'key' => Arr::get($this->extensionList, 'Key'),
-                'value' => Arr::get($this->extensionList, 'Value'),
-            ],*/
+            'transactionStatus' => $transaction->transactionStatus,
         ];
+
+        if ($transaction->subType) {
+            $return['subType'] = $transaction->subType;
+        }
+
+        if ($transaction->descriptionText) {
+            $return['descriptionText'] = $transaction->descriptionText;
+        }
+
+        if ($transaction->requestDate) {
+            $return['requestDate'] = $transaction->requestDate;
+        }
+
+        if ($transaction->requestingOrganisationTransactionReference) {
+            $return['requestingOrganisationTransactionReference'] = $transaction->requestingOrganisationTransactionReference;
+        }
+
+        if ($transaction->geoCode) {
+            $return['geoCode'] = $transaction->geoCode;
+        }
+
+        if ($transaction->senderKyc) {
+            $return['senderKyc'] = $transaction->senderKyc;
+        }
+
+        if ($transaction->recipientKyc) {
+            $return['recipientKyc'] = $transaction->recipientKyc;
+        }
+
+        if ($transaction->originalTransactionReference) {
+            $return['originalTransactionReference'] = $transaction->originalTransactionReference;
+        }
+
+        if ($transaction->servicingIdentity) {
+            $return['servicingIdentity'] = $transaction->servicingIdentity;
+        }
+
+        if ($transaction->transactionReceipt) {
+            $return['transactionReceipt'] = $transaction->transactionReceipt;
+        }
+
+        if ($transaction->metadata) {
+            $return['metadata'] = $transaction->metadata;
+        }
+
+        return $return;
     }
 }
 

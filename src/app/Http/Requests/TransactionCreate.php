@@ -25,12 +25,19 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  * @property string $subType
  * @property string $requestingOrganisationTransactionReference
  * @property string $descriptionText
+ * @property string $requestDate
  * @property string $geoCode
+ * @property array $senderKyc
+ * @property string $originalTransactionReference
+ * @property string $servicingIdentity
+ * @property string $transactionStatus
  * @property string $oneTimeCode
  * @property array $metadata
  * @property array $creditParty
  * @property array $debitParty
  * @property array $recipientKyc
+ * @property string $transactionReceipt
+ * @property string $traceId
  */
 class TransactionCreate extends FormRequest
 {
@@ -59,7 +66,9 @@ class TransactionCreate extends FormRequest
         'billpay', 'deposit', 'disbursement', 'transfer', 'merchantpay', 'inttransfer', 'adjustment', 'reversal', 'withdrawal',
     ];
 
-    /**
+    const GENDER = ['m', 'f', 'u'];
+
+    /**c
      * Get the validation rules that apply to the request.
      * TODO debitParty creditParty and metadata array size
      *
@@ -68,7 +77,7 @@ class TransactionCreate extends FormRequest
     public function rules()
     {
         return [
-            'amount'           => ['required', 'string', 'min:4', 'max:256', 'regex:\'^\d+\.\d{2}$\''],
+            'amount'           => ['required', 'regex:/^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$/'],
             'currency'         => ['required', Rule::in(self::CURRENCY)],
             'type'             => ['required', Rule::in(self::TYPE)],
             'subType'          => 'string|min:0|max:256',
@@ -79,7 +88,7 @@ class TransactionCreate extends FormRequest
                 'string',
                 'min:0',
                 'max:256',
-                'regex:\'^(-?(90|(\d|[1-8]\d)(\.\d{1,6}){0,1}))\,{1}(-?(180|(\d|\d\d|1[0-7]\d)(\.\d{1,6}){0,1}))$\''
+                'regex:\'^(-?(90|(\d|[1-8]\d)(\.\d{1,7}){0,1}))\,{1}\s?(-?(180|(\d|\d\d|1[0-7]\d)(\.\d{1,7}){0,1}))$\''
             ],
             'debitParty'       => 'required|array|max:1',
                 'debitParty.*.key'    => 'required|string|min:1|max:256',
@@ -87,13 +96,61 @@ class TransactionCreate extends FormRequest
             'creditParty'      => 'required|array|max:1',
                 'creditParty.*.key'   => 'required|string|min:1|max:256',
                 'creditParty.*.value' => 'required|string|min:1|max:256',
+            'senderKyc'     => 'array',
+                'senderKyc.nationality' => 'regex:\'^[A-Z]{2}$\'',
+                'senderKyc.dateOfBirth' => 'date:Y-m-d',
+                'senderKyc.occupation' => 'string',
+                'senderKyc.employerName' => 'string',
+                'senderKyc.contactPhone' => 'regex:\'^\+?(?:\s*\d){6,15}$\'',
+                'senderKyc.gender' => Rule::in(self::GENDER),
+                'senderKyc.idDocument' => 'array',
+                'senderKyc.postalAddress' => 'array',
+                    'senderKyc.postalAddress.addressLine1' => 'string',
+                    'senderKyc.postalAddress.addressLine2' => 'string',
+                    'senderKyc.postalAddress.addressLine3' => 'string',
+                    'senderKyc.postalAddress.city' => 'string',
+                    'senderKyc.postalAddress.stateProvince' => 'string',
+                    'senderKyc.postalAddress.postalCode' => 'string',
+                    'senderKyc.postalAddress.country' => 'regex:\'^[A-Z]{2}$\'',
+                'senderKyc.subjectName' => 'array',
+                    'senderKyc.subjectName.title'      => 'string',
+                    'senderKyc.subjectName.fullName'   => 'string|min:0|max:256',
+                    'senderKyc.subjectName.firstName'  => 'string|min:0|max:256',
+                    'senderKyc.subjectName.middleName' => 'string|min:0|max:256',
+                    'senderKyc.subjectName.lastName'   => 'string|min:0|max:256',
+                    'senderKyc.subjectName.nativeName' => 'string',
+                'senderKyc.emailAddress' => 'string',
+                'senderKyc.birthCountry' => 'regex:\'^[A-Z]{2}$\'',
             'recipientKyc'     => 'array',
-                'recipientKyc.dateOfBirth' => 'string',
+                'recipientKyc.nationality' => 'regex:\'^[A-Z]{2}$\'',
+                'recipientKyc.dateOfBirth' => 'date:Y-m-d',
+                'recipientKyc.occupation' => 'string',
+                'recipientKyc.employerName' => 'string',
+                'recipientKyc.contactPhone' => 'regex:\'^\+?(?:\s*\d){6,15}$\'',
+                'recipientKyc.gender' => Rule::in(self::GENDER),
+                'recipientKyc.idDocument' => 'array',
+                'recipientKyc.postalAddress' => 'array',
+                    'recipientKyc.postalAddress.addressLine1' => 'string',
+                    'recipientKyc.postalAddress.addressLine2' => 'string',
+                    'recipientKyc.postalAddress.addressLine3' => 'string',
+                    'recipientKyc.postalAddress.city' => 'string',
+                    'recipientKyc.postalAddress.stateProvince' => 'string',
+                    'recipientKyc.postalAddress.postalCode' => 'string',
+                    'recipientKyc.postalAddress.country' => 'regex:\'^[A-Z]{2}$\'',
                 'recipientKyc.subjectName' => 'array',
+                    'recipientKyc.subjectName.title'      => 'string',
                     'recipientKyc.subjectName.fullName'   => 'string|min:0|max:256',
                     'recipientKyc.subjectName.firstName'  => 'string|min:0|max:256',
                     'recipientKyc.subjectName.middleName' => 'string|min:0|max:256',
                     'recipientKyc.subjectName.lastName'   => 'string|min:0|max:256',
+                    'recipientKyc.subjectName.nativeName' => 'string',
+                'recipientKyc.emailAddress' => 'string',
+                'recipientKyc.birthCountry' => 'regex:\'^[A-Z]{2}$\'',
+            'originalTransactionReference' => 'string|min:0|max:256',
+            'servicingIdentity' => 'string|min:0|max:256',
+            'transactionStatus' => 'string|min:0|max:256',
+            'transactionReceipt' => 'string|min:0|max:256',
+            'requestDate' => 'date:Y-m-dTH:i:s.vZ',
             'metadata'         => 'array|max:1',
                 'metadata.*.key'   => 'string|min:1|max:256',
                 'metadata.*.value' => 'string|min:1|max:256',
