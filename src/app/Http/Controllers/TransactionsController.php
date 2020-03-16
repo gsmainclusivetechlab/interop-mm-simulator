@@ -68,14 +68,19 @@ class TransactionsController extends Controller
             );
         });
 
+        $response = [
+            'status' => 'pending',
+            'notificationMethod' => "callback",
+        ];
+
+        if ($serverCorrelationId = $request->header('X-CorrelationID')) {
+            $response['serverCorrelationId'] = $serverCorrelationId;
+        }
+
         return new Response(
             202,
             ['X-Date' => (new Carbon())->toRfc7231String()],
-            \GuzzleHttp\json_encode([
-                'serverCorrelationId' => $request->header('X-CorrelationID'),
-                'status' => 'pending',
-                'notificationMethod' => "callback",
-            ])
+            \GuzzleHttp\json_encode($response)
         );
     }
 }
