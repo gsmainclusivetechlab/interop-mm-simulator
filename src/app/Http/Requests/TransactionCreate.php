@@ -77,7 +77,7 @@ class TransactionCreate extends FormRequest
     public function rules()
     {
         return [
-            'amount'           => ['required', 'string', 'min:4', 'max:256', 'regex:\'^\d+\.\d{2}$\''],
+            'amount'           => ['required', 'regex:/^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$/'],
             'currency'         => ['required', Rule::in(self::CURRENCY)],
             'type'             => ['required', Rule::in(self::TYPE)],
             'subType'          => 'string|min:0|max:256',
