@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\ParseTraceId;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -98,9 +99,24 @@ class Transaction extends Model
         'debitParty' => 'array',
         'creditParty' => 'array',
         'senderKyc' => 'array',
+        'recipientKyc' => 'array',
         'metadata' => 'array',
-        'requestDate' => 'datetime:Y-m-d H:i:s',
+        'requestDate' => 'datetime:Y-m-dTH:i:s.vZ',
     ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    /*protected $dates = [
+        'requestDate',
+    ];*/
+
+    public function setRequestDateAttribute(string $value)
+    {
+        $this->attributes['requestDate'] = new Carbon($value);
+    }
 
     /**
      * Get current transaction

@@ -16,7 +16,7 @@ class AddColumnsToTransactionsTable extends Migration
         Schema::table('transactions', function (Blueprint $table) {
             $table->string('subType')->nullable()->after('type');
             $table->text('descriptionText')->nullable()->after('subType');
-            $table->dateTime('requestDate')->nullable()->after('descriptionText');
+            $table->timestamp('requestDate')->nullable()->after('descriptionText');
             $table->string('requestingOrganisationTransactionReference')->nullable()->after('requestDate');
             $table->string('geoCode')->nullable()->after('requestingOrganisationTransactionReference');
             $table->json('senderKyc')->nullable()->after('creditParty');
