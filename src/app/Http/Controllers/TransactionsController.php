@@ -10,6 +10,7 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
+use Illuminate\Support\Str;
 
 /**
  * Class TransactionsController
@@ -71,11 +72,8 @@ class TransactionsController extends Controller
         $response = [
             'status' => 'pending',
             'notificationMethod' => "callback",
+            'serverCorrelationId' => $request->header('X-CorrelationID') ?? Str::uuid()
         ];
-
-        if ($serverCorrelationId = $request->header('X-CorrelationID')) {
-            $response['serverCorrelationId'] = $serverCorrelationId;
-        }
 
         return new Response(
             202,
