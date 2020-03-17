@@ -2,6 +2,8 @@
 
 namespace App\Contracts;
 
+use Psr\Http\Message\ResponseInterface;
+
 /**
  * Interface RequestContract
  *
@@ -14,5 +16,5 @@ interface RequestContract
      *
      * @return bool
      */
-    public function send(): bool;
+    public function send(): ResponseInterface;
 }

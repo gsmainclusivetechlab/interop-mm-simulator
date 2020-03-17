@@ -3,10 +3,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TerminateTransaction;
 use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
 use App\Http\Requests\QuoteUpdate;
+use App\Models\Transaction;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
@@ -58,7 +60,7 @@ class QuotesController extends Controller
     {
         app()->terminating(function() use ($request) {
             if ($request->amount['amount'] === '51.03') {
-                (new \App\Requests\QuoteError([
+                $response = (new \App\Requests\QuoteError([
                     'errorInformation' => [
                         'errorCode' => '5103',
                         'errorDescription' => ''
@@ -68,6 +70,14 @@ class QuotesController extends Controller
                     'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                     'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
                 ], $request->quoteId))->send();
+
+                if ($response->getStatusCode() === 200) {
+                    $transaction = Transaction::getCurrent();
+
+                    $transaction->update(['transactionStatus' => $this->request->transferState ?? 'REJECTED']);
+
+                    event(new TerminateTransaction($transaction));
+                }
 
                 return;
             }

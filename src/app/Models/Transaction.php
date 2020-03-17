@@ -58,6 +58,21 @@ class Transaction extends Model
 {
     use ParseTraceId;
 
+    const STATUSES = [
+        'received',
+        'pending',
+        'completed',
+        'rejected'
+    ];
+
+    const TYPES = [
+        'DEPOSIT',
+        'WITHDRAWAL',
+        'TRANSFER',
+        'PAYMENT',
+        'REFUND'
+    ];
+
     /**
      * The primary key associated with the table.
      *
