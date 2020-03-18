@@ -181,12 +181,12 @@ class TransactionCreate extends FormRequest
             'transactionRequestId' => Str::uuid(),
             'payee' => [
                 'partyIdInfo'  => [
-                    'partyIdType'     => $this->creditParty[0]['key'],
+                    'partyIdType'     => strtoupper($this->creditParty[0]['key']),
                     'partyIdentifier' => $this->creditParty[0]['value'] != '16135551213' ? $this->creditParty[0]['value'] : '',
                 ],
             ],
             'payer' => [
-                'partyIdType'     => $this->debitParty[0]['key'],
+                'partyIdType'     => strtoupper($this->debitParty[0]['key']),
                 'partyIdentifier' => $this->debitParty[0]['value'] != '16135551213' ? $this->debitParty[0]['value'] : '',
             ],
             'amount' => [
