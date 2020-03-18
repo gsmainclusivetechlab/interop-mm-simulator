@@ -74,7 +74,7 @@ class QuotesController extends Controller
                 if ($response->getStatusCode() === 200) {
                     $transaction = Transaction::getCurrent();
 
-                    $transaction->update(['transactionStatus' => $this->request->transferState ?? 'REJECTED']);
+                    $transaction->update(['transactionStatus' => $this->request->transferState ?? 'Failed']);
 
                     event(new TerminateTransaction($transaction));
                 }

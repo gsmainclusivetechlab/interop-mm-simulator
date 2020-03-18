@@ -23,10 +23,10 @@ class TransactionRequestsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($request->transactionRequestState === 'rejected') {
+        if ($request->transactionRequestState === 'REJECTED') {
             $transaction = Transaction::getCurrent();
 
-            $transaction->update(['transactionStatus' => 'REJECTED']);
+            $transaction->update(['transactionStatus' => 'Failed']);
 
             event(new TerminateTransaction($transaction));
         }
@@ -51,7 +51,7 @@ class TransactionRequestsController extends Controller
     {
         $transaction = Transaction::getCurrent();
 
-        $transaction->update(['transactionStatus' => 'REJECTED']);
+        $transaction->update(['transactionStatus' => 'Failed']);
 
         event(new TerminateTransaction($transaction));
     }

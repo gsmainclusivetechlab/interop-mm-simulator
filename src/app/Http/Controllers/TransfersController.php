@@ -30,7 +30,7 @@ class TransfersController extends Controller
         app()->terminating(function() use ($request) {
             $transaction = Transaction::getCurrent();
 
-            $transaction->update(['transactionStatus' => $this->request->transferState ?? 'COMPLETED']);
+            $transaction->update(['transactionStatus' => $this->request->transferState ?? 'Completed']);
 
             event(new TerminateTransaction($transaction));
 
