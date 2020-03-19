@@ -70,13 +70,13 @@ class TransactionCreate extends FormRequest
 
     const TYPE_MAP = [
         'billpay' => 'PAYMENT',
-        'deposit' => '',
+        'deposit' => 'DEPOSIT',
         'disbursement' => 'PAYMENT',
         'transfer' => 'TRANSFER',
         'merchantpay' => 'PAYMENT',
         'inttransfer' => 'TRANSFER',
-        'adjustment' => '',
-        'reversal' => '',
+        'adjustment' => 'TRANSFER',
+        'reversal' => 'REFUND',
         'withdrawal' => 'WITHDRAWAL',
     ];
 
