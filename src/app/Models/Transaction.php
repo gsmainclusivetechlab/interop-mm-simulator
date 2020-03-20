@@ -88,6 +88,8 @@ class Transaction extends Model
     protected $fillable = [
         'trace_id',
         'callback_url',
+        'amount',
+        'currency',
         'type',
         'subType',
         'descriptionText',
