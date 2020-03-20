@@ -37,8 +37,8 @@ class SendCallback
         $headers['traceparent'] = request()->header('traceparent');
 
         $data = [
-            'amount' => Arr::get($this->request->amount, 'amount'),
-            'currency' => Arr::get($this->request->amount, 'currency'),
+            'amount' => $event->transaction->amount,
+            'currency' => $event->transaction->currency,
             'type' => $event->transaction->type,
             'debitParty' => $event->transaction->debitParty,
             'creditParty' => $event->transaction->creditParty,
