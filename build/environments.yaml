@@ -87,7 +87,7 @@ instances:
                 HOST_TRANSACTION_REQUESTS_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/6fd1452c-eae3-4019-a2b1-d6f1c6cff2d5/test@http://mojaloop.s9.jc
                 HOST_ML_API_ADAPTER: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/6fd1452c-eae3-4019-a2b1-d6f1c6cff2d5/test@http://mojaloop.s9.jc
                 HOST_QUOTING_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/6fd1452c-eae3-4019-a2b1-d6f1c6cff2d5/test@http://mojaloop.s9.jc
-                HOST_SERVICE_PROVIDER: http://gsma-itp-test-control.staging.s8.jc/testing/6fd1452c-eae3-4019-a2b1-d6f1c6cff2d5/test@
+                HOST_SERVICE_PROVIDER: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/6fd1452c-eae3-4019-a2b1-d6f1c6cff2d5/test@
                 FSPIOP_SOURCE: payeefsp
                 FSPIOP_DESTINATION: testfsp1
         docker_server:
