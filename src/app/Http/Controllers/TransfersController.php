@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TerminateTransaction;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
 use App\Models\Transaction;
-use App\Requests\Callback;
 use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
@@ -27,36 +27,20 @@ class TransfersController extends Controller
      */
     public function store(TransferCreate $request): Response
     {
-        $transaction = Transaction::getCurrent();
+        app()->terminating(function() use ($request) {
+            $transaction = Transaction::getCurrent();
 
-        $transaction->update(['transactionStatus' => $request->transferState ?? 'commited']);
+            $transaction->update(['transactionStatus' => $this->request->transferState ?? 'Completed']);
 
-        app()->terminating(function() use ($request, $transaction) {
-            if ($transaction) {
-                (new Callback($request->mapInToCallback($transaction), [], $transaction->callback_url))->send();
-            }
+            event(new TerminateTransaction($transaction));
 
             $data = $request->mapInTo();
 
-            $client = new Client();
-            $response = $client->request(
-                'PUT',
-                Env::get('HOST_ML_API_ADAPTER') . '/transfers/' . $request->transferId,
-                [
-                    'headers' => [
-                        'traceparent'        => $request->header('traceparent'),
-                        'Content-Type'       => 'application/vnd.interoperability.transfers+json;version=1.0',
-                        'Date'               => (new Carbon())->toRfc7231String(),
-                        'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
-                        'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
-                    ],
-                    'json' => $data,
-                ]
-            );
-            \Illuminate\Support\Facades\Log::info(
-                'PUT /transfers ' . $response->getStatusCode() . PHP_EOL
-                . \GuzzleHttp\json_encode($data) . PHP_EOL
-            );
+            (new \App\Requests\TransferUpdate($data, [
+                'traceparent'        => $request->header('traceparent'),
+                'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
+                'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
+            ], $request->transferId))->send();
         });
 
         return new Response(202);

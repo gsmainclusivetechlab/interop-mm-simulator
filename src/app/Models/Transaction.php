@@ -6,6 +6,7 @@ use App\Traits\ParseTraceId;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class Transaction
@@ -57,6 +58,21 @@ use Illuminate\Http\Request;
 class Transaction extends Model
 {
     use ParseTraceId;
+
+    const STATUSES = [
+        'received',
+        'pending',
+        'completed',
+        'rejected'
+    ];
+
+    const TYPES = [
+        'DEPOSIT',
+        'WITHDRAWAL',
+        'TRANSFER',
+        'PAYMENT',
+        'REFUND'
+    ];
 
     /**
      * The primary key associated with the table.
@@ -125,6 +141,12 @@ class Transaction extends Model
      */
     public static function getCurrent(): ?Transaction
     {
+        $transaction = self::find(self::parseTraceId(resolve(Request::class)->header('traceparent')));
+
+        if (!$transaction) {
+            throw new BadRequestHttpException();
+        }
+
         return self::find(self::parseTraceId(resolve(Request::class)->header('traceparent')));
     }
 }

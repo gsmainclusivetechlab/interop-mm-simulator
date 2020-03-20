@@ -68,6 +68,18 @@ class TransactionCreate extends FormRequest
 
     const GENDER = ['m', 'f', 'u'];
 
+    const TYPE_MAP = [
+        'billpay' => 'PAYMENT',
+        'deposit' => 'DEPOSIT',
+        'disbursement' => 'PAYMENT',
+        'transfer' => 'TRANSFER',
+        'merchantpay' => 'PAYMENT',
+        'inttransfer' => 'TRANSFER',
+        'adjustment' => 'TRANSFER',
+        'reversal' => 'REFUND',
+        'withdrawal' => 'WITHDRAWAL',
+    ];
+
     /**c
      * Get the validation rules that apply to the request.
      * TODO debitParty creditParty and metadata array size
@@ -148,7 +160,7 @@ class TransactionCreate extends FormRequest
                 'recipientKyc.birthCountry' => 'regex:\'^[A-Z]{2}$\'',
             'originalTransactionReference' => 'string|min:0|max:256',
             'servicingIdentity' => 'string|min:0|max:256',
-            'transactionStatus' => 'string|min:0|max:256',
+            'transactionStatus' => Rule::in(Transaction::STATUSES),
             'transactionReceipt' => 'string|min:0|max:256',
             'requestDate' => 'date:Y-m-dTH:i:s.vZ',
             'metadata'         => 'array|max:1',
@@ -182,7 +194,7 @@ class TransactionCreate extends FormRequest
                 'amount'   => "$amount",
             ],
             'transactionType' => [
-                'scenario'      => strtoupper($this->type),
+                'scenario'      => self::TYPE_MAP[$this->type],
                 'initiator'     => 'PAYEE',
                 'initiatorType' => 'BUSINESS',
             ],

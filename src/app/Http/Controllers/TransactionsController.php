@@ -10,6 +10,7 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
+use Illuminate\Support\Str;
 
 /**
  * Class TransactionsController
@@ -68,14 +69,16 @@ class TransactionsController extends Controller
             );
         });
 
+        $response = [
+            'status' => 'pending',
+            'notificationMethod' => "callback",
+            'serverCorrelationId' => $request->header('X-CorrelationID') ?? Str::uuid()
+        ];
+
         return new Response(
             202,
             ['X-Date' => (new Carbon())->toRfc7231String()],
-            \GuzzleHttp\json_encode([
-                'serverCorrelationId' => $request->header('X-CorrelationID'),
-                'status' => 'pending',
-                'notificationMethod' => "callback",
-            ])
+            \GuzzleHttp\json_encode($response)
         );
     }
 }

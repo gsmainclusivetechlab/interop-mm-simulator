@@ -13,28 +13,28 @@ class Handler extends ExceptionHandler
 {
     const ERROR_DEFINITIONS = [
         400 => [
-            'errorCategory' => 'validation',
-            'errorCode' => 'formatError',
+            'errorCategory' => 'businessRule',
+            'errorCode' => 'genericError',
             'errorDescription' => 'The specified property contents do not conform to the format required for this Property.',
         ],
         401 => [
-            'errorCategory' => 'unauthorized',
-            'errorCode' => 'AuthnorizeError',
-            'errorDescription' => 'The user does not have valid authentication credentials for the target resource',
+            'errorCategory' => 'authorisation',
+            'errorCode' => 'genericError',
+            'errorDescription' => 'General Client Authentication failure. No further details provided to prevent leakage of security information.',
         ],
         404 => [
-            'errorCategory'    => 'Identification',
-            'errorCode'        => 'IdentifierError',
+            'errorCategory'    => 'validation',
+            'errorCode'        => 'genericError',
             'errorDescription' => 'The requested resource could not be matched on the system with the supplied identifier(s).',
         ],
         500 => [
-            'errorCategory'    => 'Internal',
-            'errorCode'        => 'GenericError',
+            'errorCategory'    => 'internal',
+            'errorCode'        => 'genericError',
             'errorDescription' => 'The request could not be completed due to a non-client related issues that do not constitute complete system unavailability. Examples include software licence issues, unavailability of system configuration information.',
         ],
         503 => [
-            'errorCategory'    => 'ServiceUnavailable',
-            'errorCode'        => 'GenericError',
+            'errorCategory'    => 'internal',
+            'errorCode'        => 'genericError',
             'errorDescription' => 'The service is not currently available. This could be due to network issues, issues with individual components or complete systems outages. Regardless of the cause, the result means that the request cannot be performed.',
         ],
     ];

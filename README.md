@@ -54,6 +54,8 @@ To open nodejs container permanently just run:
 
 ### Using telescope for check incoming requests
 
+In `src/.env` set TELESCOPE_ENABLED=true
+
 Run
 
 `make php-bash`
@@ -61,8 +63,6 @@ Run
 Inside PHP container run
 
 `php artisan telescope:install`
-
-`php artisan telescope:publish`
 
 `php artisan migrate`
 
