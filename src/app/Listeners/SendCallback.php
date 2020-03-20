@@ -34,6 +34,8 @@ class SendCallback
             return;
         }
 
+        $headers['traceparent'] = request()->header('traceparent');
+
         $data = [
             'amount' => Arr::get($this->request->amount, 'amount'),
             'currency' => Arr::get($this->request->amount, 'currency'),
@@ -89,6 +91,6 @@ class SendCallback
             $data['metadata'] = $event->transaction->metadata;
         }
 
-        (new Callback($data, [], $event->transaction->callback_url))->send();
+        (new Callback($data, $headers, $event->transaction->callback_url))->send();
     }
 }
