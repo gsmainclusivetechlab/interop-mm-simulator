@@ -60,10 +60,9 @@ class Transaction extends Model
     use ParseTraceId;
 
     const STATUSES = [
-        'received',
-        'pending',
-        'completed',
-        'rejected'
+        'Pending',
+        'Completed',
+        'Failed'
     ];
 
     const TYPES = [
