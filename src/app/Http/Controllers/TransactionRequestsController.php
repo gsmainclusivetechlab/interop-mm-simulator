@@ -3,7 +3,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\TerminateTransaction;
+use App\Events\TransactionFailed;
+use App\Events\TransactionSuccess;
 use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
@@ -24,11 +25,7 @@ class TransactionRequestsController extends Controller
     public function update(Request $request, $id)
     {
         if ($request->transactionRequestState === 'REJECTED') {
-            $transaction = Transaction::getCurrent();
-
-            $transaction->update(['transactionStatus' => 'Failed']);
-
-            event(new TerminateTransaction($transaction));
+            event(new TransactionFailed());
         }
 
         return new Response(200);
@@ -49,10 +46,8 @@ class TransactionRequestsController extends Controller
      */
     public function error(Request $request, $id)
     {
-        $transaction = Transaction::getCurrent();
+        event(new TransactionFailed());
 
-        $transaction->update(['transactionStatus' => 'Failed']);
-
-        event(new TerminateTransaction($transaction));
+        return new Response(200);
     }
 }
