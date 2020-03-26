@@ -2,7 +2,7 @@
 
 namespace App\Requests\CallBacks;
 
-class FailedCallback extends BaseCallback
+class FailureCallback extends BaseCallback
 {
 	protected function collectData(): array
 	{
@@ -14,6 +14,8 @@ class FailedCallback extends BaseCallback
 
 	protected function collectHeaders(): array
 	{
-		return [];
+		return [
+			'traceparent' => request()->header('traceparent'),
+		];
 	}
 }

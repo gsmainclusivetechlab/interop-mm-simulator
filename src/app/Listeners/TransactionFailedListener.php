@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Events\TransactionFailed;
 use App\Models\Transaction;
-use App\Requests\CallBacks\FailedCallback;
+use App\Requests\CallBacks\FailureCallback;
 
 class TransactionFailedListener
 {
@@ -25,6 +25,6 @@ class TransactionFailedListener
             return;
         }
 
-		(new FailedCallback($transaction))->send();
+		(new FailureCallback($transaction))->send();
     }
 }
