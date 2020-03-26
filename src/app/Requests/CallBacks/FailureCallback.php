@@ -14,6 +14,8 @@ class FailedCallback extends BaseCallback
 
 	protected function collectHeaders(): array
 	{
-		return [];
+		return [
+			'traceparent' => request()->header('traceparent'),
+		];
 	}
 }
