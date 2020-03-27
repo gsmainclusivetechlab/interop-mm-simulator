@@ -211,7 +211,7 @@ class ValidationSets
 	{
 		return [
 			$field . '.*.idType' => [
-				'required',
+				'required_with:' . $field,
 				new EnumValue(IdTypeEnum::class),
 			],
 			$field . '.*.idNumber' => static::standardString(),
@@ -233,14 +233,14 @@ class ValidationSets
 	{
 		return [
 			$field => 'array',
-			$field . '.' . 'addressLine1' => static::standardString(),
-			$field . '.' . 'addressLine2' => static::standardString(),
-			$field . '.' . 'addressLine3' => static::standardString(),
-			$field . '.' . 'city' => static::standardString(),
-			$field . '.' . 'stateProvince' => static::standardString(),
-			$field . '.' . 'postalCode' => static::standardString(),
-			$field . '.' . 'country' => [
-				'required',
+			$field . '.addressLine1' => static::standardString(),
+			$field . '.addressLine2' => static::standardString(),
+			$field . '.addressLine3' => static::standardString(),
+			$field . '.city' => static::standardString(),
+			$field . '.stateProvince' => static::standardString(),
+			$field . '.postalCode' => static::standardString(),
+			$field . '.country' => [
+				'required_with:' . $field,
 				static::nationality(),
 			],
 		];
@@ -255,12 +255,12 @@ class ValidationSets
 	{
 		return [
 			$field => 'array',
-			$field . '.' . 'title' => static::standardString(),
-			$field . '.' . 'fullName' => static::standardString(),
-			$field . '.' . 'firstName' => static::standardString(),
-			$field . '.' . 'middleName' => static::standardString(),
-			$field . '.' . 'lastName' => static::standardString(),
-			$field . '.' . 'nativeName' => static::standardString(),
+			$field . '.title' => static::standardString(),
+			$field . '.fullName' => static::standardString(),
+			$field . '.firstName' => static::standardString(),
+			$field . '.middleName' => static::standardString(),
+			$field . '.lastName' => static::standardString(),
+			$field . '.nativeName' => static::standardString(),
 		];
 	}
 
@@ -346,16 +346,16 @@ class ValidationSets
 	{
 		return [
 			$field => 'array',
-			$field . '.' . 'originCountry' => [
-				'required',
+			$field . '.originCountry' => [
+				'required_with:' . $field,
 				static::nationality(),
 			],
-			$field . '.' . 'quotationReference' => static::standardString(),
-			$field . '.' . 'quoteId' => static::standardString(),
-			$field . '.' . 'receivingCountry' => static::nationality(),
-			$field . '.' . 'remittancePurpose' => static::standardString(),
-			$field . '.' . 'relationshipSender' => static::standardString(),
-			$field . '.' . 'deliveryMethod' => static::deliveryMethod(),
+			$field . '.quotationReference' => static::standardString(),
+			$field . '.quoteId' => static::standardString(),
+			$field . '.receivingCountry' => static::nationality(),
+			$field . '.remittancePurpose' => static::standardString(),
+			$field . '.relationshipSender' => static::standardString(),
+			$field . '.deliveryMethod' => static::deliveryMethod(),
 		];
 	}
 
