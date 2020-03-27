@@ -107,7 +107,7 @@ class ValidationSets
 	 */
 	public static function partyArray(string $field): array
 	{
-		$rules = Arr::crossJoin(
+		$rules = array_merge(
 			[
 				$field => 'required|array|max:10',
 			],
@@ -161,7 +161,7 @@ class ValidationSets
 	 */
 	public static function kyc(string $field): array
 	{
-		return Arr::crossJoin(
+		return array_merge(
 			[
 				$field => 'array',
 				$field . '.' . 'nationality' => static::nationality(),
@@ -194,7 +194,7 @@ class ValidationSets
 	 */
 	public static function idDocumentArray(string $field): array
 	{
-		return Arr::crossJoin(
+		return array_merge(
 			[
 				$field => 'array|max:10',
 			],
@@ -273,7 +273,7 @@ class ValidationSets
 	 */
 	public static function feesArray(string $field): array
 	{
-		return Arr::crossJoin(
+		return array_merge(
 			[
 				$field => 'array|max:20',
 			],
@@ -314,7 +314,7 @@ class ValidationSets
 	 */
 	public static function metadataArray(string $field): array
 	{
-		return Arr::crossJoin(
+		return array_merge(
 			[
 				$field => 'array|max:20',
 			],

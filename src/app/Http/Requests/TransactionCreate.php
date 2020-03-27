@@ -75,7 +75,7 @@ class TransactionCreate extends FormRequest
      */
     public function rules(): array
     {
-        return Arr::crossJoin(
+        return array_merge(
         	[
 				'amount'           => ValidationSets::amount(),
 				'currency'         => ValidationSets::currency(),

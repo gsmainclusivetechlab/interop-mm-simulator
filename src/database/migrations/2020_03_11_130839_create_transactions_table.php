@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Transaction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -38,8 +39,8 @@ class CreateTransactionsTable extends Migration
             $table->string('receivingLei', 20)->nullable();
             $table->json('metadata');
             $table->json('internationalTransferInformation');
-            $table->string('transactionStatus', 256);
-            $table->string('transactionReceipt', 256);
+            $table->enum('transactionStatus', Transaction::STATUSES);
+            $table->string('transactionReceipt', 256)->nullable();
             $table->timestamps();
 
             $table->primary('trace_id');
