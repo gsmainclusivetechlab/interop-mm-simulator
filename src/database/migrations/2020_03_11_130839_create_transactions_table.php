@@ -34,11 +34,11 @@ class CreateTransactionsTable extends Migration
             $table->json('recipientKyc')->nullable();
             $table->string('originalTransactionReference', 256)->nullable();
             $table->string('servicingIdentity', 256)->nullable();
-            $table->json('fees');
+            $table->json('fees')->nullable();
             $table->string('requestingLei', 20)->nullable();
             $table->string('receivingLei', 20)->nullable();
-            $table->json('metadata');
-            $table->json('internationalTransferInformation');
+            $table->json('metadata')->nullable();
+            $table->json('internationalTransferInformation')->nullable();
             $table->enum('transactionStatus', Transaction::STATUSES);
             $table->string('transactionReceipt', 256)->nullable();
             $table->timestamps();
