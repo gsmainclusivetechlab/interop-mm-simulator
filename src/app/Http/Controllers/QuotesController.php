@@ -3,7 +3,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\TerminateTransaction;
+use App\Events\TransactionFailed;
+use App\Events\TransactionSuccess;
 use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
@@ -72,11 +73,7 @@ class QuotesController extends Controller
                 ], $request->quoteId))->send();
 
                 if ($response->getStatusCode() === 200) {
-                    $transaction = Transaction::getCurrent();
-
-                    $transaction->update(['transactionStatus' => $this->request->transferState ?? 'Failed']);
-
-                    event(new TerminateTransaction($transaction));
+                    event(new TransactionFailed());
                 }
 
                 return;
@@ -106,5 +103,6 @@ class QuotesController extends Controller
      */
     public function error(QuoteError $request, $id)
     {
+    	event(new TransactionFailed());
     }
 }
