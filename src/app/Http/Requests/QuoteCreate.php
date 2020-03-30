@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\ValidationSets;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
 
@@ -22,12 +23,27 @@ class QuoteCreate extends FormRequest
     public function rules()
     {
         return [
-            'quoteId'              => 'string|required',
-            'transactionId'        => 'string|required',
-            'transactionRequestId' => 'string',
+            'quoteId'              => [
+            	'required',
+				ValidationSets::correlationId(),
+			],
+            'transactionId'        => [
+            	'required',
+				ValidationSets::correlationId(),
+			],
+            'transactionRequestId' => ValidationSets::correlationId(),
+			'payee' => 'required',
+			'payer' => 'required',
+			'amountType' => 'required',
             'amount'               => 'array|required',
                 'amount.amount'   => 'string|required',
                 'amount.currency' => 'string|required',
+			'fees' => ,
+			'transactionType' => 'required',
+			'geoCode' => ,
+			'note' => ,
+			'expiration' => ,
+			'extensionList' => ValidationSets::extensionList('extensionList'),
         ];
     }
 

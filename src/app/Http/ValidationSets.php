@@ -7,9 +7,12 @@ use App\Enums\DeliveryMethodEnum;
 use App\Enums\GenderEnum;
 use App\Enums\IdTypeEnum;
 use App\Enums\NationalityEnum;
+use App\Enums\TransactionRequestStateEnum;
 use App\Enums\TypeEnum;
+use BenSampo\Enum\Rules\Enum;
 use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Support\Arr;
+use phpDocumentor\Reflection\Types\Static_;
 
 /**
  * Frequentsy used Validation Sets
@@ -111,7 +114,7 @@ class ValidationSets
 			[
 				$field => 'required|array|max:10',
 			],
-			static::party($field)
+			static::partyMMO($field)
 		);
 
 		return $rules;
@@ -122,7 +125,7 @@ class ValidationSets
 	 *
 	 * @return array
 	 */
-	public static function party(string $field): array
+	public static function partyMMO(string $field): array
 	{
 		return [
 			$field . '.*.key' => static::requiredString(),
@@ -365,5 +368,102 @@ class ValidationSets
 	public static function deliveryMethod(): EnumValue
 	{
 		return new EnumValue(DeliveryMethodEnum::class);
+	}
+
+	public static function correlationId(): string
+	{
+		return 'regex: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/';
+	}
+
+	public static function transactiornRequestState(): EnumValue
+	{
+		return new EnumValue(TransactionRequestStateEnum::class);
+	}
+
+	public static function extensionList(string $field): array
+	{
+		return array_merge([
+			$field => 'array',
+			$field . '.extension' => [
+				'required_with:' . $field,
+				'array',
+				'max:16',
+			],
+		], static::extension($field . '.extension'));
+	}
+
+	public static function extension(string $field): array
+	{
+		return [
+			$field . '.key' => static::extensionKey($field . '.key'),
+			$field . '.value' => static::extensionValue($field . '.value'),
+		];
+	}
+
+	public static function extensionKey(string $field): array
+	{
+		return [
+			'required_with:' . $field,
+			'string',
+			'max:32',
+		];
+	}
+
+	public static function extensionValue(string $field): array
+	{
+		return [
+			'required_with:' . $field,
+			'string',
+			'max:128',
+		];
+	}
+
+	public static function errorInformation(): array
+	{
+		return [
+			'errorInformation' => 'required|array',
+			'errorInformation.errorCode' => static::errorCode(),
+			'errorInformation.errorDescription' => static::errorDescription(),
+			'errorInformation.extensionList' => static::extensionList('errorInformation.extensionList'),
+		];
+	}
+
+	public static function errorCode(): string
+	{
+		return 'regex: /^[1-9]\d{3}$/';
+	}
+
+	public static function errorDescription(): string
+	{
+		return 'string|max:128';
+	}
+
+	public static function partyMojaloop(string $field): array
+	{
+		return array_merge([
+			$field => 'array',
+			$field . '.partyIdInfo' => 'required|array',
+			$field . '.merchantClassificationCode' => ,
+			$field . '.name' => ,
+			$field . '.personalInfo' => ,
+		], static::partyIdInfo($field . '.partyIdInfo'));
+	}
+
+	public static function partyIdInfo(string $field): array
+	{
+		return [
+			$field . '.partyIdType' => [
+				'required',
+				self::partyIdType(),
+			],
+			$field . '.partyIdentifier' => 'required',
+			$field . '.partySubIdOrType' => '',
+			$field . '.fspId' => '',
+		];
+	}
+
+	public static function partyIdType(): string
+	{
+		return '';
 	}
 }
