@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\TerminateTransaction;
+use App\Events\TransactionFailed;
+use App\Events\TransactionSuccess;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
@@ -28,11 +29,7 @@ class TransfersController extends Controller
     public function store(TransferCreate $request): Response
     {
         app()->terminating(function() use ($request) {
-            $transaction = Transaction::getCurrent();
-
-            $transaction->update(['transactionStatus' => $this->request->transferState ?? 'Completed']);
-
-            event(new TerminateTransaction($transaction));
+            event(new TransactionSuccess());
 
             $data = $request->mapInTo();
 
@@ -60,5 +57,6 @@ class TransfersController extends Controller
      */
     public function error(TransferError $request, $id)
     {
+    	event(new TransactionFailed());
     }
 }

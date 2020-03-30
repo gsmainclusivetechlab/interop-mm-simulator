@@ -61,12 +61,12 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Exception  $exception
+     * @param  \Throwable  $exception
      * @return void
      *
      * @throws \Exception
      */
-    public function report(Exception $exception)
+    public function report(\Throwable $exception)
     {
         parent::report($exception);
     }
@@ -75,12 +75,12 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Throwable  $exception
      * @return \Symfony\Component\HttpFoundation\Response
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
-    public function render($request, Exception $exception)
+    public function render($request, \Throwable $exception)
     {
         return parent::render($request, $exception);
     }
@@ -89,11 +89,11 @@ class Handler extends ExceptionHandler
      * Prepare a JSON response for the given exception.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Exception $e
+     * @param \Throwable $e
      * @return \Illuminate\Http\JsonResponse
      * @throws Exception
      */
-    protected function prepareJsonResponse($request, Exception $e)
+    protected function prepareJsonResponse($request, \Throwable $e)
     {
         return new JsonResponse(
             $this->convertExceptionToArray($e),
@@ -106,11 +106,11 @@ class Handler extends ExceptionHandler
     /**
      * Convert the given exception to an array.
      *
-     * @param \Exception $e
+     * @param \Throwable $e
      * @return array
      * @throws Exception
      */
-    protected function convertExceptionToArray(Exception $e)
+    protected function convertExceptionToArray(\Throwable $e)
     {
         $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
         $content = $this->getErrorDefinitions($status);

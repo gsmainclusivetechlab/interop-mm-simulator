@@ -228,8 +228,8 @@ class TransactionCreate extends FormRequest
                 ]
             ], [
                 'traceparent.0.required' => __('Header traceparent is required!'),
-                'x-callback-url.0.required' => __('Header X-Callback-URL is required!'),
-                'x-callback-url.0.url' => __('Header X-Callback-URL has wrong format!'),
+                'x-callback-url.0.required' => __('Header X-BaseCallback-URL is required!'),
+                'x-callback-url.0.url' => __('Header X-BaseCallback-URL has wrong format!'),
             ]);
 
             if ($headerValidator->fails()) {
