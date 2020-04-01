@@ -32,19 +32,10 @@ class TransferCreate extends FormRequest
 					'required',
 					ValidationSets::correlationId(),
 				],
-				'payeeFsp' => [
-					'required',
-					ValidationSets::fspId(),
-				],
-				'payerFsp' => [
-					'required',
-					ValidationSets::fspId(),
-				],
+				'payeeFsp' => 'required|' . ValidationSets::fspId(),
+				'payerFsp' => 'required|' . ValidationSets::fspId(),
 				'amount' => 'required|array',
-				'ilpPacket' => [
-					'required',
-					ValidationSets::ilpPacket(),
-				],
+				'ilpPacket' => 'required|' . ValidationSets::ilpPacket(),
 				'condition' => [
 					'required',
 					ValidationSets::ilpCondition(),

@@ -597,13 +597,9 @@ class ValidationSets
 		return 'string|max:128';
 	}
 
-	public static function ilpPacket(): array
+	public static function ilpPacket(): string
 	{
-		return [
-			'string',
-			'max:32768',
-			'regex: /^[A-Za-z0-9-_]+[=]{0,2}$/',
-		];
+		return 'string|max:32768|regex: /^[A-Za-z0-9-_]+[=]{0,2}$/';
 	}
 
 	public static function ilpCondition(): string
