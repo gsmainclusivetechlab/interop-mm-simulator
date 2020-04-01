@@ -3,14 +3,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Headers;
 use App\Http\Requests\TransactionCreate;
 use App\Models\Transaction;
 use App\Requests\TransactionRequest;
-use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Env;
 use Illuminate\Support\Str;
 
 /**
@@ -64,7 +61,7 @@ class TransactionsController extends Controller
 
         return new Response(
             202,
-            ['X-Date' => (new Carbon())->toRfc7231String()],
+            ['X-Date' => Headers::getXDate()],
             \GuzzleHttp\json_encode($response)
         );
     }

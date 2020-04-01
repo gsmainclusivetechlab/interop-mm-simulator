@@ -2,6 +2,7 @@
 
 namespace App\Requests;
 
+use App\Http\Headers;
 use Carbon\Carbon;
 use Illuminate\Support\Env;
 
@@ -26,7 +27,7 @@ class TransactionRequest extends BaseRequest
 
 		$this->method = 'POST';
 
-		$this->headers['Date'] = (new Carbon())->toRfc7231String();
+		$this->headers['Date'] = Headers::getXDate();
 		$this->headers['Accept'] = 'application/vnd.interoperability.transactionRequests+json;version=1.0';
 		$this->headers['Content-Type'] = 'application/vnd.interoperability.transactionRequests+json;version=1.0';
 		$this->headers['FSPIOP-Source'] = Env::get('FSPIOP_SOURCE');
