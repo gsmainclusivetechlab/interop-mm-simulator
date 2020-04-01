@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\ValidationSets;
 use App\Models\Transaction;
 use App\Rules\Traceparent;
 use App\Traits\ParseTraceId;
@@ -23,52 +24,39 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  * @property string $amount
  * @property string $type
  * @property string $subType
- * @property string $requestingOrganisationTransactionReference
  * @property string $descriptionText
  * @property string $requestDate
+ * @property string $requestingOrganisationTransactionReference
+ * @property string $oneTimeCode
  * @property string $geoCode
- * @property array $senderKyc
  * @property string $originalTransactionReference
  * @property string $servicingIdentity
- * @property string $transactionStatus
- * @property string $oneTimeCode
- * @property array $metadata
+ * @property string $requestingLei
+ * @property string $receivingLei
  * @property array $creditParty
  * @property array $debitParty
+ * @property array $senderKyc
  * @property array $recipientKyc
- * @property string $transactionReceipt
+ * @property array $fees
+ * @property array $metadata
+ * @property string $internationalTransferInformation
  * @property string $traceId
  */
 class TransactionCreate extends FormRequest
 {
     use ParseTraceId;
 
-    public $traceId;
+	/**
+	 * Trace ID parsed from header traceparent
+	 *
+	 * @var string
+	 */
+	public $traceId;
 
-    /**
-     * Available currency
-     */
-    const CURRENCY = ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF',
-        'BMD', 'BND', 'BOB', 'BOV', 'BRL', 'BSD', 'BTN', 'BWP', 'BYR', 'BZD', 'CAD', 'CDF', 'CHE', 'CHF', 'CHW', 'CLF', 'CLP', 'CNY',
-        'COP', 'COU', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP',
-        'GEL', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK',
-        'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD',
-        'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO', 'MUR', 'MVR', 'MWK', 'MXN', 'MXV', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO',
-        'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD',
-        'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STD', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP',
-        'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'USN', 'UYI', 'UYU', 'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU',
-        'XBA', 'XBB', 'XBC', 'XBD', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'XSU', 'XTS', 'XUA', 'XXX', 'YER', 'ZAR', 'ZMW', 'ZWL'];
-
-    /**
-     * Available scenario type
-     */
-    const TYPE = [
-        'billpay', 'deposit', 'disbursement', 'transfer', 'merchantpay', 'inttransfer', 'adjustment', 'reversal', 'withdrawal',
-    ];
-
-    const GENDER = ['m', 'f', 'u'];
-
-    const TYPE_MAP = [
+	/**
+	 * Mapping transaction type from SP to Mojaloop
+	 */
+	const TYPE_MAP = [
         'billpay' => 'PAYMENT',
         'deposit' => 'DEPOSIT',
         'disbursement' => 'PAYMENT',
@@ -80,93 +68,43 @@ class TransactionCreate extends FormRequest
         'withdrawal' => 'WITHDRAWAL',
     ];
 
-    /**c
+    /**
      * Get the validation rules that apply to the request.
-     * TODO debitParty creditParty and metadata array size
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
-        return [
-            'amount'           => ['required', 'regex:/^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$/'],
-            'currency'         => ['required', Rule::in(self::CURRENCY)],
-            'type'             => ['required', Rule::in(self::TYPE)],
-            'subType'          => 'string|min:0|max:256',
-            'descriptionText'  => 'string|min:0|max:160',
-            'requestingOrganisationTransactionReference' => 'string|min:0|max:256',
-            'oneTimeCode'      => 'string|min:0|max:256',
-            'geoCode'          => [
-                'string',
-                'min:0',
-                'max:256',
-                'regex:\'^(-?(90|(\d|[1-8]\d)(\.\d{1,7}){0,1}))\,{1}\s?(-?(180|(\d|\d\d|1[0-7]\d)(\.\d{1,7}){0,1}))$\''
-            ],
-            'debitParty'       => 'required|array|max:1',
-                'debitParty.*.key'    => 'required|string|min:1|max:256',
-                'debitParty.*.value'  => 'required|string|min:1|max:256',
-            'creditParty'      => 'required|array|max:1',
-                'creditParty.*.key'   => 'required|string|min:1|max:256',
-                'creditParty.*.value' => 'required|string|min:1|max:256',
-            'senderKyc'     => 'array',
-                'senderKyc.nationality' => 'regex:\'^[A-Z]{2}$\'',
-                'senderKyc.dateOfBirth' => 'date:Y-m-d',
-                'senderKyc.occupation' => 'string',
-                'senderKyc.employerName' => 'string',
-                'senderKyc.contactPhone' => 'regex:\'^\+?(?:\s*\d){6,15}$\'',
-                'senderKyc.gender' => Rule::in(self::GENDER),
-                'senderKyc.idDocument' => 'array',
-                'senderKyc.postalAddress' => 'array',
-                    'senderKyc.postalAddress.addressLine1' => 'string',
-                    'senderKyc.postalAddress.addressLine2' => 'string',
-                    'senderKyc.postalAddress.addressLine3' => 'string',
-                    'senderKyc.postalAddress.city' => 'string',
-                    'senderKyc.postalAddress.stateProvince' => 'string',
-                    'senderKyc.postalAddress.postalCode' => 'string',
-                    'senderKyc.postalAddress.country' => 'regex:\'^[A-Z]{2}$\'',
-                'senderKyc.subjectName' => 'array',
-                    'senderKyc.subjectName.title'      => 'string',
-                    'senderKyc.subjectName.fullName'   => 'string|min:0|max:256',
-                    'senderKyc.subjectName.firstName'  => 'string|min:0|max:256',
-                    'senderKyc.subjectName.middleName' => 'string|min:0|max:256',
-                    'senderKyc.subjectName.lastName'   => 'string|min:0|max:256',
-                    'senderKyc.subjectName.nativeName' => 'string',
-                'senderKyc.emailAddress' => 'string',
-                'senderKyc.birthCountry' => 'regex:\'^[A-Z]{2}$\'',
-            'recipientKyc'     => 'array',
-                'recipientKyc.nationality' => 'regex:\'^[A-Z]{2}$\'',
-                'recipientKyc.dateOfBirth' => 'date:Y-m-d',
-                'recipientKyc.occupation' => 'string',
-                'recipientKyc.employerName' => 'string',
-                'recipientKyc.contactPhone' => 'regex:\'^\+?(?:\s*\d){6,15}$\'',
-                'recipientKyc.gender' => Rule::in(self::GENDER),
-                'recipientKyc.idDocument' => 'array',
-                'recipientKyc.postalAddress' => 'array',
-                    'recipientKyc.postalAddress.addressLine1' => 'string',
-                    'recipientKyc.postalAddress.addressLine2' => 'string',
-                    'recipientKyc.postalAddress.addressLine3' => 'string',
-                    'recipientKyc.postalAddress.city' => 'string',
-                    'recipientKyc.postalAddress.stateProvince' => 'string',
-                    'recipientKyc.postalAddress.postalCode' => 'string',
-                    'recipientKyc.postalAddress.country' => 'regex:\'^[A-Z]{2}$\'',
-                'recipientKyc.subjectName' => 'array',
-                    'recipientKyc.subjectName.title'      => 'string',
-                    'recipientKyc.subjectName.fullName'   => 'string|min:0|max:256',
-                    'recipientKyc.subjectName.firstName'  => 'string|min:0|max:256',
-                    'recipientKyc.subjectName.middleName' => 'string|min:0|max:256',
-                    'recipientKyc.subjectName.lastName'   => 'string|min:0|max:256',
-                    'recipientKyc.subjectName.nativeName' => 'string',
-                'recipientKyc.emailAddress' => 'string',
-                'recipientKyc.birthCountry' => 'regex:\'^[A-Z]{2}$\'',
-            'originalTransactionReference' => 'string|min:0|max:256',
-            'servicingIdentity' => 'string|min:0|max:256',
-            'transactionStatus' => Rule::in(Transaction::STATUSES),
-            'transactionReceipt' => 'string|min:0|max:256',
-            'requestDate' => 'date:Y-m-dTH:i:s.vZ',
-            'metadata'         => 'array|max:1',
-                'metadata.*.key'   => 'string|min:1|max:256',
-                'metadata.*.value' => 'string|min:1|max:256',
-        ];
+        return array_merge(
+        	[
+				'amount'           => [
+					'required',
+					ValidationSets::amount()
+				],
+				'currency'         => [
+					'required',
+					ValidationSets::currencyMmo()
+				],
+				'type'             => ValidationSets::type(),
+				'subType'          => ValidationSets::standardString(),
+				'descriptionText'  => ValidationSets::descriptionText(),
+				'requestDate'      => ValidationSets::dateTime(),
+				'requestingOrganisationTransactionReference' => ValidationSets::standardString(),
+				'oneTimeCode'      => ValidationSets::standardString(),
+				'geoCode'          => ValidationSets::geoCodeMmo(),
+				'originalTransactionReference' => ValidationSets::standardString(),
+				'servicingIdentity' => ValidationSets::standardString(),
+				'requestingLei' => ValidationSets::lei(),
+				'receivingLei' => ValidationSets::lei(),
+			],
+			ValidationSets::partyArray('debitParty'),
+			ValidationSets::partyArray('creditParty'),
+			ValidationSets::kyc('senderKyc'),
+			ValidationSets::kyc('recipientKyc'),
+			ValidationSets::feesArray('fees'),
+			ValidationSets::metadataArray('metadata'),
+			ValidationSets::internationalTransferInformation('internationalTransferInformation')
+		);
     }
 
     /**
@@ -257,7 +195,12 @@ class TransactionCreate extends FormRequest
         return $result;
     }
 
-    public function withValidator(Validator $validator)
+	/**
+	 * Configure the validator instance
+	 *
+	 * @param Validator $validator
+	 */
+	public function withValidator(Validator $validator)
     {
         $validator->after(function ($validator) {
             switch ($this->amount) {

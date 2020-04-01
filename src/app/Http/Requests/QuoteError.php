@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\ValidationSets;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -15,7 +16,7 @@ class QuoteError extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return ValidationSets::errorInformation();
     }
 }
 
