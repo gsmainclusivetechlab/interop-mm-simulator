@@ -2,12 +2,18 @@
 
 namespace App\Http;
 
-use App\Enums\CurrencyEnum;
+use App\Enums\AmountTypeEnum;
+use App\Enums\CurrencyMmoEnum;
+use App\Enums\CurrencyMojaEnum;
 use App\Enums\DeliveryMethodEnum;
 use App\Enums\GenderEnum;
 use App\Enums\IdTypeEnum;
 use App\Enums\NationalityEnum;
+use App\Enums\PartyIdTypeEnum;
+use App\Enums\TransactionInitiatorEnum;
+use App\Enums\TransactionInitiatorTypeEnum;
 use App\Enums\TransactionRequestStateEnum;
+use App\Enums\TransactionScenarioEnum;
 use App\Enums\TypeEnum;
 use BenSampo\Enum\Rules\Enum;
 use BenSampo\Enum\Rules\EnumValue;
@@ -67,12 +73,9 @@ class ValidationSets
 	 *
 	 * @return array
 	 */
-	public static function amount(): array
+	public static function amount(): string
 	{
-		return [
-			'required',
-			'regex:/^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$/',
-		];
+		return 'regex:/^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$/';
 	}
 
 	/**
@@ -80,12 +83,9 @@ class ValidationSets
 	 *
 	 * @return array
 	 */
-	public static function currency(): array
+	public static function currencyMmo(): EnumValue
 	{
-		return [
-			'required',
-			new EnumValue(CurrencyEnum::class),
-		];
+		return new EnumValue(CurrencyMmoEnum::class);
 	}
 
 	/**
@@ -114,7 +114,7 @@ class ValidationSets
 			[
 				$field => 'required|array|max:10',
 			],
-			static::partyMMO($field)
+			self::partyMMO($field)
 		);
 
 		return $rules;
@@ -128,8 +128,8 @@ class ValidationSets
 	public static function partyMMO(string $field): array
 	{
 		return [
-			$field . '.*.key' => static::requiredString(),
-			$field . '.*.value' => static::requiredString(),
+			$field . '.*.key' => self::requiredString(),
+			$field . '.*.value' => self::requiredString(),
 		];
 	}
 
@@ -149,11 +149,11 @@ class ValidationSets
 	 *
 	 * @return array
 	 */
-	public static function geoCode(): array
+	public static function geoCodeMmo(): array
 	{
 		return [
 			'nullable',
-			'regex: /^(-?(90|(\\d|[1-8]\\d)(\\.\\d{1,6}){0,1}))\\,{1}(-?(180|(\\d|\\d\\d|1[0-7]\\d)(\\.\\d{1,6}){0,1}))$/'
+			'regex: /^(-?(90|(\d|[1-8]\d)(\.\d{1,6}){0,1}))\,{1}(-?(180|(\d|\d\d|1[0-7]\d)(\.\d{1,6}){0,1}))$/',
 		];
 	}
 
@@ -167,18 +167,18 @@ class ValidationSets
 		return array_merge(
 			[
 				$field => 'array',
-				$field . '.' . 'nationality' => static::nationality(),
-				$field . '.' . 'dateOfBirth' => static::date(),
-				$field . '.' . 'occupation' => static::standardString(),
-				$field . '.' . 'employerName' => static::standardString(),
-				$field . '.' . 'contactPhone' => static::standardString(),
+				$field . '.' . 'nationality' => self::nationality(),
+				$field . '.' . 'dateOfBirth' => self::date(),
+				$field . '.' . 'occupation' => self::standardString(),
+				$field . '.' . 'employerName' => self::standardString(),
+				$field . '.' . 'contactPhone' => self::standardString(),
 				$field . '.' . 'gender' => new EnumValue(GenderEnum::class),
-				$field . '.' . 'emailAddress' => static::standardString(),
-				$field . '.' . 'birthCountry' => static::nationality(),
+				$field . '.' . 'emailAddress' => self::standardString(),
+				$field . '.' . 'birthCountry' => self::nationality(),
 			],
-			static::idDocumentArray($field . '.idDocument'),
-			static::postalAddress($field . '.postalAddress'),
-			static::subjectName($field . '.subjectName')
+			self::idDocumentArray($field . '.idDocument'),
+			self::postalAddress($field . '.postalAddress'),
+			self::subjectName($field . '.subjectName')
 		);
 	}
 
@@ -201,7 +201,7 @@ class ValidationSets
 			[
 				$field => 'array|max:10',
 			],
-			static::idDocument($field)
+			self::idDocument($field)
 		);
 	}
 
@@ -217,13 +217,13 @@ class ValidationSets
 				'required_with:' . $field,
 				new EnumValue(IdTypeEnum::class),
 			],
-			$field . '.*.idNumber' => static::standardString(),
-			$field . '.*.issueDate' => static::date(),
-			$field . '.*.expiryDate' => static::date(),
-			$field . '.*.issuer' => static::standardString(),
-			$field . '.*.issuerPlace' => static::standardString(),
-			$field . '.*.issuerCountry' => static::nationality(),
-			$field . '.*.otherIddescription' => static::standardString(),
+			$field . '.*.idNumber' => self::standardString(),
+			$field . '.*.issueDate' => self::date(),
+			$field . '.*.expiryDate' => self::date(),
+			$field . '.*.issuer' => self::standardString(),
+			$field . '.*.issuerPlace' => self::standardString(),
+			$field . '.*.issuerCountry' => self::nationality(),
+			$field . '.*.otherIddescription' => self::standardString(),
 		];
 	}
 
@@ -236,15 +236,15 @@ class ValidationSets
 	{
 		return [
 			$field => 'array',
-			$field . '.addressLine1' => static::standardString(),
-			$field . '.addressLine2' => static::standardString(),
-			$field . '.addressLine3' => static::standardString(),
-			$field . '.city' => static::standardString(),
-			$field . '.stateProvince' => static::standardString(),
-			$field . '.postalCode' => static::standardString(),
+			$field . '.addressLine1' => self::standardString(),
+			$field . '.addressLine2' => self::standardString(),
+			$field . '.addressLine3' => self::standardString(),
+			$field . '.city' => self::standardString(),
+			$field . '.stateProvince' => self::standardString(),
+			$field . '.postalCode' => self::standardString(),
 			$field . '.country' => [
 				'required_with:' . $field,
-				static::nationality(),
+				self::nationality(),
 			],
 		];
 	}
@@ -258,12 +258,12 @@ class ValidationSets
 	{
 		return [
 			$field => 'array',
-			$field . '.title' => static::standardString(),
-			$field . '.fullName' => static::standardString(),
-			$field . '.firstName' => static::standardString(),
-			$field . '.middleName' => static::standardString(),
-			$field . '.lastName' => static::standardString(),
-			$field . '.nativeName' => static::standardString(),
+			$field . '.title' => self::standardString(),
+			$field . '.fullName' => self::standardString(),
+			$field . '.firstName' => self::standardString(),
+			$field . '.middleName' => self::standardString(),
+			$field . '.lastName' => self::standardString(),
+			$field . '.nativeName' => self::standardString(),
 		];
 	}
 
@@ -280,7 +280,7 @@ class ValidationSets
 			[
 				$field => 'array|max:20',
 			],
-			static::fees($field)
+			self::fees($field)
 		);
 	}
 
@@ -292,9 +292,9 @@ class ValidationSets
 	public static function fees(string $field): array
 	{
 		return [
-			$field . '.*.feeType' => static::requiredString(),
-			$field . '.*.feeAmount' => static::amount(),
-			$field . '.*.feeCurrency' => static::currency(),
+			$field . '.*.feeType' => self::requiredString(),
+			$field . '.*.feeAmount' => self::amount(),
+			$field . '.*.feeCurrency' => self::currencyMmo(),
 		];
 	}
 
@@ -321,7 +321,7 @@ class ValidationSets
 			[
 				$field => 'array|max:20',
 			],
-			static::metadata($field)
+			self::metadata($field)
 		);
 	}
 
@@ -333,8 +333,8 @@ class ValidationSets
 	public static function metadata(string $field): array
 	{
 		return [
-			$field . '.*.key' => static::requiredString(),
-			$field . '.*.value' => static::requiredString(),
+			$field . '.*.key' => self::requiredString(),
+			$field . '.*.value' => self::requiredString(),
 		];
 	}
 
@@ -351,23 +351,15 @@ class ValidationSets
 			$field => 'array',
 			$field . '.originCountry' => [
 				'required_with:' . $field,
-				static::nationality(),
+				self::nationality(),
 			],
-			$field . '.quotationReference' => static::standardString(),
-			$field . '.quoteId' => static::standardString(),
-			$field . '.receivingCountry' => static::nationality(),
-			$field . '.remittancePurpose' => static::standardString(),
-			$field . '.relationshipSender' => static::standardString(),
-			$field . '.deliveryMethod' => static::deliveryMethod(),
+			$field . '.quotationReference' => self::standardString(),
+			$field . '.quoteId' => self::standardString(),
+			$field . '.receivingCountry' => self::nationality(),
+			$field . '.remittancePurpose' => self::standardString(),
+			$field . '.relationshipSender' => self::standardString(),
+			$field . '.deliveryMethod' => new EnumValue(DeliveryMethodEnum::class),
 		];
-	}
-
-	/**
-	 * @return EnumValue
-	 */
-	public static function deliveryMethod(): EnumValue
-	{
-		return new EnumValue(DeliveryMethodEnum::class);
 	}
 
 	public static function correlationId(): string
@@ -389,14 +381,14 @@ class ValidationSets
 				'array',
 				'max:16',
 			],
-		], static::extension($field . '.extension'));
+		], self::extension($field . '.extension'));
 	}
 
 	public static function extension(string $field): array
 	{
 		return [
-			$field . '.key' => static::extensionKey($field . '.key'),
-			$field . '.value' => static::extensionValue($field . '.value'),
+			$field . '.key' => self::extensionKey($field),
+			$field . '.value' => self::extensionValue($field),
 		];
 	}
 
@@ -420,12 +412,14 @@ class ValidationSets
 
 	public static function errorInformation(): array
 	{
-		return [
-			'errorInformation' => 'required|array',
-			'errorInformation.errorCode' => static::errorCode(),
-			'errorInformation.errorDescription' => static::errorDescription(),
-			'errorInformation.extensionList' => static::extensionList('errorInformation.extensionList'),
-		];
+		return array_merge(
+			[
+				'errorInformation' => 'required|array',
+				'errorInformation.errorCode' => self::errorCode(),
+				'errorInformation.errorDescription' => self::errorDescription(),
+			],
+			self::extensionList('errorInformation.extensionList')
+		);
 	}
 
 	public static function errorCode(): string
@@ -440,30 +434,180 @@ class ValidationSets
 
 	public static function partyMojaloop(string $field): array
 	{
-		return array_merge([
-			$field => 'array',
-			$field . '.partyIdInfo' => 'required|array',
-			$field . '.merchantClassificationCode' => ,
-			$field . '.name' => ,
-			$field . '.personalInfo' => ,
-		], static::partyIdInfo($field . '.partyIdInfo'));
+		return array_merge(
+			[
+				$field . '.partyIdInfo' => 'required|array',
+				$field . '.merchantClassificationCode' => self::merchantClassificationCode(),
+				$field . '.name' => self::partyName(),
+			],
+			self::partyIdInfo($field . '.partyIdInfo'),
+			self::partyPersonalInfo($field . '.personalInfo'),
+		);
 	}
 
 	public static function partyIdInfo(string $field): array
 	{
 		return [
 			$field . '.partyIdType' => [
-				'required',
-				self::partyIdType(),
+				'required_with:' . $field,
+				new EnumValue(PartyIdTypeEnum::class),
 			],
-			$field . '.partyIdentifier' => 'required',
-			$field . '.partySubIdOrType' => '',
-			$field . '.fspId' => '',
+			$field . '.partyIdentifier' => 'required_with:' . $field . '|' . self::partyIdentifier(),
+			$field . '.partySubIdOrType' => self::partySubIdOrType(),
+			$field . '.fspId' => self::fspId(),
 		];
 	}
 
-	public static function partyIdType(): string
+	public static function partyIdentifier(): string
 	{
-		return '';
+		return 'string|max:128';
+	}
+
+	public static function partySubIdOrType(): string
+	{
+		return 'string|max:128';
+	}
+
+	public static function fspId(): string
+	{
+		return 'string|max:32';
+	}
+
+	public static function merchantClassificationCode(): string
+	{
+		return 'regex: /^[\d]{1,4}$/';
+	}
+
+	public static function partyName(): string
+	{
+		return 'string|max:128';
+	}
+
+	public static function partyPersonalInfo(string $field): array
+	{
+		return array_merge(
+			[
+				$field => 'array',
+				$field . '.dateOfBirth' => self::date(),
+			],
+			self::partyComplexName($field . '.complexName'),
+		);
+	}
+
+	public static function partyComplexName(string $field): array
+	{
+		return [
+			$field => 'array',
+			$field . '.firstName' => self::name(),
+			$field . '.middleName' => self::name(),
+			$field . '.lastName' => self::name(),
+		];
+	}
+
+	public static function name(): string
+	{
+		return 'regex: /^(?!\s*$)[\w .,\'-]{1,128}$/';
+	}
+
+	public static function amountType(): EnumValue
+	{
+		return new EnumValue(AmountTypeEnum::class);
+	}
+
+	public static function money(string $field): array
+	{
+		return [
+			$field . '.currency' => [
+				'required_with:' . $field,
+				new EnumValue(CurrencyMojaEnum::class)
+			],
+			$field . '.amount' => [
+				'required_with:' . $field,
+				self::amount(),
+			],
+		];
+	}
+
+	public static function transactionType(string $field): array
+	{
+		return array_merge(
+				[
+				$field . '.scenario' => [
+					'required',
+					new EnumValue(TransactionScenarioEnum::class),
+				],
+				$field . '.subScenario' => self::transactionSubScenario(),
+				$field . '.initiator' => [
+					'required',
+					new EnumValue(TransactionInitiatorEnum::class),
+				],
+				$field . '.initiatorType' => [
+					'required',
+					new EnumValue(TransactionInitiatorTypeEnum::class),
+				],
+				$field . '.refundInfo' => 'array',
+				$field . '.balanceOfPayments' => self::balanceOfPayments(),
+			],
+			self::refund($field . '.refundInfo')
+		);
+	}
+
+	public static function transactionSubScenario(): string
+	{
+		return 'regex: /^[A-Z_]{1,32}$/';
+	}
+
+	public static function refund($field): array
+	{
+		return [
+			$field . '.originalTransactionId' => [
+				'required_with:' . $field,
+				self::correlationId()
+			],
+			$field . '.refundReason' => self::refundReason(),
+		];
+	}
+
+	public static function refundReason(): string
+	{
+		return 'string|max:128';
+	}
+
+	public static function balanceOfPayments(): string
+	{
+		return 'regex: /^[1-9]\d{2}$/';
+	}
+
+	public static function geoCodeMoja(string $field): array
+	{
+		return [
+			$field . '.latitude' => [
+				'required_with:' . $field,
+				'regex: /^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$/',
+			],
+			$field . '.longitude' => [
+				'required_with:' . $field,
+				'regex: /^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/',
+			],
+		];
+	}
+
+	public static function note(): string
+	{
+		return 'string|max:128';
+	}
+
+	public static function ilpPacket(): array
+	{
+		return [
+			'string',
+			'max:32768',
+			'regex: /^[A-Za-z0-9-_]+[=]{0,2}$/',
+		];
+	}
+
+	public static function ilpCondition(): string
+	{
+		return 'regex: /^[A-Za-z0-9-_]{43}$/';
 	}
 }

@@ -22,29 +22,34 @@ class QuoteCreate extends FormRequest
      */
     public function rules()
     {
-        return [
-            'quoteId'              => [
-            	'required',
-				ValidationSets::correlationId(),
+        return array_merge(
+				[
+				'quoteId'              => [
+					'required',
+					ValidationSets::correlationId(),
+				],
+				'transactionId'        => [
+					'required',
+					ValidationSets::correlationId(),
+				],
+				'transactionRequestId' => ValidationSets::correlationId(),
+				'payee'                => 'required|array',
+				'payer'                => 'required|array',
+				'amountType'           => ValidationSets::amountType(),
+				'amount'               => 'required|array',
+				'fees'                 => 'array',
+				'transactionType'      => 'required',
+				'note' => ValidationSets::note(),
+				'expiration' => ValidationSets::dateTime(),
+				'extensionList' => ValidationSets::extensionList('extensionList'),
 			],
-            'transactionId'        => [
-            	'required',
-				ValidationSets::correlationId(),
-			],
-            'transactionRequestId' => ValidationSets::correlationId(),
-			'payee' => 'required',
-			'payer' => 'required',
-			'amountType' => 'required',
-            'amount'               => 'array|required',
-                'amount.amount'   => 'string|required',
-                'amount.currency' => 'string|required',
-			'fees' => ,
-			'transactionType' => 'required',
-			'geoCode' => ,
-			'note' => ,
-			'expiration' => ,
-			'extensionList' => ValidationSets::extensionList('extensionList'),
-        ];
+			ValidationSets::partyMojaloop('payee'),
+			ValidationSets::partyMojaloop('payer'),
+			ValidationSets::money('amount'),
+			ValidationSets::money('fees'),
+			ValidationSets::transactionType('transactionType'),
+			ValidationSets::geoCodeMoja('geoCode')
+		);
     }
 
     /**

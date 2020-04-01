@@ -6,8 +6,8 @@ namespace App\Http\Controllers;
 use App\Enums\TransactionRequestStateEnum;
 use App\Events\TransactionFailed;
 use App\Events\TransactionSuccess;
-use App\Http\Requests\TransactionError;
-use App\Http\Requests\TransactionUpdate;
+use App\Http\Requests\TransactionRequestError;
+use App\Http\Requests\TransactionRequestUpdate;
 use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
@@ -21,12 +21,12 @@ use Illuminate\Http\Request;
 class TransactionRequestsController extends Controller
 {
     /**
-     * @param TransactionUpdate $request
+     * @param TransactionRequestUpdate $request
      * @param $id
 	 *
      * @return Response
      */
-    public function update(TransactionUpdate $request, $id)
+    public function update(TransactionRequestUpdate $request, $id)
     {
         if ($request->transactionRequestState === TransactionRequestStateEnum::REJECTED) {
             event(new TransactionFailed());
@@ -36,10 +36,10 @@ class TransactionRequestsController extends Controller
     }
 
     /**
-     * @param TransactionError $request
+     * @param TransactionRequestError $request
      * @param $id
      */
-    public function error(TransactionError $request, $id)
+    public function error(TransactionRequestError $request, $id)
     {
         event(new TransactionFailed());
 

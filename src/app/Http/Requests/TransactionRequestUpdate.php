@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Http\ValidationSets;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TransactionUpdate extends FormRequest
+class TransactionRequestUpdate extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -17,7 +17,7 @@ class TransactionUpdate extends FormRequest
         return [
             'transactionId' => ValidationSets::correlationId(),
 			'transactionRequestState' => ValidationSets::transactiornRequestState(),
-			'extensionList' => ValidationSets::extensionList(),
+			'extensionList' => ValidationSets::extensionList('extensionList'),
         ];
     }
 }

@@ -44,14 +44,6 @@ class TransfersController extends Controller
     }
 
     /**
-     * @param TransferUpdate $request
-     * @param $id
-     */
-    public function update(TransferUpdate $request, $id)
-    {
-    }
-
-    /**
      * @param TransferError $request
      * @param $id
      */

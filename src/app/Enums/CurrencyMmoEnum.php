@@ -184,7 +184,7 @@ use BenSampo\Enum\Enum;
  * @method static static ZMW()
  * @method static static ZWL()
  */
-final class CurrencyEnum extends Enum
+final class CurrencyMmoEnum extends Enum
 {
 	const AED = 'AED';
 	const AFN = 'AFN';
@@ -364,4 +364,5 @@ final class CurrencyEnum extends Enum
 	const ZAR = 'ZAR';
 	const ZMW = 'ZMW';
 	const ZWL = 'ZWL';
+
 }

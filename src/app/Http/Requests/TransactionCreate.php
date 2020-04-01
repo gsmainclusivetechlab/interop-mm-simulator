@@ -77,15 +77,21 @@ class TransactionCreate extends FormRequest
     {
         return array_merge(
         	[
-				'amount'           => ValidationSets::amount(),
-				'currency'         => ValidationSets::currency(),
+				'amount'           => [
+					'required',
+					ValidationSets::amount()
+				],
+				'currency'         => [
+					'required',
+					ValidationSets::currencyMmo()
+				],
 				'type'             => ValidationSets::type(),
 				'subType'          => ValidationSets::standardString(),
 				'descriptionText'  => ValidationSets::descriptionText(),
 				'requestDate'      => ValidationSets::dateTime(),
 				'requestingOrganisationTransactionReference' => ValidationSets::standardString(),
 				'oneTimeCode'      => ValidationSets::standardString(),
-				'geoCode'          => ValidationSets::geoCode(),
+				'geoCode'          => ValidationSets::geoCodeMmo(),
 				'originalTransactionReference' => ValidationSets::standardString(),
 				'servicingIdentity' => ValidationSets::standardString(),
 				'requestingLei' => ValidationSets::lei(),

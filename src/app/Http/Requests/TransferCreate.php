@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\ValidationSets;
 use App\Models\Transaction;
 use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,9 +26,37 @@ class TransferCreate extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'transferId' => 'string|required',
-        ];
+        return array_merge(
+			[
+				'transferId' => [
+					'required',
+					ValidationSets::correlationId(),
+				],
+				'payeeFsp' => [
+					'required',
+					ValidationSets::fspId(),
+				],
+				'payerFsp' => [
+					'required',
+					ValidationSets::fspId(),
+				],
+				'amount' => 'required|array',
+				'ilpPacket' => [
+					'required',
+					ValidationSets::ilpPacket(),
+				],
+				'condition' => [
+					'required',
+					ValidationSets::ilpCondition(),
+				],
+				'expiration' => [
+					'required',
+					ValidationSets::dateTime(),
+				],
+				'extensionList' => ValidationSets::extensionList('extensionList'),
+			],
+			ValidationSets::money('amount')
+		);
     }
 
     /**
