@@ -45,7 +45,7 @@ class TransactionsController extends Controller
 
             $response = (new TransactionRequest($data, [
 				'traceparent'        => $request->header('traceparent'),
-			]))->send();
+			]))->send(); 
 
             \Illuminate\Support\Facades\Log::info(
                 'POST /transactionRequests ' . $response->getStatusCode() . PHP_EOL
@@ -61,7 +61,10 @@ class TransactionsController extends Controller
 
         return new Response(
             202,
-            ['X-Date' => Headers::getXDate()],
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			],
             \GuzzleHttp\json_encode($response)
         );
     }

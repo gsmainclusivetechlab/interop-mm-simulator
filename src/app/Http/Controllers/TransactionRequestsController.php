@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
 use App\Events\TransactionSuccess;
+use App\Http\Headers;
 use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
@@ -28,7 +29,13 @@ class TransactionRequestsController extends Controller
             event(new TransactionFailed());
         }
 
-        return new Response(200);
+        return new Response(
+        	200,
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			]
+		);
     }
 
     /**
@@ -48,6 +55,12 @@ class TransactionRequestsController extends Controller
     {
         event(new TransactionFailed());
 
-        return new Response(200);
+        return new Response(
+        	200,
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			]
+		);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
 use App\Events\TransactionSuccess;
+use App\Http\Headers;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
@@ -40,7 +41,13 @@ class TransfersController extends Controller
             ], $request->transferId))->send();
         });
 
-        return new Response(202);
+        return new Response(
+        	202,
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			]
+		);
     }
 
     /**
@@ -58,5 +65,13 @@ class TransfersController extends Controller
     public function error(TransferError $request, $id)
     {
     	event(new TransactionFailed());
+
+        return new Response(
+        	200,
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			]
+		);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
 use App\Events\TransactionSuccess;
+use App\Http\Headers;
 use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
@@ -86,7 +87,13 @@ class QuotesController extends Controller
             ], $request->quoteId))->send();
         });
 
-        return new Response(202);
+        return new Response(
+        	202,
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			]
+		);;
     }
 
     /**
@@ -104,5 +111,13 @@ class QuotesController extends Controller
     public function error(QuoteError $request, $id)
     {
     	event(new TransactionFailed());
+
+        return new Response(
+        	200,
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			]
+		);
     }
 }
