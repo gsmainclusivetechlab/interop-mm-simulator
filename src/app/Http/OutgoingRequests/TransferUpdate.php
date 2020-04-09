@@ -9,7 +9,7 @@ class TransferUpdate extends BaseRequest
 {
     public function __construct(array $data, array $headers, string $url)
     {
-        parent::__construct($data, $headers, Env::get('HOST_ML_API_ADAPTER') . '/transfers/' . $url);
+        parent::__construct($data, $headers, Env::get('HOST_ML_API_ADAPTER') . 'transfers/' . $url);
 
         $this->method = 'PUT';
 

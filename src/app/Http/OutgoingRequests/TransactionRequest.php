@@ -23,7 +23,7 @@ class TransactionRequest extends BaseRequest
 	 */
 	public function __construct(array $data, array $headers)
 	{
-		parent::__construct($data, $headers, Env::get('HOST_TRANSACTION_REQUESTS_SERVICE') . '/transactionRequests');
+		parent::__construct($data, $headers, Env::get('HOST_TRANSACTION_REQUESTS_SERVICE') . 'transactionRequests');
 
 		$this->method = 'POST';
 
