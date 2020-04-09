@@ -13,6 +13,7 @@ class SuccessCallback extends BaseCallback
             'debitParty' => $this->transaction->debitParty,
             'creditParty' => $this->transaction->creditParty,
             'transactionStatus' => $this->transaction->transactionStatus,
+            'transactionReference' => '',
 		];
 
         if ($this->transaction->subType) {
