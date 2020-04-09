@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Http\Headers;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
@@ -98,7 +99,7 @@ class Handler extends ExceptionHandler
         return new JsonResponse(
             $this->convertExceptionToArray($e),
             $this->isHttpException($e) ? $e->getStatusCode() : 500,
-            ['X-Date' => (new Carbon())->toRfc7231String()],
+            ['X-Date' => Headers::getXDate()],
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
     }
