@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Requests\CallBacks;
+namespace App\OutgoingRequests\CallBacks;
 
 class FailureCallback extends BaseCallback
 {

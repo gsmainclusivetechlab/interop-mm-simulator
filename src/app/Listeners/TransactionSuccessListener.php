@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Events\TransactionSuccess;
 use App\Models\Transaction;
-use App\Requests\CallBacks\SuccessCallback;
+use App\OutgoingRequests\CallBacks\SuccessCallback;
 
 class TransactionSuccessListener
 {

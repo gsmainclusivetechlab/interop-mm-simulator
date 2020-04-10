@@ -62,7 +62,7 @@ class QuotesController extends Controller
     {
         app()->terminating(function() use ($request) {
             if ($request->amount['amount'] === '51.03') {
-                $response = (new \App\Requests\QuoteError([
+                $response = (new \App\OutgoingRequests\QuoteError([
                     'errorInformation' => [
                         'errorCode' => '5103',
                         'errorDescription' => ''

@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Headers;
 use App\Http\Requests\TransactionCreate;
 use App\Models\Transaction;
-use App\Requests\TransactionRequest;
+use App\OutgoingRequests\TransactionRequest;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Str;
 
@@ -45,7 +45,7 @@ class TransactionsController extends Controller
 
             $response = (new TransactionRequest($data, [
 				'traceparent'        => $request->header('traceparent'),
-			]))->send(); 
+			]))->send();
 
             \Illuminate\Support\Facades\Log::info(
                 'POST /transactionRequests ' . $response->getStatusCode() . PHP_EOL

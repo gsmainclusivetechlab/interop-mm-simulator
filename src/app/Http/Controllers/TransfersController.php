@@ -34,7 +34,7 @@ class TransfersController extends Controller
 
             $data = $request->mapInTo();
 
-            (new \App\Requests\TransferUpdate($data, [
+            (new \App\OutgoingRequests\TransferUpdate($data, [
                 'traceparent'        => $request->header('traceparent'),
                 'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                 'FSPIOP-Destination' => $request->header('FSPIOP-Source'),

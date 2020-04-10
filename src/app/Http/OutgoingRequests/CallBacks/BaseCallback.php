@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Requests\CallBacks;
+namespace App\OutgoingRequests\CallBacks;
 
 use App\Models\Transaction;
 use App\Requests\BaseRequest;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Requests;
+namespace App\OutgoingRequests;
 
 use App\Http\Headers;
 use Carbon\Carbon;
