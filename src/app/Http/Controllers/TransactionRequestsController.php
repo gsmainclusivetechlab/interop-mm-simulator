@@ -3,8 +3,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TransactionRequestStateEnum;
 use App\Events\TransactionFailed;
 use App\Events\TransactionSuccess;
+use App\Http\Headers;
+use App\Http\Requests\TransactionRequestError;
+use App\Http\Requests\TransactionRequestUpdate;
 use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
@@ -18,36 +22,40 @@ use Illuminate\Http\Request;
 class TransactionRequestsController extends Controller
 {
     /**
-     * @param Request $request
+     * @param TransactionRequestUpdate $request
      * @param $id
+	 *
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(TransactionRequestUpdate $request, $id)
     {
-        if ($request->transactionRequestState === 'REJECTED') {
+        if ($request->transactionRequestState === TransactionRequestStateEnum::REJECTED) {
             event(new TransactionFailed());
         }
 
-        return new Response(200);
+        return new Response(
+        	200,
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			]
+		);
     }
 
     /**
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        return new Response(200);
-    }
-
-    /**
-     * @param Request $request
+     * @param TransactionRequestError $request
      * @param $id
      */
-    public function error(Request $request, $id)
+    public function error(TransactionRequestError $request, $id)
     {
         event(new TransactionFailed());
 
-        return new Response(200);
+        return new Response(
+        	200,
+            [
+            	'Content-Type' => 'application/json',
+            	'X-Date' => Headers::getXDate()
+			]
+		);
     }
 }

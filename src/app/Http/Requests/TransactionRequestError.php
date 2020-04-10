@@ -5,13 +5,11 @@ namespace App\Http\Requests;
 use App\Http\ValidationSets;
 use Illuminate\Foundation\Http\FormRequest;
 
-/**
- * Class TransferError
- * @package App\Http\Requests
- */
-class TransferError extends FormRequest
+class TransactionRequestError extends FormRequest
 {
     /**
+     * Get the validation rules that apply to the request.
+     *
      * @return array
      */
     public function rules()
@@ -19,4 +17,3 @@ class TransferError extends FormRequest
         return ValidationSets::errorInformation();
     }
 }
-

@@ -21,7 +21,7 @@ class QuoteUpdate extends BaseRequest
      */
     public function __construct(array $data, array $headers, ?string $url)
     {
-        parent::__construct($data, $headers, Env::get('HOST_QUOTING_SERVICE') . '/quotes/' . $url);
+        parent::__construct($data, $headers, Env::get('HOST_QUOTING_SERVICE') . 'quotes/' . $url);
 
         $this->method = 'PUT';
 

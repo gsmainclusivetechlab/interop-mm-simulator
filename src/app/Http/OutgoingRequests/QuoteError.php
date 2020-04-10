@@ -21,7 +21,7 @@ class QuoteError extends BaseRequest
      */
     public function __construct(array $data, array $headers, string $url)
     {
-        parent::__construct($data, $headers, Env::get('HOST_QUOTING_SERVICE') . '/quotes/' . $url . '/error');
+        parent::__construct($data, $headers, Env::get('HOST_QUOTING_SERVICE') . 'quotes/' . $url . '/error');
 
         $this->method = 'PUT';
 
