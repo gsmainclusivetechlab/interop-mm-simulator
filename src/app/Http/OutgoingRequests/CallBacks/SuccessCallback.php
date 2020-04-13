@@ -1,6 +1,6 @@
 <?php
 
-namespace App\OutgoingRequests\CallBacks;
+namespace App\Http\OutgoingRequests\CallBacks;
 
 class SuccessCallback extends BaseCallback
 {

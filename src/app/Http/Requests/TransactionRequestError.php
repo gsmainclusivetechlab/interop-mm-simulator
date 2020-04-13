@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\ValidationSets;
+use App\Http\RuleSets;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TransactionRequestError extends FormRequest
@@ -14,6 +14,6 @@ class TransactionRequestError extends FormRequest
      */
     public function rules()
     {
-        return ValidationSets::errorInformation();
+        return RuleSets::errorInformation();
     }
 }

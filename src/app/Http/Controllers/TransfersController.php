@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
 use App\Events\TransactionSuccess;
-use App\Http\Headers;
+use App\Http\OutgoingRequests\Headers;
+use App\Http\OutgoingRequests\TransferUpdate;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
-use App\Http\Requests\TransferUpdate;
-use App\Models\Transaction;
-use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Env;
 
 /**
  * Class TransfersController
@@ -34,7 +30,7 @@ class TransfersController extends Controller
 
             $data = $request->mapInTo();
 
-            (new \App\OutgoingRequests\TransferUpdate($data, [
+            (new TransferUpdate($data, [
                 'traceparent'        => $request->header('traceparent'),
                 'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                 'FSPIOP-Destination' => $request->header('FSPIOP-Source'),

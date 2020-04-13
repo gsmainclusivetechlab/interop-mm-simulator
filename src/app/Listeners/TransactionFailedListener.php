@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Events\TransactionFailed;
 use App\Models\Transaction;
-use App\OutgoingRequests\CallBacks\FailureCallback;
+use App\Http\OutgoingRequests\CallBacks\FailureCallback;
 
 class TransactionFailedListener
 {

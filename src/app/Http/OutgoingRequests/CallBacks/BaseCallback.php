@@ -1,9 +1,9 @@
 <?php
 
-namespace App\OutgoingRequests\CallBacks;
+namespace App\Http\OutgoingRequests\CallBacks;
 
+use App\Http\OutgoingRequests\BaseRequest;
 use App\Models\Transaction;
-use App\Requests\BaseRequest;
 use Illuminate\Support\Env;
 
 /**

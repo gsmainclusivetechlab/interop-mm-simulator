@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\ValidationSets;
+use App\Http\RuleSets;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
 
@@ -26,29 +26,29 @@ class QuoteCreate extends FormRequest
 				[
 				'quoteId'              => [
 					'required',
-					ValidationSets::correlationId(),
+					RuleSets::correlationId(),
 				],
 				'transactionId'        => [
 					'required',
-					ValidationSets::correlationId(),
+					RuleSets::correlationId(),
 				],
-				'transactionRequestId' => ValidationSets::correlationId(),
+				'transactionRequestId' => RuleSets::correlationId(),
 				'payee'                => 'required|array',
 				'payer'                => 'required|array',
-				'amountType'           => ValidationSets::amountType(),
+				'amountType'           => RuleSets::amountType(),
 				'amount'               => 'required|array',
 				'fees'                 => 'array',
 				'transactionType'      => 'required',
-				'note' => ValidationSets::note(),
-				'expiration' => ValidationSets::dateTime(),
-				'extensionList' => ValidationSets::extensionList('extensionList'),
+				'note' => RuleSets::note(),
+				'expiration' => RuleSets::dateTime(),
+				'extensionList' => RuleSets::extensionList('extensionList'),
 			],
-			ValidationSets::partyMojaloop('payee'),
-			ValidationSets::partyMojaloop('payer'),
-			ValidationSets::money('amount'),
-			ValidationSets::money('fees'),
-			ValidationSets::transactionType('transactionType'),
-			ValidationSets::geoCodeMoja('geoCode')
+			RuleSets::partyMojaloop('payee'),
+			RuleSets::partyMojaloop('payer'),
+			RuleSets::money('amount'),
+			RuleSets::money('fees'),
+			RuleSets::transactionType('transactionType'),
+			RuleSets::geoCodeMoja('geoCode')
 		);
     }
 

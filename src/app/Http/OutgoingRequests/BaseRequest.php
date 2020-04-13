@@ -1,12 +1,11 @@
 <?php
 
-namespace App\OutgoingRequests;
+namespace App\Http\OutgoingRequests;
 
 use App\Contracts\RequestContract;
 use App\Traits\ParseTraceId;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface;
 

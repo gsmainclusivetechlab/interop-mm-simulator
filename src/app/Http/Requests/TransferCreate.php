@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Http\ValidationSets;
-use App\Models\Transaction;
+use App\Http\RuleSets;
 use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 
 /**
@@ -30,23 +28,23 @@ class TransferCreate extends FormRequest
 			[
 				'transferId' => [
 					'required',
-					ValidationSets::correlationId(),
+					RuleSets::correlationId(),
 				],
-				'payeeFsp' => 'required|' . ValidationSets::fspId(),
-				'payerFsp' => 'required|' . ValidationSets::fspId(),
+				'payeeFsp' => 'required|' . RuleSets::fspId(),
+				'payerFsp' => 'required|' . RuleSets::fspId(),
 				'amount' => 'required|array',
-				'ilpPacket' => 'required|' . ValidationSets::ilpPacket(),
+				'ilpPacket' => 'required|' . RuleSets::ilpPacket(),
 				'condition' => [
 					'required',
-					ValidationSets::ilpCondition(),
+					RuleSets::ilpCondition(),
 				],
 				'expiration' => [
 					'required',
-					ValidationSets::dateTime(),
+					RuleSets::dateTime(),
 				],
-				'extensionList' => ValidationSets::extensionList('extensionList'),
+				'extensionList' => RuleSets::extensionList('extensionList'),
 			],
-			ValidationSets::money('amount')
+			RuleSets::money('amount')
 		);
     }
 

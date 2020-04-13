@@ -1,6 +1,6 @@
 <?php
 
-namespace App\OutgoingRequests;
+namespace App\Http\OutgoingRequests;
 
 use Carbon\Carbon;
 use Illuminate\Support\Env;

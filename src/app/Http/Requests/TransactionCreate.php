@@ -2,14 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Http\ValidationSets;
-use App\Models\Transaction;
+use App\Http\RuleSets;
 use App\Rules\Traceparent;
 use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -79,31 +77,31 @@ class TransactionCreate extends FormRequest
         	[
 				'amount'           => [
 					'required',
-					ValidationSets::amount()
+					RuleSets::amount()
 				],
 				'currency'         => [
 					'required',
-					ValidationSets::currencyMmo()
+					RuleSets::currencyMmo()
 				],
-				'type'             => ValidationSets::type(),
-				'subType'          => ValidationSets::standardString(),
-				'descriptionText'  => ValidationSets::descriptionText(),
-				'requestDate'      => ValidationSets::dateTime(),
-				'requestingOrganisationTransactionReference' => ValidationSets::standardString(),
-				'oneTimeCode'      => ValidationSets::standardString(),
-				'geoCode'          => ValidationSets::geoCodeMmo(),
-				'originalTransactionReference' => ValidationSets::standardString(),
-				'servicingIdentity' => ValidationSets::standardString(),
-				'requestingLei' => ValidationSets::lei(),
-				'receivingLei' => ValidationSets::lei(),
+				'type'             => RuleSets::type(),
+				'subType'          => RuleSets::standardString(),
+				'descriptionText'  => RuleSets::descriptionText(),
+				'requestDate'      => RuleSets::dateTime(),
+				'requestingOrganisationTransactionReference' => RuleSets::standardString(),
+				'oneTimeCode'      => RuleSets::standardString(),
+				'geoCode'          => RuleSets::geoCodeMmo(),
+				'originalTransactionReference' => RuleSets::standardString(),
+				'servicingIdentity' => RuleSets::standardString(),
+				'requestingLei' => RuleSets::lei(),
+				'receivingLei' => RuleSets::lei(),
 			],
-			ValidationSets::partyArray('debitParty'),
-			ValidationSets::partyArray('creditParty'),
-			ValidationSets::kyc('senderKyc'),
-			ValidationSets::kyc('recipientKyc'),
-			ValidationSets::feesArray('fees'),
-			ValidationSets::metadataArray('metadata'),
-			ValidationSets::internationalTransferInformation('internationalTransferInformation')
+			RuleSets::partyArray('debitParty'),
+			RuleSets::partyArray('creditParty'),
+			RuleSets::kyc('senderKyc'),
+			RuleSets::kyc('recipientKyc'),
+			RuleSets::feesArray('fees'),
+			RuleSets::metadataArray('metadata'),
+			RuleSets::internationalTransferInformation('internationalTransferInformation')
 		);
     }
 

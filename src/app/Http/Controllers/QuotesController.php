@@ -4,13 +4,11 @@
 namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
-use App\Events\TransactionSuccess;
-use App\Http\Headers;
+use App\Http\OutgoingRequests\Headers;
 use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
 use App\Http\Requests\QuoteUpdate;
-use App\Models\Transaction;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
@@ -24,6 +22,7 @@ class QuotesController extends Controller
 {
     /**
      * @param QuotationsCreate $request
+     *
      * @return array
      */
     public function storeQuotations(QuotationsCreate $request)
@@ -56,13 +55,15 @@ class QuotesController extends Controller
      * POST /quotes from mojaloop
      *
      * @param QuoteCreate $request
+     *
      * @return string
+     * @throws \Exception
      */
     public function store(QuoteCreate $request)
     {
         app()->terminating(function() use ($request) {
             if ($request->amount['amount'] === '51.03') {
-                $response = (new \App\OutgoingRequests\QuoteError([
+                $response = (new \App\Http\OutgoingRequests\QuoteError([
                     'errorInformation' => [
                         'errorCode' => '5103',
                         'errorDescription' => ''
@@ -80,7 +81,7 @@ class QuotesController extends Controller
                 return;
             }
 
-            (new \App\Requests\QuoteUpdate($request->mapInTo(), [
+            (new \App\Http\OutgoingRequests\QuoteUpdate($request->mapInTo(), [
                 'traceparent'        => $request->header('traceparent'),
                 'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                 'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
@@ -107,6 +108,8 @@ class QuotesController extends Controller
     /**
      * @param QuoteError $request
      * @param $id
+     *
+     * @throws \Exception
      */
     public function error(QuoteError $request, $id)
     {

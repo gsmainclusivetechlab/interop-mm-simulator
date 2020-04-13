@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\ValidationSets;
+use App\Http\RuleSets;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TransactionRequestUpdate extends FormRequest
@@ -15,9 +15,9 @@ class TransactionRequestUpdate extends FormRequest
     public function rules()
     {
         return [
-            'transactionId' => ValidationSets::correlationId(),
-			'transactionRequestState' => ValidationSets::transactiornRequestState(),
-			'extensionList' => ValidationSets::extensionList('extensionList'),
+            'transactionId' => RuleSets::correlationId(),
+			'transactionRequestState' => RuleSets::transactiornRequestState(),
+			'extensionList' => RuleSets::extensionList('extensionList'),
         ];
     }
 }

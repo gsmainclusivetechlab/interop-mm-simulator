@@ -1,9 +1,7 @@
 <?php
 
-namespace App\OutgoingRequests;
+namespace App\Http\OutgoingRequests;
 
-use App\Http\Headers;
-use Carbon\Carbon;
 use Illuminate\Support\Env;
 
 /**

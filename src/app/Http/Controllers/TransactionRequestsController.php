@@ -5,13 +5,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\TransactionRequestStateEnum;
 use App\Events\TransactionFailed;
-use App\Events\TransactionSuccess;
-use App\Http\Headers;
+use App\Http\OutgoingRequests\Headers;
 use App\Http\Requests\TransactionRequestError;
 use App\Http\Requests\TransactionRequestUpdate;
-use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Http\Request;
 
 /**
  * Mojaloop Request controller

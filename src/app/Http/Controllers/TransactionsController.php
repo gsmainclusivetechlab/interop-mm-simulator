@@ -3,10 +3,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Headers;
+use App\Http\OutgoingRequests\Headers;
 use App\Http\Requests\TransactionCreate;
 use App\Models\Transaction;
-use App\OutgoingRequests\TransactionRequest;
+use App\Http\OutgoingRequests\TransactionRequest;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Str;
 
@@ -24,6 +24,7 @@ class TransactionsController extends Controller
      * @param TransactionCreate $request
      *
      * @return Response
+     * @throws \Exception
      */
     public function store(TransactionCreate $request): Response
     {
