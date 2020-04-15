@@ -8172,7 +8172,7 @@ components:
             $ref: '#/components/schemas/responseAuthorisationCode'
 
 
-  # All the GSMA Mobile Money API Response Headers are defined here.
+  # All the GSMA Mobile Money API Response InteractsWithHeaders are defined here.
 
   headers:
     X-Date:

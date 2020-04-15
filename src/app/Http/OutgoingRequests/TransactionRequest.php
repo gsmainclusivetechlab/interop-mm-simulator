@@ -2,6 +2,7 @@
 
 namespace App\Http\OutgoingRequests;
 
+use App\Concerns\InteractsWithHeaders;
 use Illuminate\Support\Env;
 
 /**
@@ -11,6 +12,8 @@ use Illuminate\Support\Env;
  */
 class TransactionRequest extends BaseRequest
 {
+    use InteractsWithHeaders;
+
 	/**
 	 * TransactionRequest constructor.
 	 *
@@ -25,7 +28,7 @@ class TransactionRequest extends BaseRequest
 
 		$this->method = 'POST';
 
-		$this->headers['Date'] = Headers::getXDate();
+		$this->headers['Date'] = $this->xDate();
 		$this->headers['Accept'] = 'application/vnd.interoperability.transactionRequests+json;version=1.0';
 		$this->headers['Content-Type'] = 'application/vnd.interoperability.transactionRequests+json;version=1.0';
 		$this->headers['FSPIOP-Source'] = Env::get('FSPIOP_SOURCE');

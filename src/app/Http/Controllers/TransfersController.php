@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
 use App\Events\TransactionSuccess;
-use App\Http\OutgoingRequests\Headers;
+use App\Concerns\InteractsWithHeaders;
 use App\Http\OutgoingRequests\TransferUpdate;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
@@ -16,6 +16,8 @@ use GuzzleHttp\Psr7\Response;
  */
 class TransfersController extends Controller
 {
+    use InteractsWithHeaders;
+
     /**
      * Handle transfer request
      *
@@ -41,7 +43,7 @@ class TransfersController extends Controller
         	202,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
+            	'X-Date' => $this->xDate()
 			]
 		);
     }
@@ -58,7 +60,7 @@ class TransfersController extends Controller
         	200,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
+            	'X-Date' => $this->xDate()
 			]
 		);
     }

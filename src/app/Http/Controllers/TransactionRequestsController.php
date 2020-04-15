@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\TransactionRequestStateEnum;
 use App\Events\TransactionFailed;
-use App\Http\OutgoingRequests\Headers;
+use App\Concerns\InteractsWithHeaders;
 use App\Http\Requests\TransactionRequestError;
 use App\Http\Requests\TransactionRequestUpdate;
 use GuzzleHttp\Psr7\Response;
@@ -18,6 +18,8 @@ use GuzzleHttp\Psr7\Response;
  */
 class TransactionRequestsController extends Controller
 {
+    use InteractsWithHeaders;
+
     /**
      * @param TransactionRequestUpdate $request
      * @param $id
@@ -34,7 +36,7 @@ class TransactionRequestsController extends Controller
         	200,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
+            	'X-Date' => $this->xDate()
 			]
 		);
     }

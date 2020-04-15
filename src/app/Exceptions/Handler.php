@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Http\OutgoingRequests\Headers;
+use App\Concerns\InteractsWithHeaders;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +13,8 @@ use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
+    use InteractsWithHeaders;
+
     const ERROR_DEFINITIONS = [
         400 => [
             'errorCategory' => 'businessRule',
@@ -100,7 +102,7 @@ class Handler extends ExceptionHandler
         return new JsonResponse(
             $this->convertExceptionToArray($e),
             $this->isHttpException($e) ? $e->getStatusCode() : 500,
-            ['X-Date' => Headers::getXDate()],
+            ['X-Date' => $this->xDate()],
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
     }
@@ -120,7 +122,6 @@ class Handler extends ExceptionHandler
 
         return config('app.debug') ? [
             'message' => $e->getMessage(),
-            //'errors' => $e->getErrors(),
             'exception' => get_class($e),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
@@ -143,7 +144,7 @@ class Handler extends ExceptionHandler
      * @return \Illuminate\Http\JsonResponse
      * @throws Exception
      */
-    protected function invalidJson(Request $request, ValidationException $exception)
+    protected function invalidJson($request, ValidationException $exception)
     {
         $status = 400;
         $errorParameters = [];

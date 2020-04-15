@@ -3,11 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Concerns\InteractsWithMMValidator;
-use App\Http\OpenApiValidator;
 use App\Rules\Traceparent;
-use App\Traits\ParseTraceId;
+use App\Validation\OpenApiValidator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -38,12 +38,10 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  * @property array $fees
  * @property array $metadata
  * @property string $internationalTransferInformation
- * @property string $traceId
  */
 class TransactionCreate extends FormRequest
 {
-    use InteractsWithMMValidator,
-        ParseTraceId;
+    use InteractsWithMMValidator;
 
 	/**
 	 * Mapping transaction type from SP to Mojaloop
@@ -176,7 +174,7 @@ class TransactionCreate extends FormRequest
                     break;
             }
 
-            $headerValidator = \Illuminate\Support\Facades\Validator::make($this->headers->all(), [
+            $headerValidator = Validator::make($this->headers->all(), [
                 'traceparent.0' => [
                     'required',
                     new Traceparent(),

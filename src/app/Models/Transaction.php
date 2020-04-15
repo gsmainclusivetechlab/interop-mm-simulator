@@ -123,7 +123,7 @@ class Transaction extends Model
      *
      * @return Transaction
      */
-    public static function getCurrent(): ?Transaction
+    public static function getCurrent(): Transaction
     {
         $transaction = static::find(self::parseTraceId(resolve(Request::class)->header('traceparent')));
 

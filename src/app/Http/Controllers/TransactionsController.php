@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\InteractsWithHeaders;
 use App\Http\OutgoingRequests\Headers;
 use App\Http\Requests\TransactionCreate;
 use App\Models\Transaction;
@@ -17,7 +18,8 @@ use Illuminate\Support\Str;
  */
 class TransactionsController extends Controller
 {
-    use ParseTraceId;
+    use ParseTraceId,
+        InteractsWithHeaders;
 
     /**
      * Request from service provider
@@ -68,7 +70,7 @@ class TransactionsController extends Controller
             202,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
+            	'X-Date' => $this->xDate()
 			],
             json_encode($response)
         );

@@ -3,7 +3,7 @@
 namespace App\Concerns;
 
 use App\Enums\ApiTypeEnum;
-use App\Http\OpenApiValidator;
+use App\Validation\OpenApiValidator;
 
 /**
  * Trait InteractsWithMojaloopValidator

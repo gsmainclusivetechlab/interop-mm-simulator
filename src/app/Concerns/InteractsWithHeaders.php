@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\OutgoingRequests;
+namespace App\Concerns;
 
 use Carbon\Carbon;
 
@@ -9,13 +9,13 @@ use Carbon\Carbon;
  *
  * @package App\Http
  */
-class Headers
+trait InteractsWithHeaders
 {
     /**
      * @return string
      * @throws \Exception
      */
-    public static function getXDate()
+    public function xDate()
 	{
 		return Carbon::now()->toRfc3339String();
 	}

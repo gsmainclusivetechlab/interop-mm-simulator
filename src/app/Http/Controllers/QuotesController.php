@@ -4,7 +4,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
-use App\Http\OutgoingRequests\Headers;
+use App\Concerns\InteractsWithHeaders;
 use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
@@ -20,6 +20,8 @@ use Illuminate\Support\Env;
  */
 class QuotesController extends Controller
 {
+    use InteractsWithHeaders;
+
     /**
      * @param QuotationsCreate $request
      *
@@ -92,7 +94,7 @@ class QuotesController extends Controller
         	202,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
+            	'X-Date' => $this->xDate()
 			]
 		);;
     }
@@ -119,7 +121,7 @@ class QuotesController extends Controller
         	200,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
+            	'X-Date' => $this->xDate()
 			]
 		);
     }

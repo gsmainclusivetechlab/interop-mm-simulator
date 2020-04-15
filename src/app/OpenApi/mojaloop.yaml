@@ -23,7 +23,7 @@ paths:
       #Path
       - $ref: '#/components/parameters/Type'
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -40,7 +40,7 @@ paths:
         - participants
       operationId: ParticipantsByIDAndType
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
@@ -76,7 +76,7 @@ paths:
         - participants
       operationId: ParticipantsByTypeAndID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -104,7 +104,7 @@ paths:
         - participants
       operationId: ParticipantsByTypeAndID3
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Participant information returned.
@@ -140,7 +140,7 @@ paths:
         - participants
       operationId: ParticipantsByTypeAndID2
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -172,7 +172,7 @@ paths:
         #Path
         - $ref: '#/components/parameters/Type'
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -215,7 +215,7 @@ paths:
       - $ref: '#/components/parameters/Type'
       - $ref: '#/components/parameters/ID'
       - $ref: '#/components/parameters/SubId'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -232,7 +232,7 @@ paths:
         - participants
       operationId: ParticipantsSubIdByTypeAndIDPost
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
@@ -268,7 +268,7 @@ paths:
         - participants
       operationId: ParticipantsSubIdByTypeAndID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -296,7 +296,7 @@ paths:
         - participants
       operationId: ParticipantsSubIdByTypeAndID3
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Participant information returned.
@@ -332,7 +332,7 @@ paths:
         - participants
       operationId: ParticipantsSubIdByTypeAndID2
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -365,7 +365,7 @@ paths:
         - $ref: '#/components/parameters/Type'
         - $ref: '#/components/parameters/ID'
         - $ref: '#/components/parameters/SubId'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -410,7 +410,7 @@ paths:
         - participants
       operationId: Participants1
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
@@ -458,7 +458,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -505,7 +505,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -549,7 +549,7 @@ paths:
       #Path
       - $ref: '#/components/parameters/Type'
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -566,7 +566,7 @@ paths:
         - parties
       operationId: PartiesByTypeAndID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -594,7 +594,7 @@ paths:
         - parties
       operationId: PartiesByTypeAndID2
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Party information returned.
@@ -633,7 +633,7 @@ paths:
         #Path
         - $ref: '#/components/parameters/Type'
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -676,7 +676,7 @@ paths:
       - $ref: '#/components/parameters/Type'
       - $ref: '#/components/parameters/ID'
       - $ref: '#/components/parameters/SubId'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -693,7 +693,7 @@ paths:
         - parties
       operationId: PartiesSubIdByTypeAndID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -721,7 +721,7 @@ paths:
         - parties
       operationId: PartiesSubIdByTypeAndIDPut
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Party information returned.
@@ -761,7 +761,7 @@ paths:
         - $ref: '#/components/parameters/Type'
         - $ref: '#/components/parameters/ID'
         - $ref: '#/components/parameters/SubId'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -808,7 +808,7 @@ paths:
         - transactionRequests
       operationId: TransactionRequests
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
@@ -850,7 +850,7 @@ paths:
     parameters:
       #Path
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -867,7 +867,7 @@ paths:
         - transactionRequests
       operationId: TransactionRequestsByID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -895,7 +895,7 @@ paths:
         - transactionRequests
       operationId: TransactionRequestsByIDPut
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Transaction request information returned.
@@ -933,7 +933,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -980,7 +980,7 @@ paths:
         - quotes
       operationId: Quotes
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
@@ -1022,7 +1022,7 @@ paths:
     parameters:
       #Path
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -1039,7 +1039,7 @@ paths:
         - quotes
       operationId: QuotesByID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -1067,7 +1067,7 @@ paths:
         - quotes
       operationId: QuotesByID1
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Quote information returned.
@@ -1105,7 +1105,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -1148,7 +1148,7 @@ paths:
     parameters:
       #Path
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -1171,7 +1171,7 @@ paths:
         - authorizations
       operationId: AuthorizationsByIDGet
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -1199,7 +1199,7 @@ paths:
         - authorizations
       operationId: AuthorizationsByIDPut
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Authorization result returned.
@@ -1237,7 +1237,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -1284,7 +1284,7 @@ paths:
         - transfers
       operationId: transfers
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
@@ -1326,7 +1326,7 @@ paths:
     parameters:
       #Path
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -1343,7 +1343,7 @@ paths:
         - transfers
       operationId: TransfersByIDGet
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -1371,7 +1371,7 @@ paths:
         - transfers
       operationId: TransfersByIDPut
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Transfer information returned.
@@ -1409,7 +1409,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -1451,7 +1451,7 @@ paths:
   /transactions/{ID}:
     parameters:
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -1468,7 +1468,7 @@ paths:
         - transactions
       operationId: TransactionsByID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -1496,7 +1496,7 @@ paths:
         - transactions
       operationId: TransactionsByID1
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Transaction information returned.
@@ -1534,7 +1534,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -1581,7 +1581,7 @@ paths:
         - bulkQuotes
       operationId: BulkQuotes
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
@@ -1623,7 +1623,7 @@ paths:
     parameters:
       #Path
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -1640,7 +1640,7 @@ paths:
         - bulkQuotes
       operationId: BulkQuotesByID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -1668,7 +1668,7 @@ paths:
         - bulkQuotes
       operationId: BulkQuotesByID1
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Bulk quote information returned.
@@ -1706,7 +1706,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
@@ -1753,7 +1753,7 @@ paths:
         - bulkTransfers
       operationId: BulkTransfers
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
@@ -1795,7 +1795,7 @@ paths:
     parameters:
       #Path
       - $ref: '#/components/parameters/ID'
-      #Headers
+      #InteractsWithHeaders
       - $ref: '#/components/parameters/Content-Type'
       - $ref: '#/components/parameters/Date'
       - $ref: '#/components/parameters/X-Forwarded-For'
@@ -1812,7 +1812,7 @@ paths:
         - bulkTransfers
       operationId: BulkTransferByID
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Accept'
       responses:
         202:
@@ -1840,7 +1840,7 @@ paths:
         - bulkTransfers
       operationId: BulkTransfersByIDPut
       parameters:
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
         description: Bulk transfer information returned.
@@ -1878,7 +1878,7 @@ paths:
       parameters:
         #Path
         - $ref: '#/components/parameters/ID'
-        #Headers
+        #InteractsWithHeaders
         - $ref: '#/components/parameters/Content-Length'
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Date'
