@@ -65,14 +65,6 @@ class Transaction extends Model
         'Failed'
     ];
 
-    const TYPES = [
-        'DEPOSIT',
-        'WITHDRAWAL',
-        'TRANSFER',
-        'PAYMENT',
-        'REFUND'
-    ];
-
     /**
      * The primary key associated with the table.
      *
@@ -121,15 +113,6 @@ class Transaction extends Model
         'requestDate' => 'datetime:Y-m-dTH:i:s.vZ',
     ];
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    /*protected $dates = [
-        'requestDate',
-    ];*/
-
     public function setRequestDateAttribute(string $value)
     {
         $this->attributes['requestDate'] = new Carbon($value);
@@ -138,16 +121,16 @@ class Transaction extends Model
     /**
      * Get current transaction
      *
-     * @return Transaction|null
+     * @return Transaction
      */
     public static function getCurrent(): ?Transaction
     {
-        $transaction = self::find(self::parseTraceId(resolve(Request::class)->header('traceparent')));
+        $transaction = static::find(self::parseTraceId(resolve(Request::class)->header('traceparent')));
 
         if (!$transaction) {
             throw new BadRequestHttpException();
         }
 
-        return self::find(self::parseTraceId(resolve(Request::class)->header('traceparent')));
+        return $transaction;
     }
 }

@@ -2,18 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Http\RuleSets;
+use App\Concerns\InteractsWithMojaloopValidator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TransactionRequestError extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return RuleSets::errorInformation();
-    }
+    use InteractsWithMojaloopValidator;
 }

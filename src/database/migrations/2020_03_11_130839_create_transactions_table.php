@@ -39,7 +39,7 @@ class CreateTransactionsTable extends Migration
             $table->string('receivingLei', 20)->nullable();
             $table->json('metadata')->nullable();
             $table->json('internationalTransferInformation')->nullable();
-            $table->enum('transactionStatus', Transaction::STATUSES);
+            $table->string('transactionStatus');
             $table->string('transactionReceipt', 256)->nullable();
             $table->timestamps();
 

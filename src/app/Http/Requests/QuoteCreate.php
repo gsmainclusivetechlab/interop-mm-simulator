@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\RuleSets;
+use App\Concerns\InteractsWithMojaloopValidator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
 
@@ -17,40 +17,7 @@ use Illuminate\Support\Carbon;
  */
 class QuoteCreate extends FormRequest
 {
-    /**
-     * @return array
-     */
-    public function rules()
-    {
-        return array_merge(
-				[
-				'quoteId'              => [
-					'required',
-					RuleSets::correlationId(),
-				],
-				'transactionId'        => [
-					'required',
-					RuleSets::correlationId(),
-				],
-				'transactionRequestId' => RuleSets::correlationId(),
-				'payee'                => 'required|array',
-				'payer'                => 'required|array',
-				'amountType'           => RuleSets::amountType(),
-				'amount'               => 'required|array',
-				'fees'                 => 'array',
-				'transactionType'      => 'required',
-				'note' => RuleSets::note(),
-				'expiration' => RuleSets::dateTime(),
-				'extensionList' => RuleSets::extensionList('extensionList'),
-			],
-			RuleSets::partyMojaloop('payee'),
-			RuleSets::partyMojaloop('payer'),
-			RuleSets::money('amount'),
-			RuleSets::money('fees'),
-			RuleSets::transactionType('transactionType'),
-			RuleSets::geoCodeMoja('geoCode')
-		);
-    }
+    use InteractsWithMojaloopValidator;
 
     /**
      * payer -> debit

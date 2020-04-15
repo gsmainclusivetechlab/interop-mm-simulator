@@ -2,10 +2,11 @@
 
 namespace App\Exceptions;
 
-use App\Http\Headers;
+use App\Http\OutgoingRequests\Headers;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -119,6 +120,7 @@ class Handler extends ExceptionHandler
 
         return config('app.debug') ? [
             'message' => $e->getMessage(),
+            //'errors' => $e->getErrors(),
             'exception' => get_class($e),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
@@ -141,10 +143,11 @@ class Handler extends ExceptionHandler
      * @return \Illuminate\Http\JsonResponse
      * @throws Exception
      */
-    protected function invalidJson($request, ValidationException $exception)
+    protected function invalidJson(Request $request, ValidationException $exception)
     {
         $status = 400;
         $errorParameters = [];
+
         foreach ($exception->errors() as $key => $value) {
             $errorParameters[] = [
                 'key'   => $key,
@@ -166,10 +169,10 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * @param $status
+     * @param int $status
      * @return array|mixed
      */
-    protected function getErrorDefinitions($status)
+    protected function getErrorDefinitions(int $status)
     {
         $defaultDefinition = [
             'errorCategory' => '',

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\RuleSets;
+use App\Concerns\InteractsWithMojaloopValidator;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -11,12 +11,6 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class QuoteError extends FormRequest
 {
-    /**
-     * @return array
-     */
-    public function rules()
-    {
-        return RuleSets::errorInformation();
-    }
+    use InteractsWithMojaloopValidator;
 }
 

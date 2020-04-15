@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests;
 
-use App\Http\RuleSets;
+use App\Concerns\InteractsWithMMValidator;
+use App\Http\OpenApiValidator;
 use App\Rules\Traceparent;
 use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Validator;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
@@ -42,14 +42,8 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  */
 class TransactionCreate extends FormRequest
 {
-    use ParseTraceId;
-
-	/**
-	 * Trace ID parsed from header traceparent
-	 *
-	 * @var string
-	 */
-	public $traceId;
+    use InteractsWithMMValidator,
+        ParseTraceId;
 
 	/**
 	 * Mapping transaction type from SP to Mojaloop
@@ -65,45 +59,6 @@ class TransactionCreate extends FormRequest
         'reversal' => 'REFUND',
         'withdrawal' => 'WITHDRAWAL',
     ];
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules(): array
-    {
-        return array_merge(
-        	[
-				'amount'           => [
-					'required',
-					RuleSets::amount()
-				],
-				'currency'         => [
-					'required',
-					RuleSets::currencyMmo()
-				],
-				'type'             => RuleSets::type(),
-				'subType'          => RuleSets::standardString(),
-				'descriptionText'  => RuleSets::descriptionText(),
-				'requestDate'      => RuleSets::dateTime(),
-				'requestingOrganisationTransactionReference' => RuleSets::standardString(),
-				'oneTimeCode'      => RuleSets::standardString(),
-				'geoCode'          => RuleSets::geoCodeMmo(),
-				'originalTransactionReference' => RuleSets::standardString(),
-				'servicingIdentity' => RuleSets::standardString(),
-				'requestingLei' => RuleSets::lei(),
-				'receivingLei' => RuleSets::lei(),
-			],
-			RuleSets::partyArray('debitParty'),
-			RuleSets::partyArray('creditParty'),
-			RuleSets::kyc('senderKyc'),
-			RuleSets::kyc('recipientKyc'),
-			RuleSets::feesArray('fees'),
-			RuleSets::metadataArray('metadata'),
-			RuleSets::internationalTransferInformation('internationalTransferInformation')
-		);
-    }
 
     /**
      * Data Mapping for Mojaloop POST transactionRequests
@@ -196,13 +151,13 @@ class TransactionCreate extends FormRequest
 	/**
 	 * Configure the validator instance
 	 *
-	 * @param Validator $validator
+	 * @param OpenApiValidator $validator
 	 */
-	public function withValidator(Validator $validator)
+	public function withValidator(OpenApiValidator $validator)
     {
         $validator->after(function ($validator) {
             switch ($this->amount) {
-                case '4.00':
+                case '4':
                     throw new BadRequestHttpException();
                     break;
                 case '4.01':
@@ -211,7 +166,7 @@ class TransactionCreate extends FormRequest
                 case '4.04':
                     throw new NotFoundHttpException();
                     break;
-                case '5.00':
+                case '5':
                     throw new \Exception();
                     break;
                 case '5.03':
@@ -238,10 +193,7 @@ class TransactionCreate extends FormRequest
 
             if ($headerValidator->fails()) {
                 $validator->messages()->merge($headerValidator->messages());
-                return;
             }
-
-            $this->traceId = self::parseTraceId($this->headers->get('traceparent'));
         });
     }
 }

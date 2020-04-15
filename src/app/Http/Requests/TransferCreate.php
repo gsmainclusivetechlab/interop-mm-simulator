@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Http\RuleSets;
+use App\Concerns\InteractsWithMojaloopValidator;
 use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
@@ -17,36 +17,8 @@ use Illuminate\Support\Carbon;
  */
 class TransferCreate extends FormRequest
 {
-    use ParseTraceId;
-
-    /**
-     * @return array
-     */
-    public function rules(): array
-    {
-        return array_merge(
-			[
-				'transferId' => [
-					'required',
-					RuleSets::correlationId(),
-				],
-				'payeeFsp' => 'required|' . RuleSets::fspId(),
-				'payerFsp' => 'required|' . RuleSets::fspId(),
-				'amount' => 'required|array',
-				'ilpPacket' => 'required|' . RuleSets::ilpPacket(),
-				'condition' => [
-					'required',
-					RuleSets::ilpCondition(),
-				],
-				'expiration' => [
-					'required',
-					RuleSets::dateTime(),
-				],
-				'extensionList' => RuleSets::extensionList('extensionList'),
-			],
-			RuleSets::money('amount')
-		);
-    }
+    use InteractsWithMojaloopValidator,
+        ParseTraceId;
 
     /**
      * @return array
