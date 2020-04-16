@@ -4,9 +4,7 @@ namespace App\Validation;
 
 use App\Enums\ApiTypeEnum;
 use App\Traits\ParseContentType;
-use cebe\openapi\exceptions\IOException;
 use cebe\openapi\exceptions\TypeErrorException;
-use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
@@ -38,19 +36,24 @@ class OpenApiValidator extends Validator
     protected Schema $requestSchema;
     protected SchemaValidator $validator;
 
+    public function __construct(Translator $translator, array $data, array $rules, array $messages = [], array $customAttributes = [])
+    {
+        parent::__construct($translator, $data, $rules);
+    }
+
     /**
-     * OpenApiValidator constructor.
+     * OpenApiValidator init.
      *
      * @param ApiTypeEnum $api
      * @param Request $request
      * @throws \Exception
      */
-    public function __construct(ApiTypeEnum $api, Request $request)
+    public function init(ApiTypeEnum $api, Request $request)
     {
         $this->request = $request;
         $this->spec = $this->getSpec($api);
 
-        parent::__construct(resolve(Translator::class), $this->getData(), []);
+        return $this;
     }
 
     /**

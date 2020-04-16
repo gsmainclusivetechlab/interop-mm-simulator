@@ -94,7 +94,7 @@ class QuotesController extends Controller
         	202,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => $this->xDate()
+            	'X-Date' => $this->headerXDate()
 			]
 		);;
     }
@@ -121,7 +121,7 @@ class QuotesController extends Controller
         	200,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => $this->xDate()
+            	'X-Date' => $this->headerXDate()
 			]
 		);
     }

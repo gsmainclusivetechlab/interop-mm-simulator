@@ -43,7 +43,7 @@ class TransfersController extends Controller
         	202,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => $this->xDate()
+            	'X-Date' => $this->headerXDate()
 			]
 		);
     }
@@ -60,7 +60,7 @@ class TransfersController extends Controller
         	200,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => $this->xDate()
+            	'X-Date' => $this->headerXDate()
 			]
 		);
     }

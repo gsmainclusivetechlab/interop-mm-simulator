@@ -15,7 +15,7 @@ trait InteractsWithHeaders
      * @return string
      * @throws \Exception
      */
-    public function xDate()
+    public function headerXDate()
 	{
 		return Carbon::now()->toRfc3339String();
 	}

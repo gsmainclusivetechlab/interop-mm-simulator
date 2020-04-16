@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Concerns\InteractsWithHeaders;
-use App\Http\OutgoingRequests\Headers;
 use App\Http\Requests\TransactionCreate;
 use App\Models\Transaction;
 use App\Http\OutgoingRequests\TransactionRequest;
@@ -70,7 +69,7 @@ class TransactionsController extends Controller
             202,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => $this->xDate()
+            	'X-Date' => $this->headerXDate()
 			],
             json_encode($response)
         );

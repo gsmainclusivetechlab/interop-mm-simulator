@@ -1,5 +1,7 @@
 <?php
 
+use App\Validation\OpenApiValidatorFactory;
+
 return [
 
     /*
@@ -213,6 +215,7 @@ return [
         'Log' => Illuminate\Support\Facades\Log::class,
         'Mail' => Illuminate\Support\Facades\Mail::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
+        'OpenApiValidator' => OpenApiValidatorFactory::class,
         'Password' => Illuminate\Support\Facades\Password::class,
         'Queue' => Illuminate\Support\Facades\Queue::class,
         'Redirect' => Illuminate\Support\Facades\Redirect::class,
@@ -226,7 +229,6 @@ return [
         'Str' => Illuminate\Support\Str::class,
         'URL' => Illuminate\Support\Facades\URL::class,
         'View' => Illuminate\Support\Facades\View::class,
-
     ],
 
 ];

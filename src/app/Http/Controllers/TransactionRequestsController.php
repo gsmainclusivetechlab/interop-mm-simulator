@@ -36,7 +36,7 @@ class TransactionRequestsController extends Controller
         	200,
             [
             	'Content-Type' => 'application/json',
-            	'X-Date' => $this->xDate()
+            	'X-Date' => $this->headerXDate()
 			]
 		);
     }

@@ -3,7 +3,7 @@
 namespace App\Concerns;
 
 use App\Enums\ApiTypeEnum;
-use App\Validation\OpenApiValidator;
+use App\Facades\OpenApiValidator;
 
 /**
  * Trait InteractsWithMojaloopValidator
@@ -16,6 +16,6 @@ trait InteractsWithMojaloopValidator
      */
     public function validator()
     {
-        return new OpenApiValidator(new ApiTypeEnum(ApiTypeEnum::Mojaloop), $this);
+        return OpenApiValidator::make($this->all(), [])->init(new ApiTypeEnum(ApiTypeEnum::Mojaloop), $this);
     }
 }

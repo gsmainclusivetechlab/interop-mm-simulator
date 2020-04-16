@@ -113,6 +113,12 @@ class Transaction extends Model
         'requestDate' => 'datetime:Y-m-dTH:i:s.vZ',
     ];
 
+    /**
+     * Mutator for request date
+     *
+     * @param string $value
+     * @throws \Exception
+     */
     public function setRequestDateAttribute(string $value)
     {
         $this->attributes['requestDate'] = new Carbon($value);

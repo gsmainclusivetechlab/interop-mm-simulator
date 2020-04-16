@@ -3,7 +3,7 @@
 namespace App\Concerns;
 
 use App\Enums\ApiTypeEnum;
-use App\Validation\OpenApiValidator;
+use App\Facades\OpenApiValidator;
 
 /**
  * Trait InteractsWithMMValidator
@@ -16,6 +16,6 @@ trait InteractsWithMMValidator
      */
     public function validator()
     {
-        return new OpenApiValidator(new ApiTypeEnum(ApiTypeEnum::MM), $this);
+        return OpenApiValidator::make($this->all(), [])->init(new ApiTypeEnum(ApiTypeEnum::MM), $this);
     }
 }

@@ -6,7 +6,6 @@ use App\Concerns\InteractsWithHeaders;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -102,7 +101,7 @@ class Handler extends ExceptionHandler
         return new JsonResponse(
             $this->convertExceptionToArray($e),
             $this->isHttpException($e) ? $e->getStatusCode() : 500,
-            ['X-Date' => $this->xDate()],
+            ['X-Date' => $this->headerXDate()],
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
     }
@@ -165,7 +164,7 @@ class Handler extends ExceptionHandler
                 ]
             ),
             $status,
-            ['X-Date' => (new Carbon())->toRfc7231String()]
+            ['X-Date' => $this->headerXDate()]
         );
     }
 

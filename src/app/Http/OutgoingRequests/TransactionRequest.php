@@ -28,7 +28,7 @@ class TransactionRequest extends BaseRequest
 
 		$this->method = 'POST';
 
-		$this->headers['Date'] = $this->xDate();
+		$this->headers['Date'] = $this->headerXDate();
 		$this->headers['Accept'] = 'application/vnd.interoperability.transactionRequests+json;version=1.0';
 		$this->headers['Content-Type'] = 'application/vnd.interoperability.transactionRequests+json;version=1.0';
 		$this->headers['FSPIOP-Source'] = Env::get('FSPIOP_SOURCE');
