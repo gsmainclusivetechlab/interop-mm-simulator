@@ -8,7 +8,6 @@ use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\SpecObjectInterface;
-use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\MessageBag;
@@ -17,10 +16,12 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidBody;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use League\OpenAPIValidation\Schema\Keywords\Required;
 use League\OpenAPIValidation\Schema\SchemaValidator;
+use Nyholm\Psr7\ServerRequest;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
@@ -33,13 +34,8 @@ class OpenApiValidator extends Validator
 
     protected Request $request;
     protected SpecObjectInterface $spec;
-    protected Schema $requestSchema;
+    protected Schema $bodySchema;
     protected SchemaValidator $validator;
-
-    public function __construct(Translator $translator, array $data, array $rules, array $messages = [], array $customAttributes = [])
-    {
-        parent::__construct($translator, $data, $rules);
-    }
 
     /**
      * OpenApiValidator init.
@@ -73,18 +69,23 @@ class OpenApiValidator extends Validator
     {
         $this->messages = new MessageBag();
 
-        $validator = (new \League\OpenAPIValidation\PSR7\ValidatorBuilder)->fromSchema($this->spec)
+        $validator = (new ValidatorBuilder)->fromSchema($this->spec)
             ->getServerRequestValidator();
 
         try {
-            $validator->validate(new \Nyholm\Psr7\ServerRequest(
+            $validator->validate(new ServerRequest(
                 $this->request->method(),
                 $this->request->fullUrl(),
                 $this->request->headers->all(),
                 $this->request->getContent(),
             ));
         } catch (InvalidBody $e) {
-            $this->validateBody();
+            $this->bodySchema = Arr::get(
+                $this->spec->paths[$this->request->getPathInfo()]->{$this->getRequestMethod()}->requestBody->content,
+                $this->parseContentType()
+            )->schema;
+
+            $this->validateSchema($this->getData(), $this->bodySchema);
         } catch (ValidationFailed $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
@@ -112,11 +113,11 @@ class OpenApiValidator extends Validator
 
         $missingValue = Str::random(10);
 
-        if (empty($this->requestSchema)) {
+        if (empty($this->bodySchema)) {
             return $results;
         }
 
-        foreach ($this->requestSchema->properties as $key) {
+        foreach ($this->bodySchema->properties as $key) {
             $value = data_get($this->getData(), $key, $missingValue);
 
             if ($value !== $missingValue) {
@@ -160,48 +161,64 @@ class OpenApiValidator extends Validator
     }
 
     /**
-     * Validates request body
+     * Validates schema
      *
      * @return void
      */
-    public function validateBody()
+    public function validateSchema($data, Schema $schema, string $attribute = null)
     {
         try {
-            $this->requestSchema = Arr::get(
-                $this->spec->paths[$this->request->getPathInfo()]->{$this->getRequestMethod()}->requestBody->content,
-                $this->parseContentType()
-            )->schema;
-
             $validator = new SchemaValidator(SchemaValidator::VALIDATE_AS_REQUEST);
 
             try {
-                $validator->validate($this->getData(), $this->requestSchema);
+                $validator->validate($data, $schema);
             } catch (KeywordMismatch $e) {
                 if ($e->keyword() === 'required') {
-                    $this->validateRequiredAll();
+                    $this->validateRequiredInScheme($schema, $attribute);
                 }
 
-                $this->validateProperties();
+                if (!is_array($data)) {
+                    $this->addError($attribute, $e->getMessage());
+                    return;
+                }
+
+                if ($schema->type === 'array') {
+                    $this->validateProperties($data, $schema->items->properties, $attribute . '.*.');
+
+                    if (Arr::isAssoc($data)) {
+                        $this->validateProperties($data, $schema->properties, $attribute ? $attribute . '.' : null);
+                        return;
+                    }
+
+                    foreach ($data as $item) {
+                        $this->validateProperties($item, $schema->properties, $attribute ? $attribute . '.' : null);
+                    }
+
+                    return;
+                }
+
+                $this->validateProperties($data, $schema->properties, $attribute ? $attribute . '.' : null);
             } catch (ValidationFailed $e) {
                 throw new BadRequestHttpException($e->getMessage());
             }
         } catch (TypeErrorException $e) {
+            throw new BadRequestHttpException($e->getMessage());
         }
     }
 
     /**
-     * Validates existing of all required properties
+     * Validates existing of all required properties in the scheme
      *
      * @return void
      */
-    protected function validateRequiredAll()
+    protected function validateRequiredInScheme(Schema $schema, string $parent = null)
     {
-        foreach($this->requestSchema->required as $required) {
+        foreach ($schema->required as $attribute) {
             try {
-                (new Required($this->requestSchema, SchemaValidator::VALIDATE_AS_REQUEST))
-                    ->validate($this->getData(), [$required]);
+                (new Required($schema, SchemaValidator::VALIDATE_AS_REQUEST))
+                    ->validate($this->getData(), [$attribute]);
             } catch (KeywordMismatch $e) {
-                $this->addError($required, $e->getMessage());
+                $this->addError($parent . $attribute, $e->getMessage());
             }
         }
     }
@@ -211,21 +228,20 @@ class OpenApiValidator extends Validator
      *
      * @return void
      */
-    protected function validateProperties()
+    protected function validateProperties(array $data, array $properties, string $parent = null)
     {
-        $validator = new SchemaValidator(SchemaValidator::VALIDATE_AS_REQUEST);
-
-        foreach ($this->requestSchema->properties as $attribute => $property) {
-            if (!($field = Arr::get($this->getData(), $attribute))) {
+        foreach ($properties as $attribute => $property) {
+            if (!($field = Arr::get($data, $attribute))) {
                 continue;
             }
 
-            try {
-                $validator->validate($field, $property);
-            } catch (KeywordMismatch $e) {
-                $this->addError($attribute, $e->getMessage());
-            } catch (SchemaMismatch $e) {
-                throw new BadRequestHttpException($e->getMessage());
+            if (!is_array($field) || Arr::isAssoc($field)) {
+                $this->validateSchema($field, $property, $parent . $attribute);
+                continue;
+            }
+
+            foreach ($field as $item) {
+                $this->validateSchema($item, $property, $parent . $attribute);
             }
         }
     }
