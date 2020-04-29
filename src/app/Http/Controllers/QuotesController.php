@@ -61,11 +61,11 @@ class QuotesController extends Controller
     public function store(QuoteCreate $request)
     {
         app()->terminating(function() use ($request) {
-            if ($request->amount['amount'] === '51.03') {
+            if ($request->amount['amount'] === '51.01') {
                 $response = (new \App\Requests\QuoteError([
                     'errorInformation' => [
-                        'errorCode' => '5103',
-                        'errorDescription' => ''
+                        'errorCode' => '5101',
+                        'errorDescription' => 'Payee does not want to proceed with the financial transaction after receiving a quote.'
                     ]
                 ], [
                     'traceparent'        => $request->header('traceparent'),
