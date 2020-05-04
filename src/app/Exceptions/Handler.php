@@ -99,7 +99,7 @@ class Handler extends ExceptionHandler
         return new JsonResponse(
             $this->convertExceptionToArray($e),
             $this->isHttpException($e) ? $e->getStatusCode() : 500,
-            ['X-Date' => Headers::getXDate()],
+            ['X-Date' => (new Carbon())->toIso8601ZuluString('millisecond')],
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
     }
@@ -161,7 +161,7 @@ class Handler extends ExceptionHandler
                 ]
             ),
             $status,
-            ['X-Date' => (new Carbon())->toRfc7231String()]
+            ['X-Date' => (new Carbon())->toIso8601ZuluString('millisecond')]
         );
     }
 
