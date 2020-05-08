@@ -65,7 +65,7 @@ class QuotesController extends Controller
                 $response = (new \App\Requests\QuoteError([
                     'errorInformation' => [
                         'errorCode' => '5103',
-                        'errorDescription' => ''
+                        'errorDescription' => 'Payee FSP does not want to proceed with the financial transaction after receiving a quote.'
                     ]
                 ], [
                     'traceparent'        => $request->header('traceparent'),

@@ -161,7 +161,7 @@ class Handler extends ExceptionHandler
                 ]
             ),
             $status,
-            ['X-Date' => (new Carbon())->toRfc7231String()]
+            ['X-Date' => Headers::getXDate()]
         );
     }
 
