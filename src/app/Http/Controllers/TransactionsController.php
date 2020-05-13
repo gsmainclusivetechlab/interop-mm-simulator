@@ -45,12 +45,7 @@ class TransactionsController extends Controller
 
             $response = (new TransactionRequest($data, [
 				'traceparent'        => $request->header('traceparent'),
-			]))->send(); 
-
-            \Illuminate\Support\Facades\Log::info(
-                'POST /transactionRequests ' . $response->getStatusCode() . PHP_EOL
-                . \GuzzleHttp\json_encode($data) . PHP_EOL
-            );
+			]))->send();
         });
 
         $response = [
