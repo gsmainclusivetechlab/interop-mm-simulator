@@ -1,0 +1,50 @@
+# Interop Mobile Money Simulator CircleCI
+
+version: 2
+jobs:
+  build:
+    machine:
+      image: ubuntu-1604:201903-01 # Define a machine who has support for docker compose 3.7
+    working_directory: ~/repo
+
+    branches:
+      only:
+        - master
+        - develop
+        - circleci-project-setup
+    
+    steps:
+      - checkout
+
+      - run: 
+          name: Generate configuration files
+          command: make init
+
+      - run: 
+          name: Run docker containers
+          command: make run
+          
+      - restore_cache: 
+          keys:
+            - composer-v1-{{ checksum "src/composer.lock" }}
+            - composer-v1-
+
+      - run: 
+          name: Install Componser dependecies
+          command: make install
+      
+      - save_cache:
+          key: composer-v1-{{ checksum "src/composer.lock" }}
+          paths:
+            - vendor
+
+      - run: 
+          name: Check installation
+          command: |
+            FILE=./runtime/installed
+            if test -f "$FILE"; then
+                echo "Installation succesful"
+            else 
+                echo "Installation fail"
+                exit 2
+            fi
