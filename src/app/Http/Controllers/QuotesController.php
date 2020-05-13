@@ -61,25 +61,6 @@ class QuotesController extends Controller
     public function store(QuoteCreate $request)
     {
         app()->terminating(function() use ($request) {
-            if ($request->amount['amount'] === '51.03') {
-                $response = (new \App\Requests\QuoteError([
-                    'errorInformation' => [
-                        'errorCode' => '5103',
-                        'errorDescription' => 'Payee FSP does not want to proceed with the financial transaction after receiving a quote.'
-                    ]
-                ], [
-                    'traceparent'        => $request->header('traceparent'),
-                    'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
-                    'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
-                ], $request->quoteId))->send();
-
-                if ($response->getStatusCode() === 200) {
-                    event(new TransactionFailed());
-                }
-
-                return;
-            }
-
             (new \App\Requests\QuoteUpdate($request->mapInTo(), [
                 'traceparent'        => $request->header('traceparent'),
                 'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
@@ -93,7 +74,7 @@ class QuotesController extends Controller
             	'Content-Type' => 'application/json',
             	'X-Date' => Headers::getXDate()
 			]
-		);;
+		);
     }
 
     /**

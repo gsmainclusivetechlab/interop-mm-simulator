@@ -120,12 +120,12 @@ class TransactionCreate extends FormRequest
             'payee' => [
                 'partyIdInfo'  => [
                     'partyIdType'     => strtoupper($this->creditParty[0]['key']),
-                    'partyIdentifier' => $this->creditParty[0]['value'] != '16135551213' ? $this->creditParty[0]['value'] : '',
+                    'partyIdentifier' => $this->creditParty[0]['value'],
                 ],
             ],
             'payer' => [
                 'partyIdType'     => strtoupper($this->debitParty[0]['key']),
-                'partyIdentifier' => $this->debitParty[0]['value'] != '16135551213' ? $this->debitParty[0]['value'] : '',
+                'partyIdentifier' => $this->debitParty[0]['value'],
             ],
             'amount' => [
                 'currency' => $this->currency,
@@ -203,26 +203,6 @@ class TransactionCreate extends FormRequest
 	public function withValidator(Validator $validator)
     {
         $validator->after(function ($validator) {
-            switch ($this->amount) {
-                case '4.00':
-                    throw new BadRequestHttpException();
-                    break;
-                case '4.01':
-                    throw new UnauthorizedHttpException('');
-                    break;
-                case '4.04':
-                    throw new NotFoundHttpException();
-                    break;
-                case '5.00':
-                    throw new \Exception();
-                    break;
-                case '5.03':
-                    throw new ServiceUnavailableHttpException();
-                    break;
-                default:
-                    break;
-            }
-
             $headerValidator = \Illuminate\Support\Facades\Validator::make($this->headers->all(), [
                 'traceparent.0' => [
                     'required',
