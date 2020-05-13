@@ -8,11 +8,7 @@ use App\Http\Headers;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
-use App\Models\Transaction;
-use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Env;
 
 /**
  * Class TransfersController

@@ -126,10 +126,6 @@ class Transaction extends Model
      *
      * @var array
      */
-    /*protected $dates = [
-        'requestDate',
-    ];*/
-
     public function setRequestDateAttribute(string $value)
     {
         $this->attributes['requestDate'] = new Carbon($value);

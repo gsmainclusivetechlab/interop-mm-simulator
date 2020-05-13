@@ -40,18 +40,6 @@ To get inside PHP container to run composer/php commands run this command:
 
 Inside PHP container there is also GNU Make utility, run `make` without any parameters to get available commands list.
 
-### Docker nodejs container
-
-To build nodejs you can use make helpers:
-
-`make npm-i`
-`make npm-build`
-`make npm-watch`
-
-To open nodejs container permanently just run:
-
-`make nodejs-bash`
-
 ### Using telescope for check incoming requests
 
 In `src/.env` set TELESCOPE_ENABLED=true
