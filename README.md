@@ -1,5 +1,8 @@
-GSMA MMO API. Powered by Laravel 
+GSMA Mobile Money API Simulator
 ===================================
+
+[![CircleCI](https://img.shields.io/circleci/build/github/gsmainclusivetechlab/interop-mm-simulator/master?label=Master&logo=circleCI&token=1357bfe0731d8817433b52570534dfb986d874e6)](https://app.circleci.com/pipelines/github/gsmainclusivetechlab/interop-mm-simulator?branch=master)
+[![CircleCI](https://img.shields.io/circleci/build/github/gsmainclusivetechlab/interop-mm-simulator/develop?label=Develop&logo=circleCI&token=1357bfe0731d8817433b52570534dfb986d874e6)](https://app.circleci.com/pipelines/github/gsmainclusivetechlab/interop-mm-simulator?branch=develop)
 
 BASE STRUCTURE
 -------------------
