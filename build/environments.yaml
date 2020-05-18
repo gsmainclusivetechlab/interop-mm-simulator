@@ -49,10 +49,10 @@ instances:
                 <<: *default-env-vars
                 APP_URL: http://gsma-itp-mmo-api.develop.s8.jc
                 APP_DEBUG: false
-                HOST_TRANSACTION_REQUESTS_SERVICE: http://gsma-itp-test-control.develop.s8.jc/testing/step/
-                HOST_ML_API_ADAPTER: http://gsma-itp-test-control.develop.s8.jc/testing/step/
-                HOST_QUOTING_SERVICE: http://gsma-itp-test-control.develop.s8.jc/testing/step/
-                HOST_SERVICE_PROVIDER: http://gsma-itp-test-control.develop.s8.jc/testing/step/
+                HOST_TRANSACTION_REQUESTS_SERVICE: http://gsma-itp-test-control.develop.s8.jc/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/b2a85076-b748-4d93-8df1-2b39844e6d4b/simulator/
+                HOST_ML_API_ADAPTER: http://gsma-itp-test-control.develop.s8.jc/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/b2a85076-b748-4d93-8df1-2b39844e6d4b/simulator/
+                HOST_QUOTING_SERVICE: http://gsma-itp-test-control.develop.s8.jc/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/b2a85076-b748-4d93-8df1-2b39844e6d4b/simulator/
+                HOST_SERVICE_PROVIDER: http://gsma-itp-test-control.develop.s8.jc/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/114511be-74e9-49d5-b93e-b4a461e01626/simulator/
                 FSPIOP_SOURCE: developpayeefsp
                 FSPIOP_DESTINATION: developpayerfsp
         docker_server:
@@ -84,10 +84,10 @@ instances:
                 <<: *default-env-vars
                 APP_URL: http://gsma-itp-mmo-api.staging.s8.justcoded.com
                 APP_DEBUG: false
-                HOST_TRANSACTION_REQUESTS_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/step/
-                HOST_ML_API_ADAPTER: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/step/
-                HOST_QUOTING_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/step/
-                HOST_SERVICE_PROVIDER: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/step/
+                HOST_TRANSACTION_REQUESTS_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/b2a85076-b748-4d93-8df1-2b39844e6d4b/simulator/
+                HOST_ML_API_ADAPTER: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/b2a85076-b748-4d93-8df1-2b39844e6d4b/simulator/
+                HOST_QUOTING_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/b2a85076-b748-4d93-8df1-2b39844e6d4b/simulator/
+                HOST_SERVICE_PROVIDER: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/114511be-74e9-49d5-b93e-b4a461e01626/simulator/
                 FSPIOP_SOURCE: payeefsp
                 FSPIOP_DESTINATION: testfsp1
         docker_server:

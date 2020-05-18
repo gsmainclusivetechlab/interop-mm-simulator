@@ -3,11 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Http\ValidationSets;
-use App\Models\Transaction;
 use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
 
 /**
  * Class TransferCreate
@@ -51,14 +48,14 @@ class TransferCreate extends FormRequest
     }
 
     /**
+     * @param $completedTimestamp
      * @return array
-     * @throws \Exception
      */
-    public function mapInTo(): array
+    public function mapInTo($completedTimestamp): array
     {
         return [
             'fulfilment' => 'XoSz1cL0tljJSCp_VtIYmPNw-zFUgGfbUqf69AagUzY',
-            'completedTimestamp' => (new Carbon())->toIso8601ZuluString('millisecond'),
+            'completedTimestamp' => $completedTimestamp,
             'transferState' => 'COMMITTED',
         ];
     }

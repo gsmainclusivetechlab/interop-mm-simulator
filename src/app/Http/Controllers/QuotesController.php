@@ -9,10 +9,12 @@ use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
 use App\Http\Requests\QuoteUpdate;
+use App\Models\Transaction;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
+use Illuminate\Support\Str;
 
 /**
  * Class TransfersController
@@ -22,10 +24,22 @@ class QuotesController extends Controller
 {
     /**
      * @param QuotationsCreate $request
-     * @return array
+     * @return Response
      */
     public function storeQuotations(QuotationsCreate $request)
     {
+        if ($request->traceId) {
+            $data = $request->all();
+
+            $data['trace_id'] = $request->traceId;
+            $data['callback_url'] = $request->header('x-callback-url');
+
+            if (!$request->transactionStatus) {
+                $data['transactionStatus'] = 'pending';
+            }
+
+            Transaction::create($data);
+        }
         app()->terminating(function() use ($request) {
             $client = new Client();
             $client->request(
@@ -47,7 +61,20 @@ class QuotesController extends Controller
             );
         });
 
-        return $request->all();
+        $response = [
+            'status' => 'pending',
+            'notificationMethod' => "callback",
+            'serverCorrelationId' => $request->header('X-CorrelationID') ?? Str::uuid()
+        ];
+
+        return new Response(
+            202,
+            [
+                'Content-Type' => 'application/json',
+                'X-Date' => Headers::getXDate()
+            ],
+            \GuzzleHttp\json_encode($response)
+        );
     }
 
     /**
