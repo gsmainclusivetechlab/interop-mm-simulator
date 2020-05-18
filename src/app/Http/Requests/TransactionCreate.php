@@ -218,6 +218,16 @@ class TransactionCreate extends FormRequest
             }
 
             $this->traceId = self::parseTraceId($this->headers->get('traceparent'));
+            $traceValidate = \Illuminate\Support\Facades\Validator::make(['trace_id' => $this->traceId], [
+                'trace_id' => ['unique:transactions,trace_id'],
+            ], [
+                'trace_id' => __('Header traceparent exist')
+            ]);
+
+            if ($traceValidate->fails()) {
+                $validator->messages()->merge($traceValidate->messages());
+                return;
+            }
         });
     }
 }

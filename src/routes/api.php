@@ -24,3 +24,6 @@ Route::put('/quotes/{id}/error', 'QuotesController@error')->name('quotes.error')
 Route::post('/transfers', 'TransfersController@store')->name('transfers.store');
 Route::put('/transfers/{id}', 'TransfersController@update')->name('transfers.update');
 Route::put('/transfers/{id}/error', 'TransfersController@error')->name('transfers.error');
+
+
+Route::put('/participants/{type}/{id}/error', 'TransfersController@part')->name('transfers.part');

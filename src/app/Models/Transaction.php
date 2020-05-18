@@ -80,6 +80,10 @@ class Transaction extends Model
      */
     protected $primaryKey = 'trace_id';
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     /**
      * The attributes that are mass assignable.
      *
