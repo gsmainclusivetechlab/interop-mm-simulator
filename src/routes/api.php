@@ -26,4 +26,5 @@ Route::put('/transfers/{id}', 'TransfersController@update')->name('transfers.upd
 Route::put('/transfers/{id}/error', 'TransfersController@error')->name('transfers.error');
 
 
-Route::put('/participants/{type}/{id}/error', 'TransfersController@part')->name('transfers.part');
+Route::put('/participants/{type}/{id}', 'ParticipantsController@update')->name('participants.update');
+Route::put('/participants/{type}/{id}/error', 'ParticipantsController@error')->name('participants.error');
