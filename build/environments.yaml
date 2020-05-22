@@ -7,7 +7,10 @@ defaults:
                 DOTENV_VALID: 1
                 MYSQL_HOST: host.docker.internal
                 PARTICIPANTS_ID_MERCHANT: +3355511111
-                PARTICIPANTS_ID_P2P: 335557891231
+                PARTICIPANTS_ID_P2P_500: +33555555555
+                PARTICIPANTS_ID_P2P_600: +33555666666
+                PARTICIPANTS_ID_P2P_700: +33555777777
+                PARTICIPANTS_ID_P2P_800: +33555888888
         composer_json:
             require:
         docker_server: &default-docker-server
