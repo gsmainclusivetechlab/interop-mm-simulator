@@ -106,6 +106,7 @@ class QuotesController extends Controller
     {
         app()->terminating(function() use ($request) {
             $response = (new \App\Requests\TransferStore($request->mapInTo(), [
+                'traceparent'        => $request->header('traceparent'),
                 'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                 'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
             ]))->send();
