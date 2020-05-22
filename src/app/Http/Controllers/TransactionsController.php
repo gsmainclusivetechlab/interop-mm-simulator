@@ -6,10 +6,9 @@ namespace App\Http\Controllers;
 use App\Http\Headers;
 use App\Http\Requests\TransactionCreate;
 use App\Models\Transaction;
+use App\Requests\ParticipantShow;
 use App\Requests\TransactionRequest;
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
 use Illuminate\Support\Str;
 
@@ -46,29 +45,21 @@ class TransactionsController extends Controller
         app()->terminating(function() use ($request) {
             $data = $request->mapInTo();
 
-//            $client = new Client();
-//            $idType = $data['payer']['partyIdType'];
-//            $identifier = $data['payer']['partyIdentifier'];
-//            $client->request(
-//                'GET',
-//                Env::get('HOST_ACCOUNT_LOOKUP_SERVICE') . "participants/{$idType}/{$identifier}",
-//            [
-//                'headers' => [
-//                    'traceparent'        => $request->header('traceparent'),
-//                    'Accept'             => 'application/vnd.interoperability.participants+json',
-//                    'Content-Type'       => 'application/vnd.interoperability.participants+json;version=1.0',
-//                    'Date'               => (new Carbon())->toRfc7231String(),
-//                    'FSPIOP-Source'      => Env::get('FSPIOP_SOURCE'),
-//                ]
-//            ]
-//            );
-
-            /**
-             * TODO make request after get response PUT /participants
-             */
-            $response = (new TransactionRequest($data, [
-				'traceparent'        => $request->header('traceparent'),
-			]))->send();
+            if ($request->amount == 1010) {
+                (new ParticipantShow(
+                    $data,
+                    [
+                        'traceparent' => $request->header('traceparent'),
+                    ],
+                    strtoupper($data['payer']['partyIdType']),
+                    $data['payer']['partyIdentifier']
+                ))->send();
+            } else {
+                (new TransactionRequest($data, [
+                    'traceparent' => $request->header('traceparent'),
+                    'FSPIOP-Destination' => Env::get('FSPIOP_DESTINATION'),
+                ]))->send();
+            }
         });
 
         $response = [
