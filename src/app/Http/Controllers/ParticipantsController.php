@@ -34,8 +34,8 @@ class ParticipantsController extends Controller
                     'traceparent' => $request->header('traceparent'),
                     'FSPIOP-Destination' => $request->fspId,
                 ]))->send();
-            } elseif ($id == Env::get('PARTICIPANTS_ID_P2P')) {
-                (new QuoteStore(QuoteStore::mapInTo(), [
+            } elseif (in_array($id, array_keys(QuoteStore::participantsData()))) {
+                (new QuoteStore(QuoteStore::mapInTo($id), [
                     'traceparent' => $request->header('traceparent'),
                     'FSPIOP-Destination' => $request->fspId,
                 ]))->send();
