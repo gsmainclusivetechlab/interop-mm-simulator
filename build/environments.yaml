@@ -6,6 +6,8 @@ defaults:
             env_variables: &default-env-vars
                 DOTENV_VALID: 1
                 MYSQL_HOST: host.docker.internal
+                PARTICIPANTS_ID_MERCHANT: +3355511111
+                PARTICIPANTS_ID_P2P: 335557891231
         composer_json:
             require:
         docker_server: &default-docker-server

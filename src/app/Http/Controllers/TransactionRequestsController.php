@@ -8,6 +8,7 @@ use App\Events\TransactionFailed;
 use App\Http\Headers;
 use App\Http\Requests\TransactionRequestError;
 use App\Http\Requests\TransactionRequestUpdate;
+use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -28,6 +29,11 @@ class TransactionRequestsController extends Controller
     {
         if ($request->transactionRequestState === TransactionRequestStateEnum::REJECTED) {
             event(new TransactionFailed());
+        }
+
+        $transaction = Transaction::getCurrent();
+        if (empty($transaction->transactionId)) {
+            $transaction->update(['transactionId' => $id]);
         }
 
         return new Response(

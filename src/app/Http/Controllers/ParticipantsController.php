@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Headers;
+use App\Http\Requests\TransactionCreate;
+use App\Models\Transaction;
+use App\Requests\QuoteStore;
+use App\Requests\TransactionRequest;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Env;
 
 /**
  * Class ParticipantsController
@@ -20,6 +25,23 @@ class ParticipantsController extends Controller
      */
     public function update(Request $request, $type, $id)
     {
+        app()->terminating(function() use ($request, $id) {
+            if ($id == Env::get('PARTICIPANTS_ID_MERCHANT')) {
+                $transaction = Transaction::getCurrent();
+                $transactionRequest = (new TransactionCreate())->merge($transaction->attributesToArray());
+
+                (new TransactionRequest($transactionRequest->mapInTo(), [
+                    'traceparent' => $request->header('traceparent'),
+                    'FSPIOP-Destination' => $request->fspId,
+                ]))->send();
+            } elseif ($id == Env::get('PARTICIPANTS_ID_P2P')) {
+                (new QuoteStore(QuoteStore::mapInTo(), [
+                    'traceparent' => $request->header('traceparent'),
+                    'FSPIOP-Destination' => $request->fspId,
+                ]))->send();
+            }
+        });
+
         return new Response(
             200,
             [
@@ -28,6 +50,7 @@ class ParticipantsController extends Controller
             ]
         );
     }
+
     /**
      * @param Request $request
      * @param $type

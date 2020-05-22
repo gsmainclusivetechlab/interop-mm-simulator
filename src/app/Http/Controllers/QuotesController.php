@@ -9,7 +9,9 @@ use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
 use App\Http\Requests\QuoteUpdate;
+use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Env;
 use Illuminate\Support\Str;
 
 /**
@@ -25,7 +27,9 @@ class QuotesController extends Controller
     public function storeQuotations(QuotationsCreate $request)
     {
         app()->terminating(function() use ($request) {
-            $response = (new \App\Requests\QuoteStore($request->mapInTo(), []))->send();
+            $response = (new \App\Requests\QuoteStore($request->mapInTo(), [
+                'FSPIOP-Destination' => Env::get('FSPIOP_DESTINATION')
+            ]))->send();
         });
 
         $response = [
@@ -70,6 +74,11 @@ class QuotesController extends Controller
                 }
 
                 return;
+            }
+
+            $transaction = Transaction::getCurrent();
+            if (empty($transaction->transactionId) && !empty($request->transactionRequestId)) {
+                $transaction->update(['transactionId' => $request->transactionRequestId]);
             }
 
             (new \App\Requests\QuoteUpdate($request->mapInTo(), [
