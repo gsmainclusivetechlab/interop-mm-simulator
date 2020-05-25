@@ -8,6 +8,7 @@ use App\Http\Headers;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
+use App\Http\TriggerRulesSets;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
 
@@ -28,6 +29,25 @@ class TransfersController extends Controller
     {
         $completedTimestamp = (new Carbon())->toIso8601ZuluString('millisecond');
         app()->terminating(function() use ($request, $completedTimestamp) {
+            if (TriggerRulesSets::amount($request->amount['amount'])) {
+                $response = (new \App\Requests\TransferError([
+                    'errorInformation' => [
+                        'errorCode' => '5001',
+                        'errorDescription' => 'Payee FSP has insufficient liquidity to perform the transfer.'
+                    ]
+                ], [
+                    'traceparent'        => $request->header('traceparent'),
+                    'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
+                    'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
+                ], $request->transferId))->send();
+
+                if ($response->getStatusCode() === 200) {
+                    event(new TransactionFailed());
+                }
+
+                return;
+            }
+
             event(new TransactionSuccess());
 
             $data = $request->mapInTo($completedTimestamp);

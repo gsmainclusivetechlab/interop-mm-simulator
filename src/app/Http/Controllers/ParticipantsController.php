@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Headers;
 use App\Http\Requests\TransactionCreate;
+use App\Http\TriggerRulesSets;
 use App\Models\Transaction;
 use App\Requests\QuoteStore;
 use App\Requests\TransactionRequest;
@@ -26,7 +27,7 @@ class ParticipantsController extends Controller
     public function update(Request $request, $type, $id)
     {
         app()->terminating(function() use ($request, $id) {
-            if ($id == Env::get('PARTICIPANTS_ID_MERCHANT')) {
+            if (TriggerRulesSets::participantMerchant($id)) {
                 $transaction = Transaction::getCurrent();
                 $transactionRequest = (new TransactionCreate())->merge($transaction->attributesToArray());
 
@@ -34,7 +35,7 @@ class ParticipantsController extends Controller
                     'traceparent' => $request->header('traceparent'),
                     'FSPIOP-Destination' => $request->fspId,
                 ]))->send();
-            } elseif (in_array($id, array_keys(QuoteStore::participantsData()))) {
+            } elseif (TriggerRulesSets::participantP2p($id)) {
                 (new QuoteStore(QuoteStore::mapInTo($id), [
                     'traceparent' => $request->header('traceparent'),
                     'FSPIOP-Destination' => $request->fspId,
