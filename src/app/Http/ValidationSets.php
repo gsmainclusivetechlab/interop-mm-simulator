@@ -21,7 +21,7 @@ use Illuminate\Support\Arr;
 use phpDocumentor\Reflection\Types\Static_;
 
 /**
- * Frequentsy used Validation Sets
+ * Frequently used Validation Sets
  *
  * @package App\Http
  */

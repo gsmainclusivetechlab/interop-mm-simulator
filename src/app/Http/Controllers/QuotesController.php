@@ -9,6 +9,7 @@ use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
 use App\Http\Requests\QuoteUpdate;
+use App\Http\TriggerRulesSets;
 use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Env;
@@ -57,7 +58,7 @@ class QuotesController extends Controller
     public function store(QuoteCreate $request)
     {
         app()->terminating(function() use ($request) {
-            if ($request->amount['amount'] === '1002') {
+            if (TriggerRulesSets::amount($request->amount['amount'])) {
                 $response = (new \App\Requests\QuoteError([
                     'errorInformation' => [
                         'errorCode' => '5103',
