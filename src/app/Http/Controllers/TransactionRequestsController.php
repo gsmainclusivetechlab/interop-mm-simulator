@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 
 use App\Enums\TransactionRequestStateEnum;
 use App\Events\TransactionFailed;
-use App\Events\TransactionSuccess;
 use App\Http\Headers;
 use App\Http\Requests\TransactionRequestError;
 use App\Http\Requests\TransactionRequestUpdate;
 use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Http\Request;
 
 /**
  * Mojaloop Request controller
@@ -31,6 +29,11 @@ class TransactionRequestsController extends Controller
     {
         if ($request->transactionRequestState === TransactionRequestStateEnum::REJECTED) {
             event(new TransactionFailed());
+        }
+
+        $transaction = Transaction::getCurrent();
+        if (empty($transaction->transactionId)) {
+            $transaction->update(['transactionId' => $id]);
         }
 
         return new Response(

@@ -3,18 +3,12 @@
 namespace App\Http\Requests;
 
 use App\Http\ValidationSets;
-use App\Models\Transaction;
 use App\Rules\Traceparent;
 use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * Class TransactionCreate
@@ -120,12 +114,12 @@ class TransactionCreate extends FormRequest
             'payee' => [
                 'partyIdInfo'  => [
                     'partyIdType'     => strtoupper($this->creditParty[0]['key']),
-                    'partyIdentifier' => $this->creditParty[0]['value'] != '16135551213' ? $this->creditParty[0]['value'] : '',
+                    'partyIdentifier' => $this->creditParty[0]['value'],
                 ],
             ],
             'payer' => [
                 'partyIdType'     => strtoupper($this->debitParty[0]['key']),
-                'partyIdentifier' => $this->debitParty[0]['value'] != '16135551213' ? $this->debitParty[0]['value'] : '',
+                'partyIdentifier' => $this->debitParty[0]['value'],
             ],
             'amount' => [
                 'currency' => $this->currency,
@@ -203,26 +197,6 @@ class TransactionCreate extends FormRequest
 	public function withValidator(Validator $validator)
     {
         $validator->after(function ($validator) {
-            switch ($this->amount) {
-                case '4.00':
-                    throw new BadRequestHttpException();
-                    break;
-                case '4.01':
-                    throw new UnauthorizedHttpException('');
-                    break;
-                case '4.04':
-                    throw new NotFoundHttpException();
-                    break;
-                case '5.00':
-                    throw new \Exception();
-                    break;
-                case '5.03':
-                    throw new ServiceUnavailableHttpException();
-                    break;
-                default:
-                    break;
-            }
-
             $headerValidator = \Illuminate\Support\Facades\Validator::make($this->headers->all(), [
                 'traceparent.0' => [
                     'required',
@@ -244,6 +218,16 @@ class TransactionCreate extends FormRequest
             }
 
             $this->traceId = self::parseTraceId($this->headers->get('traceparent'));
+            $traceValidate = \Illuminate\Support\Facades\Validator::make(['trace_id' => $this->traceId], [
+                'trace_id' => ['unique:transactions,trace_id'],
+            ], [
+                'trace_id' => __('Header traceparent exist')
+            ]);
+
+            if ($traceValidate->fails()) {
+                $validator->messages()->merge($traceValidate->messages());
+                return;
+            }
         });
     }
 }

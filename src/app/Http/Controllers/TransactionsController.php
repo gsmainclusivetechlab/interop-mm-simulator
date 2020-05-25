@@ -6,8 +6,10 @@ namespace App\Http\Controllers;
 use App\Http\Headers;
 use App\Http\Requests\TransactionCreate;
 use App\Models\Transaction;
+use App\Requests\ParticipantShow;
 use App\Requests\TransactionRequest;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Env;
 use Illuminate\Support\Str;
 
 /**
@@ -43,14 +45,21 @@ class TransactionsController extends Controller
         app()->terminating(function() use ($request) {
             $data = $request->mapInTo();
 
-            $response = (new TransactionRequest($data, [
-				'traceparent'        => $request->header('traceparent'),
-			]))->send(); 
-
-            \Illuminate\Support\Facades\Log::info(
-                'POST /transactionRequests ' . $response->getStatusCode() . PHP_EOL
-                . \GuzzleHttp\json_encode($data) . PHP_EOL
-            );
+            if ($request->amount == 1010) {
+                (new ParticipantShow(
+                    $data,
+                    [
+                        'traceparent' => $request->header('traceparent'),
+                    ],
+                    strtoupper($data['payer']['partyIdType']),
+                    $data['payer']['partyIdentifier']
+                ))->send();
+            } else {
+                (new TransactionRequest($data, [
+                    'traceparent' => $request->header('traceparent'),
+                    'FSPIOP-Destination' => Env::get('FSPIOP_DESTINATION'),
+                ]))->send();
+            }
         });
 
         $response = [

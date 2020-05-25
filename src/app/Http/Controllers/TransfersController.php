@@ -8,11 +8,8 @@ use App\Http\Headers;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
 use App\Http\Requests\TransferUpdate;
-use App\Models\Transaction;
-use \GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Env;
 
 /**
  * Class TransfersController
@@ -29,10 +26,11 @@ class TransfersController extends Controller
      */
     public function store(TransferCreate $request): Response
     {
-        app()->terminating(function() use ($request) {
+        $completedTimestamp = (new Carbon())->toIso8601ZuluString('millisecond');
+        app()->terminating(function() use ($request, $completedTimestamp) {
             event(new TransactionSuccess());
 
-            $data = $request->mapInTo();
+            $data = $request->mapInTo($completedTimestamp);
 
             (new \App\Requests\TransferUpdate($data, [
                 'traceparent'        => $request->header('traceparent'),
@@ -48,6 +46,22 @@ class TransfersController extends Controller
             	'X-Date' => Headers::getXDate()
 			]
 		);
+    }
+
+    /**
+     * @param TransferUpdate $request
+     * @param $id
+     * @return Response
+     */
+    public function update(TransferUpdate $request, $id)
+    {
+        return new Response(
+            200,
+            [
+                'Content-Type' => 'application/json',
+                'X-Date' => Headers::getXDate()
+            ]
+        );
     }
 
     /**

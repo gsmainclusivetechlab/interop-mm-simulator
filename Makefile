@@ -1,4 +1,4 @@
-.PHONY: info init build run test-run install update stop xdebug-init chown npm-i npm-build npm-watch php-bash nodejs-bash
+.PHONY: info init build run test-run install update stop xdebug-init chown php-bash
 
 info:
 	@echo "MMO API Server Configuration/Launcher"
@@ -16,14 +16,10 @@ info:
 	@echo "	test-run		Docker run in place"
 	@echo "	run	 		Docker run as daemon"
 	@echo "	stop			Docker stop"
-	@echo "	install	 		Run install process (php and nodejs)"
-	@echo "	update	 		Run install process (php and nodejs)"
+	@echo "	install	 		Run install process (php)"
+	@echo "	update	 		Run install process (php)"
 	@echo "	chown	 		Return back correct file owner for files created inside a container"
 	@echo "	php-bash		Open php-fpm container bash"
-#	@echo "	nodejs-bash		Open nodejs container bash"
-#	@echo "	npm-i			Install npm modules inside nodejs container"
-#	@echo "	npm-build		Build admin assets inside nodejs container"
-#	@echo "	npm-watch		Admin assets build watcher for development"
 
 CURDIR_BASENAME = $(notdir ${CURDIR})
 
@@ -73,15 +69,11 @@ init:
 
 install:
 	${DOCKER_COMPOSE_EXEC_WWW} app bash -c "make install"
-#	$(MAKE) npm-i
-#	$(MAKE) npm-build
 	${MAYBE_SUDO} mkdir runtime || true
 	${MAYBE_SUDO} touch runtime/installed
 
 update:
 	${DOCKER_COMPOSE_EXEC_WWW} app bash -c "make update"
-#	$(MAKE) npm-i
-#	$(MAKE) npm-build
 
 build:
 	docker-compose build
@@ -100,7 +92,7 @@ xdebug-init:
 	fi	
 
 test:
-	@echo 'dummy test'
+	${DOCKER_COMPOSE_EXEC_WWW} app bash -c "make test"
 
 stop:
 	docker-compose down
@@ -110,20 +102,3 @@ chown:
 
 php-bash:
 	${DOCKER_COMPOSE_EXEC_WWW} app bash
-
-
-#NODEJS_REPO = npm config set registry https://hub.jcdev.net/repository/npm/
-#NODEJS_BASH_CMD = docker-compose run -w /var/www/html nodejs bash
-#NODEJS_WORK_DIR = cd /var/www/html &&
-
-#nodejs-bash:
-#	$(NODEJS_BASH_CMD)
-
-#npm-i:
-#	$(NODEJS_BASH_CMD) -c 'npm ci'
-
-#npm-build:
-#	$(NODEJS_BASH_CMD) -c 'npm run prod'
-
-#npm-watch:
-#	$(NODEJS_BASH_CMD) -c 'npm run watch-poll'

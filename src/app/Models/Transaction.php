@@ -53,6 +53,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereTransactionReceipt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereTransactionStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereMatadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Transaction whereTransactionId($value)
  * @mixin \Eloquent
  */
 class Transaction extends Model
@@ -80,6 +81,10 @@ class Transaction extends Model
      */
     protected $primaryKey = 'trace_id';
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -87,6 +92,7 @@ class Transaction extends Model
      */
     protected $fillable = [
         'trace_id',
+        'transaction_id',
         'callback_url',
         'amount',
         'currency',
@@ -126,10 +132,6 @@ class Transaction extends Model
      *
      * @var array
      */
-    /*protected $dates = [
-        'requestDate',
-    ];*/
-
     public function setRequestDateAttribute(string $value)
     {
         $this->attributes['requestDate'] = new Carbon($value);
@@ -148,6 +150,6 @@ class Transaction extends Model
             throw new BadRequestHttpException();
         }
 
-        return self::find(self::parseTraceId(resolve(Request::class)->header('traceparent')));
+        return $transaction;
     }
 }

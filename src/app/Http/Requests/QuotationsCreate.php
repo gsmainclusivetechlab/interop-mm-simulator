@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Traits\ParseTraceId;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
@@ -19,6 +20,15 @@ use Illuminate\Support\Str;
  */
 class QuotationsCreate extends FormRequest
 {
+    use ParseTraceId;
+
+    /**
+     * Trace ID parsed from header traceparent
+     *
+     * @var string
+     */
+    public $traceId;
+
     /**
      * @return array
      */
