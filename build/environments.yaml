@@ -96,7 +96,7 @@ instances:
                 HOST_QUOTING_SERVICE: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/b2a85076-b748-4d93-8df1-2b39844e6d4b/simulator/
                 HOST_SERVICE_PROVIDER: http://gsma-itp-test-control.staging.s8.justcoded.com/testing/e5f5e817-94d6-4a43-a7ec-f7274b6d85c2/114511be-74e9-49d5-b93e-b4a461e01626/simulator/
                 FSPIOP_SOURCE: payeefsp
-                FSPIOP_DESTINATION: testfsp1
+                FSPIOP_DESTINATION: payerfsp
         docker_server:
             <<: *default-docker-server
             vhosts:
