@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Headers;
 use App\Http\Requests\TransactionCreate;
+use App\Http\TriggerRulesSets;
 use App\Models\Transaction;
 use App\Requests\ParticipantShow;
 use App\Requests\TransactionRequest;
@@ -45,7 +46,7 @@ class TransactionsController extends Controller
         app()->terminating(function() use ($request) {
             $data = $request->mapInTo();
 
-            if ($request->amount == 1010) {
+            if (TriggerRulesSets::participantMerchant($data['payer']['partyIdentifier'])) {
                 (new ParticipantShow(
                     $data,
                     [

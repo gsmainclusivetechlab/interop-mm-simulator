@@ -10,7 +10,6 @@ use App\Requests\QuoteStore;
 use App\Requests\TransactionRequest;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Env;
 
 /**
  * Class ParticipantsController

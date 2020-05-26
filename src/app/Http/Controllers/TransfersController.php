@@ -29,7 +29,7 @@ class TransfersController extends Controller
     {
         $completedTimestamp = (new Carbon())->toIso8601ZuluString('millisecond');
         app()->terminating(function() use ($request, $completedTimestamp) {
-            if (TriggerRulesSets::amount($request->amount['amount'])) {
+            if (TriggerRulesSets::amountTransfer($request->amount['amount'])) {
                 $response = (new \App\Requests\TransferError([
                     'errorInformation' => [
                         'errorCode' => '5001',
