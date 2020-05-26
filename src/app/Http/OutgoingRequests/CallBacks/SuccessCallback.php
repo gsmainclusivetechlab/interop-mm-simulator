@@ -2,6 +2,8 @@
 
 namespace App\Requests\CallBacks;
 
+use Illuminate\Support\Arr;
+
 class SuccessCallback extends BaseCallback
 {
 	protected function collectData(): array
@@ -16,48 +18,24 @@ class SuccessCallback extends BaseCallback
             'transactionReference' => '',
 		];
 
-        if ($this->transaction->subType) {
-            $data['subType'] = $this->transaction->subType;
-        }
+		$attributes = [
+		    'subType',
+            'descriptionText',
+            'requestDate',
+            'requestingOrganisationTransactionReference',
+            'geoCode',
+            'senderKyc',
+            'recipientKyc',
+            'originalTransactionReference',
+            'servicingIdentity',
+            'transactionReceipt',
+            'metadata',
+        ];
 
-        if ($this->transaction->descriptionText) {
-            $data['descriptionText'] = $this->transaction->descriptionText;
-        }
-
-        if ($this->transaction->requestDate) {
-            $data['requestDate'] = $this->transaction->requestDate;
-        }
-
-        if ($this->transaction->requestingOrganisationTransactionReference) {
-            $data['requestingOrganisationTransactionReference'] = $this->transaction->requestingOrganisationTransactionReference;
-        }
-
-        if ($this->transaction->geoCode) {
-            $data['geoCode'] = $this->transaction->geoCode;
-        }
-
-        if ($this->transaction->senderKyc) {
-            $data['senderKyc'] = $this->transaction->senderKyc;
-        }
-
-        if ($this->transaction->recipientKyc) {
-            $data['recipientKyc'] = $this->transaction->recipientKyc;
-        }
-
-        if ($this->transaction->originalTransactionReference) {
-            $data['originalTransactionReference'] = $this->transaction->originalTransactionReference;
-        }
-
-        if ($this->transaction->servicingIdentity) {
-            $data['servicingIdentity'] = $this->transaction->servicingIdentity;
-        }
-
-        if ($this->transaction->transactionReceipt) {
-            $data['transactionReceipt'] = $this->transaction->transactionReceipt;
-        }
-
-        if ($this->transaction->metadata) {
-            $data['metadata'] = $this->transaction->metadata;
+		foreach ($attributes as $attribute) {
+            if ($value = $this->transaction->$attribute) {
+                Arr::set($data, $attribute, $value);
+            }
         }
 
 		return $data;

@@ -9,16 +9,26 @@ namespace App\Http;
  */
 class TriggerRulesSets
 {
-
     /**
-     * Amount triggers
+     * Amount triggers for transfers
      *
      * @param $amount
      * @return bool
      */
-	public static function amount($amount): bool
+    public static function amountTransfer($amount): bool
+    {
+        return boolval(preg_match('/^[3][0-9][.]\d{2}/', $amount));
+    }
+
+    /**
+     * Amount triggers for quotes
+     *
+     * @param $amount
+     * @return bool
+     */
+	public static function amountQuote($amount): bool
 	{
-		return boolval(preg_match('/^(3|5)[0-9][.]\d{2}/', $amount));
+		return boolval(preg_match('/^[5][0-9][.]\d{2}/', $amount));
 	}
 
     /**

@@ -58,7 +58,7 @@ class QuotesController extends Controller
     public function store(QuoteCreate $request)
     {
         app()->terminating(function() use ($request) {
-            if (TriggerRulesSets::amount($request->amount['amount'])) {
+            if (TriggerRulesSets::amountQuote($request->amount['amount'])) {
                 $response = (new \App\Requests\QuoteError([
                     'errorInformation' => [
                         'errorCode' => '5103',
