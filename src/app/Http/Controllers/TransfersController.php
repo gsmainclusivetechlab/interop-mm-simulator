@@ -87,6 +87,7 @@ class TransfersController extends Controller
     /**
      * @param TransferError $request
      * @param $id
+     * @return Response
      */
     public function error(TransferError $request, $id)
     {
