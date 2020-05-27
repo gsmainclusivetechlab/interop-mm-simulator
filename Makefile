@@ -94,6 +94,9 @@ xdebug-init:
 test:
 	${DOCKER_COMPOSE_EXEC_WWW} app bash -c "make test"
 
+test-coverage:
+	${DOCKER_COMPOSE_EXEC_WWW} app bash -c "make test-coverage"
+
 stop:
 	docker-compose down
 
