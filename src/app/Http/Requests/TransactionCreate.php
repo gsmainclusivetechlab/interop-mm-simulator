@@ -81,7 +81,7 @@ class TransactionCreate extends FormRequest
 				],
 				'type'             => ValidationSets::type(),
 				'subType'          => ValidationSets::standardString(),
-				'descriptionText'  => ValidationSets::descriptionText(),
+				'descriptionText'  => 'string|max:160|nullable',
 				'requestDate'      => ValidationSets::dateTime(),
 				'requestingOrganisationTransactionReference' => ValidationSets::standardString(),
 				'oneTimeCode'      => ValidationSets::standardString(),
@@ -132,59 +132,10 @@ class TransactionCreate extends FormRequest
             ],
         ];
 
-        if ($fullName = Arr::get($this->recipientKyc, 'subjectName.fullName')) {
-            $result['payee']['name'] = $fullName;
-        }
-
-        if ($firstName = Arr::get($this->recipientKyc, 'subjectName.firstName')) {
-            $result['payee']['personalInfo']['complexName']['firstName'] = $firstName;
-        }
-
-        if ($middleName = Arr::get($this->recipientKyc, 'subjectName.middleName')) {
-            $result['payee']['personalInfo']['complexName']['middleName'] = $middleName;
-        }
-
-        if ($lastName = Arr::get($this->recipientKyc, 'subjectName.lastName')) {
-            $result['payee']['personalInfo']['complexName']['lastName'] = $lastName;
-        }
-
-        if ($dateOfBirth = Arr::get($this->recipientKyc, 'dateOfBirth')) {
-            $result['payee']['personalInfo']['dateOfBirth'] = $dateOfBirth;
-        }
-
-        if ($this->subType) {
-            $result['transactionType']['subScenario'] = $this->subType;
-        }
-
-        if ($this->requestingOrganisationTransactionReference) {
-            $result['transactionType']['refundInfo']['originalTransactionId'] = $this->requestingOrganisationTransactionReference;
-        }
-
-        if ($this->descriptionText) {
-            $result['note'] = $this->descriptionText;
-        }
-
-        if ($this->geoCode) {
-            $geoCodeParts = explode(',', $this->geoCode);
-
-            $result['geoCode'] = [
-                'latitude'  => $geoCodeParts[0],
-                'longitude' => $geoCodeParts[1],
-            ];
-        }
-
-        if ($this->oneTimeCode) {
-            $result['authenticationType'] = 'OTP';
-        }
-
-        if ($this->metadata) {
-            $result['extensionList']['extension'] = [
-                [
-                    'key'   => Arr::get($this->metadata, '0.key'),
-                    'value' => Arr::get($this->metadata, '0.value'),
-                ],
-            ];
-        }
+        $result = $this->mapRecipientKyc($result);
+        $result = $this->mapGeoCode($result);
+        $result = $this->mapMetadata($result);
+        $result = $this->mapData($result);
 
         return $result;
     }
@@ -229,6 +180,90 @@ class TransactionCreate extends FormRequest
                 return;
             }
         });
+    }
+
+    /**
+     * @param $result
+     * @return array
+     */
+    protected function mapGeoCode($result): array
+    {
+        if ($this->geoCode) {
+            $geoCodeParts = explode(',', $this->geoCode);
+
+            $result['geoCode'] = [
+                'latitude'  => $geoCodeParts[0],
+                'longitude' => $geoCodeParts[1],
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $result
+     * @return array
+     */
+    protected function mapMetadata($result): array
+    {
+        if ($this->metadata) {
+            $result['extensionList']['extension'] = [
+                [
+                    'key'   => Arr::get($this->metadata, '0.key'),
+                    'value' => Arr::get($this->metadata, '0.value'),
+                ],
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $result
+     * @return array
+     */
+    protected function mapRecipientKyc($result): array
+    {
+        $checkRecipientKyc = [
+            'subjectName.fullName' => 'payee.name',
+            'subjectName.firstName' => 'payee.personalInfo.complexName.firstName',
+            'subjectName.middleName' => 'payee.personalInfo.complexName.middleName',
+            'subjectName.lastName' => 'payee.personalInfo.complexName.lastName',
+            'dateOfBirth' => 'payee.personalInfo.dateOfBirth',
+        ];
+
+        foreach ($checkRecipientKyc as $key => $item) {
+            if ($value = Arr::get($this->recipientKyc, $key)) {
+                Arr::set($result, $item, $value);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $result
+     * @return array
+     */
+    protected function mapData($result): array
+    {
+        $checkData = [
+            'subType' => 'transactionType.subScenario',
+            'requestingOrganisationTransactionReference' => 'transactionType.refundInfo.originalTransactionId',
+            'descriptionText' => 'note',
+        ];
+
+        foreach ($checkData as $key => $item) {
+            if ($value = $this->$key) {
+                Arr::set($result, $item, $value);
+            }
+        }
+
+        if ($this->oneTimeCode) {
+            $result['authenticationType'] = 'OTP';
+        }
+
+        return $result;
     }
 }
 

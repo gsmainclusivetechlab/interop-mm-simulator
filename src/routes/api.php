@@ -25,5 +25,7 @@ Route::post('/transfers', 'TransfersController@store')->name('transfers.store');
 Route::put('/transfers/{id}', 'TransfersController@update')->name('transfers.update');
 Route::put('/transfers/{id}/error', 'TransfersController@error')->name('transfers.error');
 
+Route::get('/authorizations/{id}', 'AuthorizationsController@show')->name('authorizations.show');
 
-Route::put('/participants/{type}/{id}/error', 'TransfersController@part')->name('transfers.part');
+Route::put('/participants/{type}/{id}', 'ParticipantsController@update')->name('participants.update');
+Route::put('/participants/{type}/{id}/error', 'ParticipantsController@error')->name('participants.error');

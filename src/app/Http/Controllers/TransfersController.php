@@ -7,9 +7,9 @@ use App\Events\TransactionSuccess;
 use App\Http\Headers;
 use App\Http\Requests\TransferCreate;
 use App\Http\Requests\TransferError;
-use App\Requests\TransferUpdate;
+use App\Http\Requests\TransferUpdate;
+use App\Http\TriggerRulesSets;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
@@ -27,13 +27,32 @@ class TransfersController extends Controller
      */
     public function store(TransferCreate $request): Response
     {
-        $completedTimestamp= (new Carbon())->toIso8601ZuluString('millisecond');
+        $completedTimestamp = (new Carbon())->toIso8601ZuluString('millisecond');
         app()->terminating(function() use ($request, $completedTimestamp) {
+            if (TriggerRulesSets::amountTransfer($request->amount['amount'])) {
+                $response = (new \App\Requests\TransferError([
+                    'errorInformation' => [
+                        'errorCode' => '5001',
+                        'errorDescription' => 'Payee FSP has insufficient liquidity to perform the transfer.'
+                    ]
+                ], [
+                    'traceparent'        => $request->header('traceparent'),
+                    'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
+                    'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
+                ], $request->transferId))->send();
+
+                if ($response->getStatusCode() === 200) {
+                    event(new TransactionFailed());
+                }
+
+                return;
+            }
+
             event(new TransactionSuccess());
 
             $data = $request->mapInTo($completedTimestamp);
 
-            (new TransferUpdate($data, [
+            (new \App\Requests\TransferUpdate($data, [
                 'traceparent'        => $request->header('traceparent'),
                 'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                 'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
@@ -50,8 +69,25 @@ class TransfersController extends Controller
     }
 
     /**
+     * @param TransferUpdate $request
+     * @param $id
+     * @return Response
+     */
+    public function update(TransferUpdate $request, $id)
+    {
+        return new Response(
+            200,
+            [
+                'Content-Type' => 'application/json',
+                'X-Date' => Headers::getXDate()
+            ]
+        );
+    }
+
+    /**
      * @param TransferError $request
      * @param $id
+     * @return Response
      */
     public function error(TransferError $request, $id)
     {
@@ -64,22 +100,5 @@ class TransfersController extends Controller
             	'X-Date' => Headers::getXDate()
 			]
 		);
-    }
-
-    /**
-     * @param \GuzzleHttp\Psr7\Request $request
-     * @param $type
-     * @param $id
-     * @return Response
-     */
-    public function part(Request $request, $type, $id)
-    {
-        return new Response(
-            200,
-            [
-                'Content-Type' => 'application/json',
-                'X-Date' => Headers::getXDate()
-            ]
-        );
     }
 }

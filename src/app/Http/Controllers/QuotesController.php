@@ -9,10 +9,9 @@ use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
 use App\Http\Requests\QuoteUpdate;
+use App\Http\TriggerRulesSets;
 use App\Models\Transaction;
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Env;
 use Illuminate\Support\Str;
 
@@ -28,37 +27,10 @@ class QuotesController extends Controller
      */
     public function storeQuotations(QuotationsCreate $request)
     {
-        if ($request->traceId) {
-            $data = $request->all();
-
-            $data['trace_id'] = $request->traceId;
-            $data['callback_url'] = $request->header('x-callback-url');
-
-            if (!$request->transactionStatus) {
-                $data['transactionStatus'] = 'pending';
-            }
-
-            Transaction::create($data);
-        }
         app()->terminating(function() use ($request) {
-            $client = new Client();
-            $client->request(
-                'POST',
-                Env::get('HOST_QUOTING_SERVICE') . '/quotes',
-                [
-                    'headers' => [
-                        'traceparent'        => $request->header('traceparent'),
-                        'Accept'             => 'application/vnd.interoperability.quotes+json',
-                        'Content-Type'       => 'application/vnd.interoperability.quotes+json;version=1.0',
-                        'Date'               => (new Carbon())->toRfc7231String(),
-                        'FSPIOP-Source'      => 'payerfsp',
-                        'FSPIOP-Destination' => 'payeefsp',
-                        'authorization'      => 'Bearer {{TESTFSP1_BEARER_TOKEN}}',
-                        'FSPIOP-Signature'   => '{"signature":"iU4GBXSfY8twZMj1zXX1CTe3LDO8Zvgui53icrriBxCUF_wltQmnjgWLWI4ZUEueVeOeTbDPBZazpBWYvBYpl5WJSUoXi14nVlangcsmu2vYkQUPmHtjOW-yb2ng6_aPfwd7oHLWrWzcsjTF-S4dW7GZRPHEbY_qCOhEwmmMOnE1FWF1OLvP0dM0r4y7FlnrZNhmuVIFhk_pMbEC44rtQmMFv4pm4EVGqmIm3eyXz0GkX8q_O1kGBoyIeV_P6RRcZ0nL6YUVMhPFSLJo6CIhL2zPm54Qdl2nVzDFWn_shVyV0Cl5vpcMJxJ--O_Zcbmpv6lxqDdygTC782Ob3CNMvg\\",\\"protectedHeader\\":\\"eyJhbGciOiJSUzI1NiIsIkZTUElPUC1VUkkiOiIvdHJhbnNmZXJzIiwiRlNQSU9QLUhUVFAtTWV0aG9kIjoiUE9TVCIsIkZTUElPUC1Tb3VyY2UiOiJPTUwiLCJGU1BJT1AtRGVzdGluYXRpb24iOiJNVE5Nb2JpbGVNb25leSIsIkRhdGUiOiIifQ"}',
-                    ],
-                    'json' => $request->mapInTo(),
-                ]
-            );
+            (new \App\Requests\QuoteStore($request->mapInTo(), [
+                'FSPIOP-Destination' => Env::get('FSPIOP_DESTINATION')
+            ]))->send();
         });
 
         $response = [
@@ -86,7 +58,7 @@ class QuotesController extends Controller
     public function store(QuoteCreate $request)
     {
         app()->terminating(function() use ($request) {
-            if ($request->amount['amount'] === '51.03') {
+            if (TriggerRulesSets::amountQuote($request->amount['amount'])) {
                 $response = (new \App\Requests\QuoteError([
                     'errorInformation' => [
                         'errorCode' => '5103',
@@ -103,6 +75,11 @@ class QuotesController extends Controller
                 }
 
                 return;
+            }
+
+            $transaction = Transaction::getCurrent();
+            if (empty($transaction->transactionId) && !empty($request->transactionRequestId)) {
+                $transaction->update(['transactionId' => $request->transactionRequestId]);
             }
 
             (new \App\Requests\QuoteUpdate($request->mapInTo(), [
@@ -124,9 +101,25 @@ class QuotesController extends Controller
     /**
      * @param QuoteUpdate $request
      * @param $id
+     * @return Response
      */
     public function update(QuoteUpdate $request, $id)
     {
+        app()->terminating(function() use ($request) {
+            (new \App\Requests\TransferStore($request->mapInTo(), [
+                'traceparent'        => $request->header('traceparent'),
+                'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
+                'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
+            ]))->send();
+        });
+
+        return new Response(
+            200,
+            [
+                'Content-Type' => 'application/json',
+                'X-Date' => Headers::getXDate()
+            ]
+        );
     }
 
     /**
@@ -135,8 +128,6 @@ class QuotesController extends Controller
      */
     public function error(QuoteError $request, $id)
     {
-    	event(new TransactionFailed());
-
         return new Response(
         	200,
             [

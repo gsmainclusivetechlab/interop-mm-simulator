@@ -1,0 +1,77 @@
+# Interop Mobile Money Simulator CircleCI
+
+version: 2.1
+orbs:
+  coverage-reporter: codacy/coverage-reporter@9.0.1
+jobs:
+  build:
+    machine:
+      image: ubuntu-1604:201903-01 # Define a machine who has support for docker compose 3.7
+    working_directory: ~/repo
+    
+    steps:
+      - checkout
+
+      - run: 
+          name: Generate configuration files
+          command: make init
+
+      - run: 
+          name: Run docker containers
+          command: | 
+            make run
+            sleep 15
+          
+      - restore_cache: 
+          keys:
+            - composer-v1-{{ checksum "src/composer.lock" }}
+            - composer-v1-
+
+      - run: 
+          name: Install Componser dependecies
+          command: make install
+      
+      - save_cache:
+          key: composer-v1-{{ checksum "src/composer.lock" }}
+          paths:
+            - vendor
+
+      - run: 
+          name: Check installation
+          command: |
+            FILE=./runtime/installed
+            if test -f "$FILE"; then
+                echo "Installation succesful"
+            else 
+                echo "Installation fail"
+                exit 2
+            fi
+      - run:
+          name: Run Tests
+          command: make test
+      
+      - run:
+          name: Run Tests Coverage
+          command: make test-coverage
+
+      - coverage-reporter/send_report:
+          coverage-reports: src/tests/results/coverage-report-clover/clover.xml
+          project-token: $CODACY_PROJECT_TOKEN
+
+      #store tests and code coverage
+      - store_test_results:
+          path: src/tests/results
+      - store_artifacts:
+          path: src/tests/results
+          
+worflow:
+  version: 2
+  build_and_test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - codacy-code-coverage

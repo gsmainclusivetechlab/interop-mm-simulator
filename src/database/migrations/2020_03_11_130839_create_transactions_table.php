@@ -19,6 +19,7 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->char('trace_id', 32);
+            $table->uuid('transaction_id')->nullable();
             $table->string('callback_url');
             $table->string('amount', 23);
             $table->char('currency', 3);
