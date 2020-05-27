@@ -48,7 +48,7 @@ class TransactionsController extends Controller
 
             if (TriggerRulesSets::participantMerchant($data['payer']['partyIdentifier'])) {
                 (new ParticipantShow(
-                    $data,
+                    [],
                     [
                         'traceparent' => $request->header('traceparent'),
                     ],

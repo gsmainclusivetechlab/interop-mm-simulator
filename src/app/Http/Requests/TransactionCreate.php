@@ -81,7 +81,7 @@ class TransactionCreate extends FormRequest
 				],
 				'type'             => ValidationSets::type(),
 				'subType'          => ValidationSets::standardString(),
-				'descriptionText'  => ValidationSets::descriptionText(),
+				'descriptionText'  => 'string|max:160|nullable',
 				'requestDate'      => ValidationSets::dateTime(),
 				'requestingOrganisationTransactionReference' => ValidationSets::standardString(),
 				'oneTimeCode'      => ValidationSets::standardString(),
