@@ -41,10 +41,10 @@ class AuthorizationsController extends Controller
 
                 (new \App\Requests\AuthorizationUpdate([
                     'authenticationInfo' => [
-                        'authentication' => $request->query('authenticationType') ?? '', // OTP , QRCODE
-                        'authenticationValue' => \GuzzleHttp\json_decode($response->getBody())->authorisationCode ?? '' // ^\d{3,10}$|^\S{1,64}$
+                        'authentication' => $request->query('authenticationType') ?? '',
+                        'authenticationValue' => \GuzzleHttp\json_decode($response->getBody())->authorisationCode ?? ''
                     ],
-                    'responseType' => 'ENTERED', // ENTERED , REJECTED , RESEND
+                    'responseType' => 'ENTERED',
                 ], [
                     'traceparent'        => $request->header('traceparent'),
                     'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),

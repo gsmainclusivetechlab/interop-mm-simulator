@@ -83,7 +83,7 @@ class BaseRequest implements RequestContract
         Log::info(
             "{$this->method} " . $this->url . ' ' . $response->getStatusCode() . PHP_EOL
             . json_encode($this->data) . PHP_EOL
-            . $responseLog
+//            . $responseLog
         );
 
         return $response;

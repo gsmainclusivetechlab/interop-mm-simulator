@@ -48,6 +48,7 @@ class TransactionRequestsController extends Controller
     /**
      * @param TransactionRequestError $request
      * @param $id
+     * @return Response
      */
     public function error(TransactionRequestError $request, $id)
     {

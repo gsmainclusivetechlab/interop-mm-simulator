@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TransactionRequestStateEnum;
 use App\Http\ValidationSets;
+use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TransactionRequestUpdate extends FormRequest
@@ -16,7 +18,7 @@ class TransactionRequestUpdate extends FormRequest
     {
         return [
             'transactionId' => ValidationSets::correlationId(),
-			'transactionRequestState' => ValidationSets::transactiornRequestState(),
+			'transactionRequestState' => (new EnumValue(TransactionRequestStateEnum::class)),
 			'extensionList' => ValidationSets::extensionList('extensionList'),
         ];
     }

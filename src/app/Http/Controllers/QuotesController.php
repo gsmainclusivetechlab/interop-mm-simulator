@@ -9,6 +9,7 @@ use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
 use App\Http\Requests\QuoteUpdate;
+use App\Http\TriggerRulesSets;
 use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Env;
@@ -27,7 +28,7 @@ class QuotesController extends Controller
     public function storeQuotations(QuotationsCreate $request)
     {
         app()->terminating(function() use ($request) {
-            $response = (new \App\Requests\QuoteStore($request->mapInTo(), [
+            (new \App\Requests\QuoteStore($request->mapInTo(), [
                 'FSPIOP-Destination' => Env::get('FSPIOP_DESTINATION')
             ]))->send();
         });
@@ -57,7 +58,7 @@ class QuotesController extends Controller
     public function store(QuoteCreate $request)
     {
         app()->terminating(function() use ($request) {
-            if ($request->amount['amount'] === '1002') {
+            if (TriggerRulesSets::amountQuote($request->amount['amount'])) {
                 $response = (new \App\Requests\QuoteError([
                     'errorInformation' => [
                         'errorCode' => '5103',
@@ -105,7 +106,7 @@ class QuotesController extends Controller
     public function update(QuoteUpdate $request, $id)
     {
         app()->terminating(function() use ($request) {
-            $response = (new \App\Requests\TransferStore($request->mapInTo(), [
+            (new \App\Requests\TransferStore($request->mapInTo(), [
                 'traceparent'        => $request->header('traceparent'),
                 'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                 'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
@@ -127,8 +128,6 @@ class QuotesController extends Controller
      */
     public function error(QuoteError $request, $id)
     {
-    	event(new TransactionFailed());
-
         return new Response(
         	200,
             [

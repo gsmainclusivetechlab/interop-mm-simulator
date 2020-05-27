@@ -12,16 +12,12 @@ use App\Enums\NationalityEnum;
 use App\Enums\PartyIdTypeEnum;
 use App\Enums\TransactionInitiatorEnum;
 use App\Enums\TransactionInitiatorTypeEnum;
-use App\Enums\TransactionRequestStateEnum;
 use App\Enums\TransactionScenarioEnum;
 use App\Enums\TypeEnum;
-use BenSampo\Enum\Rules\Enum;
 use BenSampo\Enum\Rules\EnumValue;
-use Illuminate\Support\Arr;
-use phpDocumentor\Reflection\Types\Static_;
 
 /**
- * Frequentsy used Validation Sets
+ * Frequently used Validation Sets
  *
  * @package App\Http
  */
@@ -110,38 +106,13 @@ class ValidationSets
 	 */
 	public static function partyArray(string $field): array
 	{
-		$rules = array_merge(
-			[
-				$field => 'required|array|max:10',
-			],
-			self::partyMMO($field)
-		);
+		$rules = [
+            $field => 'required|array|max:10',
+            $field . '.*.key' => self::requiredString(),
+            $field . '.*.value' => self::requiredString(),
+        ];
 
 		return $rules;
-	}
-
-	/**
-	 * @param string $field
-	 *
-	 * @return array
-	 */
-	public static function partyMMO(string $field): array
-	{
-		return [
-			$field . '.*.key' => self::requiredString(),
-			$field . '.*.value' => self::requiredString(),
-		];
-	}
-
-	/**
-	 * Free format text description of the transaction provided by the client. This can be provided as a reference
-	 * for the receiver on a notification SMS and on an account statement
-	 *
-	 * @return string
-	 */
-	public static function descriptionText(): string
-	{
-		return 'string|max:160|nullable';
 	}
 
 	/**
@@ -197,34 +168,20 @@ class ValidationSets
 	 */
 	public static function idDocumentArray(string $field): array
 	{
-		return array_merge(
-			[
-				$field => 'array|max:10',
-			],
-			self::idDocument($field)
-		);
-	}
-
-	/**
-	 * @param string $field
-	 *
-	 * @return array
-	 */
-	public static function idDocument(string $field): array
-	{
 		return [
-			$field . '.*.idType' => [
-				'required_with:' . $field,
-				new EnumValue(IdTypeEnum::class),
-			],
-			$field . '.*.idNumber' => self::standardString(),
-			$field . '.*.issueDate' => self::date(),
-			$field . '.*.expiryDate' => self::date(),
-			$field . '.*.issuer' => self::standardString(),
-			$field . '.*.issuerPlace' => self::standardString(),
-			$field . '.*.issuerCountry' => self::nationality(),
-			$field . '.*.otherIddescription' => self::standardString(),
-		];
+            $field => 'array|max:10',
+            $field . '.*.idType' => [
+                'required_with:' . $field,
+                new EnumValue(IdTypeEnum::class),
+            ],
+            $field . '.*.idNumber' => self::standardString(),
+            $field . '.*.issueDate' => self::date(),
+            $field . '.*.expiryDate' => self::date(),
+            $field . '.*.issuer' => self::standardString(),
+            $field . '.*.issuerPlace' => self::standardString(),
+            $field . '.*.issuerCountry' => self::nationality(),
+            $field . '.*.otherIddescription' => self::standardString(),
+        ];
 	}
 
 	/**
@@ -317,25 +274,11 @@ class ValidationSets
 	 */
 	public static function metadataArray(string $field): array
 	{
-		return array_merge(
-			[
-				$field => 'array|max:20',
-			],
-			self::metadata($field)
-		);
-	}
-
-	/**
-	 * @param string $field
-	 *
-	 * @return array
-	 */
-	public static function metadata(string $field): array
-	{
 		return [
-			$field . '.*.key' => self::requiredString(),
-			$field . '.*.value' => self::requiredString(),
-		];
+				$field => 'array|max:20',
+                $field . '.*.key' => self::requiredString(),
+                $field . '.*.value' => self::requiredString(),
+			];
 	}
 
 	/**
@@ -367,46 +310,25 @@ class ValidationSets
 		return 'regex: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/';
 	}
 
-	public static function transactiornRequestState(): EnumValue
-	{
-		return new EnumValue(TransactionRequestStateEnum::class);
-	}
-
 	public static function extensionList(string $field): array
 	{
-		return array_merge([
+		return [
 			$field => 'array',
 			$field . '.extension' => [
 				'required_with:' . $field,
 				'array',
 				'max:16',
 			],
-		], self::extension($field . '.extension'));
-	}
-
-	public static function extension(string $field): array
-	{
-		return [
-			$field . '.key' => self::extensionKey($field),
-			$field . '.value' => self::extensionValue($field),
-		];
-	}
-
-	public static function extensionKey(string $field): array
-	{
-		return [
-			'required_with:' . $field,
-			'string',
-			'max:32',
-		];
-	}
-
-	public static function extensionValue(string $field): array
-	{
-		return [
-			'required_with:' . $field,
-			'string',
-			'max:128',
+            $field . '.extension.key' => [
+                'required_with:' . $field,
+                'string',
+                'max:32',
+            ],
+            $field . '.extension.value' => [
+                'required_with:' . $field,
+                'string',
+                'max:128',
+            ],
 		];
 	}
 
@@ -415,21 +337,11 @@ class ValidationSets
 		return array_merge(
 			[
 				'errorInformation' => 'required|array',
-				'errorInformation.errorCode' => self::errorCode(),
-				'errorInformation.errorDescription' => self::errorDescription(),
+				'errorInformation.errorCode' => 'regex: /^[1-9]\d{3}$/',
+				'errorInformation.errorDescription' => 'string|max:128',
 			],
 			self::extensionList('errorInformation.extensionList')
 		);
-	}
-
-	public static function errorCode(): string
-	{
-		return 'regex: /^[1-9]\d{3}$/';
-	}
-
-	public static function errorDescription(): string
-	{
-		return 'string|max:128';
 	}
 
 	public static function partyMojaloop(string $field): array
@@ -437,8 +349,8 @@ class ValidationSets
 		return array_merge(
 			[
 				$field . '.partyIdInfo' => 'required|array',
-				$field . '.merchantClassificationCode' => self::merchantClassificationCode(),
-				$field . '.name' => self::partyName(),
+				$field . '.merchantClassificationCode' => 'regex: /^[\d]{1,4}$/',
+				$field . '.name' => 'string|max:128',
 			],
 			self::partyIdInfo($field . '.partyIdInfo'),
 			self::partyPersonalInfo($field . '.personalInfo'),
@@ -452,35 +364,15 @@ class ValidationSets
 				'required_with:' . $field,
 				new EnumValue(PartyIdTypeEnum::class),
 			],
-			$field . '.partyIdentifier' => 'required_with:' . $field . '|' . self::partyIdentifier(),
-			$field . '.partySubIdOrType' => self::partySubIdOrType(),
+			$field . '.partyIdentifier' => 'required_with:' . $field . '|string|max:128',
+			$field . '.partySubIdOrType' => 'string|max:128',
 			$field . '.fspId' => self::fspId(),
 		];
-	}
-
-	public static function partyIdentifier(): string
-	{
-		return 'string|max:128';
-	}
-
-	public static function partySubIdOrType(): string
-	{
-		return 'string|max:128';
 	}
 
 	public static function fspId(): string
 	{
 		return 'string|max:32';
-	}
-
-	public static function merchantClassificationCode(): string
-	{
-		return 'regex: /^[\d]{1,4}$/';
-	}
-
-	public static function partyName(): string
-	{
-		return 'string|max:128';
 	}
 
 	public static function partyPersonalInfo(string $field): array
@@ -546,7 +438,7 @@ class ValidationSets
 					new EnumValue(TransactionInitiatorTypeEnum::class),
 				],
 				$field . '.refundInfo' => 'array',
-				$field . '.balanceOfPayments' => self::balanceOfPayments(),
+				$field . '.balanceOfPayments' => 'regex: /^[1-9]\d{2}$/',
 			],
 			self::refund($field . '.refundInfo')
 		);
@@ -564,18 +456,8 @@ class ValidationSets
 				'required_with:' . $field,
 				self::correlationId()
 			],
-			$field . '.refundReason' => self::refundReason(),
+			$field . '.refundReason' => 'string|max:128',
 		];
-	}
-
-	public static function refundReason(): string
-	{
-		return 'string|max:128';
-	}
-
-	public static function balanceOfPayments(): string
-	{
-		return 'regex: /^[1-9]\d{2}$/';
 	}
 
 	public static function geoCodeMoja(string $field): array
@@ -590,11 +472,6 @@ class ValidationSets
 				'regex: /^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$/',
 			],
 		];
-	}
-
-	public static function note(): string
-	{
-		return 'string|max:128';
 	}
 
 	public static function ilpPacket(): string

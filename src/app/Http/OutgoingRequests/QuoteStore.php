@@ -40,104 +40,38 @@ class QuoteStore extends BaseRequest
      */
     public static function mapInTo($partyIdentifier)
     {
-        return array_merge(
-            [
-                'quoteId' => Str::uuid(),
-                'transactionId' => Str::uuid(),
-                'payer' => [
-                    'partyIdInfo' => [
-                        'partyIdType' => 'MSISDN',
-                        'partyIdentifier' => '+33555123456',
-                    ],
-                    'personalInfo' => [
-                        'complexName' => [
-                            'firstName' => 'John',
-                            'middleName' => 'Jane',
-                            'lastName' => 'Doe',
-                        ],
-                        'dateOfBirth' => '2000-01-01'
-                    ]
-                ],
-                'transactionType' => [
-                    'scenario' => 'TRANSFER',
-                    'initiator' => 'PAYER',
-                    'initiatorType' => 'CONSUMER'
-                ],
-            ],
-            static::participantsData()[$partyIdentifier]
-        );
-    }
-
-    public static function participantsData()
-    {
         return [
-            Env::get('PARTICIPANTS_ID_P2P_500') => [
-                'amount' => [
-                    'amount' => '799',
-                    'currency' => 'USD',
+            'quoteId' => Str::uuid(),
+            'transactionId' => Str::uuid(),
+            'payer' => [
+                'partyIdInfo' => [
+                    'partyIdType' => 'MSISDN',
+                    'partyIdentifier' => '+33555123456',
                 ],
-                'payerFspFee' =>[
-                    'currency' => 'USD',
-                    'amount' => '1'
-                ],
-                'amountType' => 'SEND',
-                'payee' => [
-                    'partyIdInfo' => [
-                        'partyIdType' => 'MSISDN',
-                        'partyIdentifier' => Env::get('PARTICIPANTS_ID_P2P_800'),
-                    ]
-                ],
+                'personalInfo' => [
+                    'complexName' => [
+                        'firstName' => 'John',
+                        'middleName' => 'Jane',
+                        'lastName' => 'Doe',
+                    ],
+                    'dateOfBirth' => '2000-01-01'
+                ]
             ],
-            Env::get('PARTICIPANTS_ID_P2P_600') => [
-                'amount' => [
-                    'amount' => '799',
-                    'currency' => 'USD',
-                ],
-                'payerFspFee' =>[
-                    'currency' => 'USD',
-                    'amount' => '1'
-                ],
-                'amountType' => 'SEND',
-                'payee' => [
-                    'partyIdInfo' => [
-                        'partyIdType' => 'MSISDN',
-                        'partyIdentifier' => Env::get('PARTICIPANTS_ID_P2P_800'),
-                    ]
-                ],
+            'transactionType' => [
+                'scenario' => 'TRANSFER',
+                'initiator' => 'PAYER',
+                'initiatorType' => 'CONSUMER'
             ],
-            Env::get('PARTICIPANTS_ID_P2P_700') => [
-                'amount' => [
-                    'amount' => '799',
-                    'currency' => 'USD',
-                ],
-                'payerFspFee' =>[
-                    'currency' => 'USD',
-                    'amount' => '1'
-                ],
-                'amountType' => 'SEND',
-                'payee' => [
-                    'partyIdInfo' => [
-                        'partyIdType' => 'MSISDN',
-                        'partyIdentifier' => Env::get('PARTICIPANTS_ID_P2P_700'),
-                    ]
-                ],
+            'amount' => [
+                'amount' => '499',
+                'currency' => 'USD',
             ],
-            Env::get('PARTICIPANTS_ID_P2P_800') => [
-                'amount' => [
-                    'amount' => '799',
-                    'currency' => 'USD',
-                ],
-                'payerFspFee' =>[
-                    'currency' => 'USD',
-                    'amount' => '1'
-                ],
-                'amountType' => 'SEND',
-                'payee' => [
-                    'partyIdInfo' => [
-                        'partyIdType' => 'MSISDN',
-                        'partyIdentifier' => Env::get('PARTICIPANTS_ID_P2P_800'),
-                    ]
-                ],
+            'amountType' => 'SEND',
+            'payee' => [
+                'partyIdInfo' => [
+                    'partyIdType' => 'MSISDN',
+                    'partyIdentifier' => $partyIdentifier,
+                ]
             ],
         ];
     }
