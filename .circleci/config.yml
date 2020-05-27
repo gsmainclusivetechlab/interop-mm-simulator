@@ -53,7 +53,11 @@ jobs:
       - run:
           name: Run Tests Coverage
           command: make test-coverage
-          
+
+      - coverage-reporter/send_report:
+          coverage-reports: src/tests/results/coverage-report-clover/clover.xml
+          project-token: $CODACY_PROJECT_TOKEN
+
       #store tests and code coverage
       - store_test_results:
           path: src/tests/results
