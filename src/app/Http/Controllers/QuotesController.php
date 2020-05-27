@@ -28,7 +28,7 @@ class QuotesController extends Controller
     public function storeQuotations(QuotationsCreate $request)
     {
         app()->terminating(function() use ($request) {
-            $response = (new \App\Requests\QuoteStore($request->mapInTo(), [
+            (new \App\Requests\QuoteStore($request->mapInTo(), [
                 'FSPIOP-Destination' => Env::get('FSPIOP_DESTINATION')
             ]))->send();
         });
@@ -106,7 +106,7 @@ class QuotesController extends Controller
     public function update(QuoteUpdate $request, $id)
     {
         app()->terminating(function() use ($request) {
-            $response = (new \App\Requests\TransferStore($request->mapInTo(), [
+            (new \App\Requests\TransferStore($request->mapInTo(), [
                 'traceparent'        => $request->header('traceparent'),
                 'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
                 'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
@@ -128,8 +128,6 @@ class QuotesController extends Controller
      */
     public function error(QuoteError $request, $id)
     {
-    	event(new TransactionFailed());
-
         return new Response(
         	200,
             [
