@@ -60,7 +60,7 @@ jobs:
           
       - run:
           name: Copy codacy json report to results page
-          command: cp /var/tmp/codacy-coverage-*.json /home/circleci/repo/src/tests/results/
+          command: sudo cp /var/tmp/codacy-coverage-*.json /home/circleci/repo/src/tests/results/
           
       #store tests and code coverage
       - store_test_results:
