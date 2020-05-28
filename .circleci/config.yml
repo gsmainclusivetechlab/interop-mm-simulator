@@ -2,7 +2,7 @@
 
 version: 2.1
 orbs:
-  coverage-reporter: codacy/coverage-reporter@9.0.1
+  coverage-reporter: codacy/coverage-reporter@10.0.3
 jobs:
   build:
     machine:
@@ -57,14 +57,18 @@ jobs:
       - coverage-reporter/send_report:
           coverage-reports: src/tests/results/coverage-report-clover/clover.xml
           project-token: $CODACY_PROJECT_TOKEN
-
+          
+      - run:
+          name: Copy codacy json report to results page
+          command: sudo cp /var/tmp/codacy-coverage-*.json /home/circleci/repo/src/tests/results/
+          
       #store tests and code coverage
       - store_test_results:
           path: src/tests/results
       - store_artifacts:
           path: src/tests/results
           
-worflow:
+workflows:
   version: 2
   build_and_test:
     jobs:
