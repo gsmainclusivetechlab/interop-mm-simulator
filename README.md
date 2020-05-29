@@ -42,17 +42,11 @@ To get inside PHP container to run composer/php commands run this command:
 
 Inside PHP container there is also GNU Make utility, run `make` without any parameters to get available commands list.
 
-### Docker nodejs container
+### Prettier usage
 
-To build nodejs you can use make helpers:
+To run prettier install nodejs on your machine and run:
 
-`make npm-i`
-`make npm-build`
-`make npm-watch`
-
-To open nodejs container permanently just run:
-
-`make nodejs-bash`
+`npm run prettier`
 
 ### Using telescope for check incoming requests
 
