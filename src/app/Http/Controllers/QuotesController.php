@@ -5,15 +5,12 @@ namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
 use App\Http\Headers;
-use App\Http\Requests\QuotationsCreate;
 use App\Http\Requests\QuoteCreate;
 use App\Http\Requests\QuoteError;
 use App\Http\Requests\QuoteUpdate;
 use App\Http\TriggerRulesSets;
 use App\Models\Transaction;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Env;
-use Illuminate\Support\Str;
 
 /**
  * Class TransfersController
@@ -21,34 +18,6 @@ use Illuminate\Support\Str;
  */
 class QuotesController extends Controller
 {
-    /**
-     * @param QuotationsCreate $request
-     * @return Response
-     */
-    public function storeQuotations(QuotationsCreate $request)
-    {
-        app()->terminating(function() use ($request) {
-            (new \App\Requests\QuoteStore($request->mapInTo(), [
-                'FSPIOP-Destination' => Env::get('FSPIOP_DESTINATION')
-            ]))->send();
-        });
-
-        $response = [
-            'status' => 'pending',
-            'notificationMethod' => "callback",
-            'serverCorrelationId' => $request->header('X-CorrelationID') ?? Str::uuid()
-        ];
-
-        return new Response(
-            202,
-            [
-                'Content-Type' => 'application/json',
-                'X-Date' => Headers::getXDate()
-            ],
-            \GuzzleHttp\json_encode($response)
-        );
-    }
-
     /**
      * POST /quotes from mojaloop
      *
