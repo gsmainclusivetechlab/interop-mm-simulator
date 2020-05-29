@@ -13,9 +13,9 @@ use BenSampo\Enum\Enum;
  */
 final class TransactionScenarioEnum extends Enum
 {
-	const DEPOSIT = 'DEPOSIT';
-	const WITHDRAWAL = 'WITHDRAWAL';
-	const TRANSFER = 'TRANSFER';
-	const PAYMENT = 'PAYMENT';
-	const REFUND = 'REFUND';
+    const DEPOSIT = 'DEPOSIT';
+    const WITHDRAWAL = 'WITHDRAWAL';
+    const TRANSFER = 'TRANSFER';
+    const PAYMENT = 'PAYMENT';
+    const REFUND = 'REFUND';
 }

@@ -16,7 +16,6 @@ Route::post('/transactions', 'TransactionsController@store')->name('transactions
 Route::put('/transactionRequests/{id}', 'TransactionRequestsController@update')->name('transaction_requests.update');
 Route::put('/transactionRequests/{id}/error', 'TransactionRequestsController@error')->name('transaction_requests.error');
 
-Route::post('/quotations', 'QuotesController@storeQuotations')->name('quotations.store');
 Route::put('/quotes/{id}', 'QuotesController@update')->name('quotes.update');
 Route::post('/quotes', 'QuotesController@store')->name('quotes.store');
 Route::put('/quotes/{id}/error', 'QuotesController@error')->name('quotes.error');

@@ -17,14 +17,16 @@ class TransactionSuccessListener
      */
     public function handle(TransactionSuccess $event)
     {
-    	$transaction = Transaction::getCurrent();
+        $transaction = Transaction::getCurrent();
 
-    	$transaction->update(['transactionStatus' => $this->request->transferState ?? 'Completed']);
+        $transaction->update([
+            'transactionStatus' => $this->request->transferState ?? 'Completed',
+        ]);
 
         if (!$transaction->callback_url) {
             return;
         }
 
-		(new SuccessCallback($transaction))->send();
+        (new SuccessCallback($transaction))->send();
     }
 }

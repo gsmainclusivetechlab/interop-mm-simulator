@@ -16,8 +16,8 @@ class TransferUpdate extends FormRequest
     {
         return [
             'fulfilment' => ValidationSets::requiredString(),
-			'completedTimestamp' => ValidationSets::requiredString(),
-			'transferState' => ValidationSets::requiredString(),
+            'completedTimestamp' => ValidationSets::requiredString(),
+            'transferState' => ValidationSets::requiredString(),
         ];
     }
 }

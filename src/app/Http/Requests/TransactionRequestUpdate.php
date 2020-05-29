@@ -18,8 +18,10 @@ class TransactionRequestUpdate extends FormRequest
     {
         return [
             'transactionId' => ValidationSets::correlationId(),
-			'transactionRequestState' => (new EnumValue(TransactionRequestStateEnum::class)),
-			'extensionList' => ValidationSets::extensionList('extensionList'),
+            'transactionRequestState' => new EnumValue(
+                TransactionRequestStateEnum::class
+            ),
+            'extensionList' => ValidationSets::extensionList('extensionList'),
         ];
     }
 }

@@ -13,27 +13,27 @@ class Traceparent implements Rule
 {
     use ParseTraceId;
 
-	/**
-	 * @inheritDoc
-	 */
-	public function passes($attribute, $value): bool
-	{
-	    if (!$value) {
-	        return false;
+    /**
+     * @inheritDoc
+     */
+    public function passes($attribute, $value): bool
+    {
+        if (!$value) {
+            return false;
         }
 
-	    $traceId= self::parseTraceId($value);
+        $traceId = self::parseTraceId($value);
 
-		return strlen($traceId) === 32
-            && ctype_xdigit($traceId)
-            && hexdec($traceId);
-	}
+        return strlen($traceId) === 32 &&
+            ctype_xdigit($traceId) &&
+            hexdec($traceId);
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function message(): string
-	{
-		return __('Header traceparent has wrong format!');
-	}
+    /**
+     * @inheritDoc
+     */
+    public function message(): string
+    {
+        return __('Header traceparent has wrong format!');
+    }
 }

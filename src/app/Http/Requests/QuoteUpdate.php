@@ -24,17 +24,11 @@ class QuoteUpdate extends FormRequest
             'transferAmount' => [
                 'required',
                 'array',
-                ValidationSets::money('transferAmount')
+                ValidationSets::money('transferAmount'),
             ],
             'ilpPacket' => 'required|' . ValidationSets::ilpPacket(),
-            'condition' => [
-                'required',
-                ValidationSets::ilpCondition(),
-            ],
-            'expiration' => [
-                'required',
-                ValidationSets::dateTime(),
-            ],
+            'condition' => ['required', ValidationSets::ilpCondition()],
+            'expiration' => ['required', ValidationSets::dateTime()],
         ];
     }
 
@@ -46,16 +40,17 @@ class QuoteUpdate extends FormRequest
     {
         return [
             'transferId' => Str::uuid(),
-            'payerFsp'   => $this->header('FSPIOP-Destination'),
-            'payeeFsp'   => $this->header('FSPIOP-Source'),
-            'amount'     => [
-                'amount'   => $this->transferAmount['amount'],
+            'payerFsp' => $this->header('FSPIOP-Destination'),
+            'payeeFsp' => $this->header('FSPIOP-Source'),
+            'amount' => [
+                'amount' => $this->transferAmount['amount'],
                 'currency' => $this->transferAmount['currency'],
             ],
-            'expiration' => (new Carbon())->addSeconds(600000)->toIso8601ZuluString('millisecond'),
-            'ilpPacket'  => $this->ilpPacket,
-            'condition'  => $this->condition,
+            'expiration' => (new Carbon())
+                ->addSeconds(600000)
+                ->toIso8601ZuluString('millisecond'),
+            'ilpPacket' => $this->ilpPacket,
+            'condition' => $this->condition,
         ];
     }
 }
-

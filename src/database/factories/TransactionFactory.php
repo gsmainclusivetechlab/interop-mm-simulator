@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
 
 $factory->define(Transaction::class, function (Faker $faker) {
     return [
-        'trace_id' => Str::random(32),
+        'trace_id' => str_replace('-', '', Str::uuid()),
         'callback_url' => $faker->url,
         'amount' => $faker->numberBetween(1, 101),
         'currency' => $faker->currencyCode,

@@ -16,12 +16,12 @@ use BenSampo\Enum\Enum;
  */
 final class PartyIdTypeEnum extends Enum
 {
-	const MSISDN = 'MSISDN';
-	const EMAIL = 'EMAIL';
-	const PERSONAL_ID = 'PERSONAL_ID';
-	const BUSINESS = 'BUSINESS';
-	const DEVICE = 'DEVICE';
-	const ACCOUNT_ID = 'ACCOUNT_ID';
-	const IBAN = 'IBAN';
-	const ALIAS = 'ALIAS';
+    const MSISDN = 'MSISDN';
+    const EMAIL = 'EMAIL';
+    const PERSONAL_ID = 'PERSONAL_ID';
+    const BUSINESS = 'BUSINESS';
+    const DEVICE = 'DEVICE';
+    const ACCOUNT_ID = 'ACCOUNT_ID';
+    const IBAN = 'IBAN';
+    const ALIAS = 'ALIAS';
 }

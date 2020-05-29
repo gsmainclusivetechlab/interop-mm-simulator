@@ -26,10 +26,10 @@ class TriggerRulesSets
      * @param $amount
      * @return bool
      */
-	public static function amountQuote($amount): bool
-	{
-		return boolval(preg_match('/^[5][0-9][.]\d{2}/', $amount));
-	}
+    public static function amountQuote($amount): bool
+    {
+        return boolval(preg_match('/^[5][0-9][.]\d{2}/', $amount));
+    }
 
     /**
      * Participant merchant triggers

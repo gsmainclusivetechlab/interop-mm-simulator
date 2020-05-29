@@ -19,13 +19,13 @@ use BenSampo\Enum\Enum;
  */
 final class TypeEnum extends Enum
 {
-	const billpay = 'billpay';
-	const deposit = 'deposit';
-	const disbursement = 'disbursement';
-	const transfer = 'transfer';
-	const merchantpay = 'merchantpay';
-	const inttransfer = 'inttransfer';
-	const adjustment = 'adjustment';
-	const reversal = 'reversal';
-	const withdrawal = 'withdrawal';
+    const billpay = 'billpay';
+    const deposit = 'deposit';
+    const disbursement = 'disbursement';
+    const transfer = 'transfer';
+    const merchantpay = 'merchantpay';
+    const inttransfer = 'inttransfer';
+    const adjustment = 'adjustment';
+    const reversal = 'reversal';
+    const withdrawal = 'withdrawal';
 }

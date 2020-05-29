@@ -24,27 +24,20 @@ class TransferCreate extends FormRequest
     public function rules(): array
     {
         return array_merge(
-			[
-				'transferId' => [
-					'required',
-					ValidationSets::correlationId(),
-				],
-				'payeeFsp' => 'required|' . ValidationSets::fspId(),
-				'payerFsp' => 'required|' . ValidationSets::fspId(),
-				'amount' => 'required|array',
-				'ilpPacket' => 'required|' . ValidationSets::ilpPacket(),
-				'condition' => [
-					'required',
-					ValidationSets::ilpCondition(),
-				],
-				'expiration' => [
-					'required',
-					ValidationSets::dateTime(),
-				],
-				'extensionList' => ValidationSets::extensionList('extensionList'),
-			],
-			ValidationSets::money('amount')
-		);
+            [
+                'transferId' => ['required', ValidationSets::correlationId()],
+                'payeeFsp' => 'required|' . ValidationSets::fspId(),
+                'payerFsp' => 'required|' . ValidationSets::fspId(),
+                'amount' => 'required|array',
+                'ilpPacket' => 'required|' . ValidationSets::ilpPacket(),
+                'condition' => ['required', ValidationSets::ilpCondition()],
+                'expiration' => ['required', ValidationSets::dateTime()],
+                'extensionList' => ValidationSets::extensionList(
+                    'extensionList'
+                ),
+            ],
+            ValidationSets::money('amount')
+        );
     }
 
     /**
@@ -60,4 +53,3 @@ class TransferCreate extends FormRequest
         ];
     }
 }
-

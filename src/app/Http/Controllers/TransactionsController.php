@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Http\Headers;
@@ -43,10 +42,14 @@ class TransactionsController extends Controller
             Transaction::create($data);
         }
 
-        app()->terminating(function() use ($request) {
+        app()->terminating(function () use ($request) {
             $data = $request->mapInTo();
 
-            if (TriggerRulesSets::participantMerchant($data['payer']['partyIdentifier'])) {
+            if (
+                TriggerRulesSets::participantMerchant(
+                    $data['payer']['partyIdentifier']
+                )
+            ) {
                 (new ParticipantShow(
                     [],
                     [
@@ -66,15 +69,16 @@ class TransactionsController extends Controller
         $response = [
             'status' => 'pending',
             'notificationMethod' => "callback",
-            'serverCorrelationId' => $request->header('X-CorrelationID') ?? Str::uuid()
+            'serverCorrelationId' =>
+                $request->header('X-CorrelationID') ?? Str::uuid(),
         ];
 
         return new Response(
             202,
             [
-            	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
-			],
+                'Content-Type' => 'application/json',
+                'X-Date' => Headers::getXDate(),
+            ],
             \GuzzleHttp\json_encode($response)
         );
     }

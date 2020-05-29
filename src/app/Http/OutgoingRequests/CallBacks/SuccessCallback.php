@@ -6,20 +6,20 @@ use Illuminate\Support\Arr;
 
 class SuccessCallback extends BaseCallback
 {
-	protected function collectData(): array
-	{
-		$data = [
-			'amount' => $this->transaction->amount,
+    protected function collectData(): array
+    {
+        $data = [
+            'amount' => $this->transaction->amount,
             'currency' => $this->transaction->currency,
             'type' => $this->transaction->type,
             'debitParty' => $this->transaction->debitParty,
             'creditParty' => $this->transaction->creditParty,
             'transactionStatus' => $this->transaction->transactionStatus,
             'transactionReference' => '',
-		];
+        ];
 
-		$attributes = [
-		    'subType',
+        $attributes = [
+            'subType',
             'descriptionText',
             'requestDate',
             'requestingOrganisationTransactionReference',
@@ -32,19 +32,19 @@ class SuccessCallback extends BaseCallback
             'metadata',
         ];
 
-		foreach ($attributes as $attribute) {
+        foreach ($attributes as $attribute) {
             if ($value = $this->transaction->$attribute) {
                 Arr::set($data, $attribute, $value);
             }
         }
 
-		return $data;
-	}
+        return $data;
+    }
 
-	protected function collectHeaders(): array
-	{
-		return [
-			'traceparent' => request()->header('traceparent'),
-		];
-	}
+    protected function collectHeaders(): array
+    {
+        return [
+            'traceparent' => request()->header('traceparent'),
+        ];
+    }
 }

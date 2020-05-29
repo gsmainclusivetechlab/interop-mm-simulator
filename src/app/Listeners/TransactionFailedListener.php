@@ -8,7 +8,7 @@ use App\Requests\CallBacks\FailureCallback;
 
 class TransactionFailedListener
 {
-	/**
+    /**
      * Handle the event.
      *
      * @param  TransactionFailed $event
@@ -17,14 +17,16 @@ class TransactionFailedListener
      */
     public function handle(TransactionFailed $event)
     {
-    	$transaction = Transaction::getCurrent();
+        $transaction = Transaction::getCurrent();
 
-    	$transaction->update(['transactionStatus' => $this->request->transferState ?? 'Failed']);
+        $transaction->update([
+            'transactionStatus' => $this->request->transferState ?? 'Failed',
+        ]);
 
         if (!$transaction->callback_url) {
             return;
         }
 
-		(new FailureCallback($transaction))->send();
+        (new FailureCallback($transaction))->send();
     }
 }
