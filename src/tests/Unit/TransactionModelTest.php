@@ -15,7 +15,7 @@ class TransactionModelTest extends TestCase
     public function testStoreValidData()
     {
         $model = factory(Transaction::class)->create();
-        $this->assertInstanceOf(Transaction::class,$model);
+        $this->assertInstanceOf(Transaction::class, $model);
     }
 
     /**
@@ -26,6 +26,12 @@ class TransactionModelTest extends TestCase
     public function testUpdateValidData()
     {
         $model = factory(Transaction::class)->create();
-        $this->assertTrue($model->update(factory(Transaction::class)->make()->attributesToArray()));
+        $this->assertTrue(
+            $model->update(
+                factory(Transaction::class)
+                    ->make()
+                    ->attributesToArray()
+            )
+        );
     }
 }

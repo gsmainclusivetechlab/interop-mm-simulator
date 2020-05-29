@@ -16,27 +16,32 @@ class Handler extends ExceptionHandler
         400 => [
             'errorCategory' => 'businessRule',
             'errorCode' => 'genericError',
-            'errorDescription' => 'The specified property contents do not conform to the format required for this Property.',
+            'errorDescription' =>
+                'The specified property contents do not conform to the format required for this Property.',
         ],
         401 => [
             'errorCategory' => 'authorisation',
             'errorCode' => 'genericError',
-            'errorDescription' => 'General Client Authentication failure. No further details provided to prevent leakage of security information.',
+            'errorDescription' =>
+                'General Client Authentication failure. No further details provided to prevent leakage of security information.',
         ],
         404 => [
-            'errorCategory'    => 'validation',
-            'errorCode'        => 'genericError',
-            'errorDescription' => 'The requested resource could not be matched on the system with the supplied identifier(s).',
+            'errorCategory' => 'validation',
+            'errorCode' => 'genericError',
+            'errorDescription' =>
+                'The requested resource could not be matched on the system with the supplied identifier(s).',
         ],
         500 => [
-            'errorCategory'    => 'internal',
-            'errorCode'        => 'genericError',
-            'errorDescription' => 'The request could not be completed due to a non-client related issues that do not constitute complete system unavailability. Examples include software licence issues, unavailability of system configuration information.',
+            'errorCategory' => 'internal',
+            'errorCode' => 'genericError',
+            'errorDescription' =>
+                'The request could not be completed due to a non-client related issues that do not constitute complete system unavailability. Examples include software licence issues, unavailability of system configuration information.',
         ],
         503 => [
-            'errorCategory'    => 'internal',
-            'errorCode'        => 'genericError',
-            'errorDescription' => 'The service is not currently available. This could be due to network issues, issues with individual components or complete systems outages. Regardless of the cause, the result means that the request cannot be performed.',
+            'errorCategory' => 'internal',
+            'errorCode' => 'genericError',
+            'errorDescription' =>
+                'The service is not currently available. This could be due to network issues, issues with individual components or complete systems outages. Regardless of the cause, the result means that the request cannot be performed.',
         ],
     ];
 
@@ -54,10 +59,7 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-    protected $dontFlash = [
-        'password',
-        'password_confirmation',
-    ];
+    protected $dontFlash = ['password', 'password_confirmation'];
 
     /**
      * Report or log an exception.
@@ -115,22 +117,26 @@ class Handler extends ExceptionHandler
     {
         $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
         $content = $this->getErrorDefinitions($status);
-        $content['errorDescription'] = $content['errorDescription'] ?: $e->getMessage();
+        $content['errorDescription'] =
+            $content['errorDescription'] ?: $e->getMessage();
 
-        return config('app.debug') ? [
-            'message' => $e->getMessage(),
-            'exception' => get_class($e),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => collect($e->getTrace())->map(function ($trace) {
-                return Arr::except($trace, ['args']);
-            })->all(),
-        ] : array_merge(
-            $content,
-            [
-                'errorDateTime'    => (new Carbon())->toIso8601ZuluString('millisecond'),
+        return config('app.debug')
+            ? [
+                'message' => $e->getMessage(),
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => collect($e->getTrace())
+                    ->map(function ($trace) {
+                        return Arr::except($trace, ['args']);
+                    })
+                    ->all(),
             ]
-        );
+            : array_merge($content, [
+                'errorDateTime' => (new Carbon())->toIso8601ZuluString(
+                    'millisecond'
+                ),
+            ]);
     }
 
     /**
@@ -147,19 +153,18 @@ class Handler extends ExceptionHandler
         $errorParameters = [];
         foreach ($exception->errors() as $key => $value) {
             $errorParameters[] = [
-                'key'   => $key,
+                'key' => $key,
                 'value' => $value[0],
             ];
         }
 
         return response()->json(
-            array_merge(
-                $this->getErrorDefinitions($status),
-                [
-                    'errorDateTime'    => (new Carbon())->toIso8601ZuluString('millisecond'),
-                    'errorParameters'  => $errorParameters,
-                ]
-            ),
+            array_merge($this->getErrorDefinitions($status), [
+                'errorDateTime' => (new Carbon())->toIso8601ZuluString(
+                    'millisecond'
+                ),
+                'errorParameters' => $errorParameters,
+            ]),
             $status,
             ['X-Date' => Headers::getXDate()]
         );

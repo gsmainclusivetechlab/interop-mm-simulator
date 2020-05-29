@@ -21,8 +21,10 @@ class AuthorizationsController extends Controller
      */
     public function show(Request $request, $id)
     {
-        app()->terminating(function() use ($request, $id) {
-            if (!$transaction = Transaction::whereTransactionId($id)->first()) {
+        app()->terminating(function () use ($request, $id) {
+            if (
+                !($transaction = Transaction::whereTransactionId($id)->first())
+            ) {
                 $transaction = Transaction::getCurrent();
             }
 
@@ -30,7 +32,9 @@ class AuthorizationsController extends Controller
                 [
                     'amount' => $request->query('amount'),
                     'currency' => $request->query('currency'),
-                    'requestDate' => (new Carbon())->toIso8601ZuluString('millisecond')
+                    'requestDate' => (new Carbon())->toIso8601ZuluString(
+                        'millisecond'
+                    ),
                 ],
                 ['traceparent' => $request->header('traceparent')],
                 strtolower($transaction->debitParty[0]['key']),
@@ -38,27 +42,34 @@ class AuthorizationsController extends Controller
             ))->send();
 
             if ($response->getStatusCode() === 201) {
-
-                (new \App\Requests\AuthorizationUpdate([
-                    'authenticationInfo' => [
-                        'authentication' => $request->query('authenticationType') ?? '',
-                        'authenticationValue' => \GuzzleHttp\json_decode($response->getBody())->authorisationCode ?? ''
+                (new \App\Requests\AuthorizationUpdate(
+                    [
+                        'authenticationInfo' => [
+                            'authentication' =>
+                                $request->query('authenticationType') ?? '',
+                            'authenticationValue' =>
+                                \GuzzleHttp\json_decode($response->getBody())
+                                    ->authorisationCode ?? '',
+                        ],
+                        'responseType' => 'ENTERED',
                     ],
-                    'responseType' => 'ENTERED',
-                ], [
-                    'traceparent'        => $request->header('traceparent'),
-                    'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
-                    'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
-                ], $id))->send();
+                    [
+                        'traceparent' => $request->header('traceparent'),
+                        'FSPIOP-Source' => $request->header(
+                            'FSPIOP-Destination'
+                        ),
+                        'FSPIOP-Destination' => $request->header(
+                            'FSPIOP-Source'
+                        ),
+                    ],
+                    $id
+                ))->send();
             }
         });
 
-        return new Response(
-            202,
-            [
-                'Content-Type' => 'application/json',
-                'X-Date' => Headers::getXDate()
-            ]
-        );
+        return new Response(202, [
+            'Content-Type' => 'application/json',
+            'X-Date' => Headers::getXDate(),
+        ]);
     }
 }

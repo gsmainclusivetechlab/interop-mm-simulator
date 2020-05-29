@@ -16,14 +16,12 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-		Registered::class => [
-            SendEmailVerificationNotification::class,
+        Registered::class => [SendEmailVerificationNotification::class],
+        'App\Events\TransactionSuccess' => [
+            'App\Listeners\TransactionSuccessListener',
         ],
-		'App\Events\TransactionSuccess' => [
-			'App\Listeners\TransactionSuccessListener'
-        ],
-		'App\Events\TransactionFailed' => [
-			'App\Listeners\TransactionFailedListener'
+        'App\Events\TransactionFailed' => [
+            'App\Listeners\TransactionFailedListener',
         ],
     ];
 

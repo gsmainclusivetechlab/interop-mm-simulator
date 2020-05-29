@@ -13,19 +13,20 @@ use Illuminate\Support\Env;
  */
 abstract class BaseCallback extends BaseRequest
 {
-	/**
-	 * @var Transaction
-	 */
-	protected $transaction;
+    /**
+     * @var Transaction
+     */
+    protected $transaction;
 
     public function __construct(Transaction $transaction)
     {
-		$this->transaction = $transaction;
+        $this->transaction = $transaction;
 
         parent::__construct(
-        	$this->collectData(),
-			$this->collectHeaders(),
-			Env::get('HOST_SERVICE_PROVIDER') . $transaction->callback_url);
+            $this->collectData(),
+            $this->collectHeaders(),
+            Env::get('HOST_SERVICE_PROVIDER') . $transaction->callback_url
+        );
 
         $this->method = 'PUT';
     }

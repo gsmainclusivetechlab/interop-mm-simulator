@@ -13,15 +13,12 @@ class QuotesControllerTest extends TestCase
      */
     public function testError()
     {
-        $response = $this->put(
-            route('quotes.error', ['id' => '+123123123']),
-            [
-                'errorInformation' => [
-                    'errorCode' => '1234',
-                    'errorDescription' => 'errorDescription',
-                ]
-            ]
-        );
+        $response = $this->put(route('quotes.error', ['id' => '+123123123']), [
+            'errorInformation' => [
+                'errorCode' => '1234',
+                'errorDescription' => 'errorDescription',
+            ],
+        ]);
 
         $response->assertStatus(200);
     }

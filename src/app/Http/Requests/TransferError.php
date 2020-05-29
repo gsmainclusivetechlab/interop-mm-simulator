@@ -19,4 +19,3 @@ class TransferError extends FormRequest
         return ValidationSets::errorInformation();
     }
 }
-

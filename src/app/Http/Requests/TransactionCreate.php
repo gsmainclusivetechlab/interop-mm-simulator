@@ -40,17 +40,17 @@ class TransactionCreate extends FormRequest
 {
     use ParseTraceId;
 
-	/**
-	 * Trace ID parsed from header traceparent
-	 *
-	 * @var string
-	 */
-	public $traceId;
+    /**
+     * Trace ID parsed from header traceparent
+     *
+     * @var string
+     */
+    public $traceId;
 
-	/**
-	 * Mapping transaction type from SP to Mojaloop
-	 */
-	const TYPE_MAP = [
+    /**
+     * Mapping transaction type from SP to Mojaloop
+     */
+    const TYPE_MAP = [
         'billpay' => 'PAYMENT',
         'deposit' => 'DEPOSIT',
         'disbursement' => 'PAYMENT',
@@ -70,35 +70,31 @@ class TransactionCreate extends FormRequest
     public function rules(): array
     {
         return array_merge(
-        	[
-				'amount'           => [
-					'required',
-					ValidationSets::amount()
-				],
-				'currency'         => [
-					'required',
-					ValidationSets::currencyMmo()
-				],
-				'type'             => ValidationSets::type(),
-				'subType'          => ValidationSets::standardString(),
-				'descriptionText'  => 'string|max:160|nullable',
-				'requestDate'      => ValidationSets::dateTime(),
-				'requestingOrganisationTransactionReference' => ValidationSets::standardString(),
-				'oneTimeCode'      => ValidationSets::standardString(),
-				'geoCode'          => ValidationSets::geoCodeMmo(),
-				'originalTransactionReference' => ValidationSets::standardString(),
-				'servicingIdentity' => ValidationSets::standardString(),
-				'requestingLei' => ValidationSets::lei(),
-				'receivingLei' => ValidationSets::lei(),
-			],
-			ValidationSets::partyArray('debitParty'),
-			ValidationSets::partyArray('creditParty'),
-			ValidationSets::kyc('senderKyc'),
-			ValidationSets::kyc('recipientKyc'),
-			ValidationSets::feesArray('fees'),
-			ValidationSets::metadataArray('metadata'),
-			ValidationSets::internationalTransferInformation('internationalTransferInformation')
-		);
+            [
+                'amount' => ['required', ValidationSets::amount()],
+                'currency' => ['required', ValidationSets::currencyMmo()],
+                'type' => ValidationSets::type(),
+                'subType' => ValidationSets::standardString(),
+                'descriptionText' => 'string|max:160|nullable',
+                'requestDate' => ValidationSets::dateTime(),
+                'requestingOrganisationTransactionReference' => ValidationSets::standardString(),
+                'oneTimeCode' => ValidationSets::standardString(),
+                'geoCode' => ValidationSets::geoCodeMmo(),
+                'originalTransactionReference' => ValidationSets::standardString(),
+                'servicingIdentity' => ValidationSets::standardString(),
+                'requestingLei' => ValidationSets::lei(),
+                'receivingLei' => ValidationSets::lei(),
+            ],
+            ValidationSets::partyArray('debitParty'),
+            ValidationSets::partyArray('creditParty'),
+            ValidationSets::kyc('senderKyc'),
+            ValidationSets::kyc('recipientKyc'),
+            ValidationSets::feesArray('fees'),
+            ValidationSets::metadataArray('metadata'),
+            ValidationSets::internationalTransferInformation(
+                'internationalTransferInformation'
+            )
+        );
     }
 
     /**
@@ -112,22 +108,22 @@ class TransactionCreate extends FormRequest
         $result = [
             'transactionRequestId' => Str::uuid(),
             'payee' => [
-                'partyIdInfo'  => [
-                    'partyIdType'     => strtoupper($this->creditParty[0]['key']),
+                'partyIdInfo' => [
+                    'partyIdType' => strtoupper($this->creditParty[0]['key']),
                     'partyIdentifier' => $this->creditParty[0]['value'],
                 ],
             ],
             'payer' => [
-                'partyIdType'     => strtoupper($this->debitParty[0]['key']),
+                'partyIdType' => strtoupper($this->debitParty[0]['key']),
                 'partyIdentifier' => $this->debitParty[0]['value'],
             ],
             'amount' => [
                 'currency' => $this->currency,
-                'amount'   => "$amount",
+                'amount' => "$amount",
             ],
             'transactionType' => [
-                'scenario'      => self::TYPE_MAP[$this->type],
-                'initiator'     => 'PAYEE',
+                'scenario' => self::TYPE_MAP[$this->type],
+                'initiator' => 'PAYEE',
                 'initiatorType' => 'BUSINESS',
             ],
         ];
@@ -140,40 +136,50 @@ class TransactionCreate extends FormRequest
         return $result;
     }
 
-	/**
-	 * Configure the validator instance
-	 *
-	 * @param Validator $validator
-	 */
-	public function withValidator(Validator $validator)
+    /**
+     * Configure the validator instance
+     *
+     * @param Validator $validator
+     */
+    public function withValidator(Validator $validator)
     {
         $validator->after(function ($validator) {
-            $headerValidator = \Illuminate\Support\Facades\Validator::make($this->headers->all(), [
-                'traceparent.0' => [
-                    'required',
-                    new Traceparent(),
+            $headerValidator = \Illuminate\Support\Facades\Validator::make(
+                $this->headers->all(),
+                [
+                    'traceparent.0' => ['required', new Traceparent()],
+                    'x-callback-url.0' => ['required', 'url'],
                 ],
-                'x-callback-url.0' => [
-                    'required',
-                    'url',
+                [
+                    'traceparent.0.required' => __(
+                        'Header traceparent is required!'
+                    ),
+                    'x-callback-url.0.required' => __(
+                        'Header X-BaseCallback-URL is required!'
+                    ),
+                    'x-callback-url.0.url' => __(
+                        'Header X-BaseCallback-URL has wrong format!'
+                    ),
                 ]
-            ], [
-                'traceparent.0.required' => __('Header traceparent is required!'),
-                'x-callback-url.0.required' => __('Header X-BaseCallback-URL is required!'),
-                'x-callback-url.0.url' => __('Header X-BaseCallback-URL has wrong format!'),
-            ]);
+            );
 
             if ($headerValidator->fails()) {
                 $validator->messages()->merge($headerValidator->messages());
                 return;
             }
 
-            $this->traceId = self::parseTraceId($this->headers->get('traceparent'));
-            $traceValidate = \Illuminate\Support\Facades\Validator::make(['trace_id' => $this->traceId], [
-                'trace_id' => ['unique:transactions,trace_id'],
-            ], [
-                'trace_id' => __('Header traceparent exist')
-            ]);
+            $this->traceId = self::parseTraceId(
+                $this->headers->get('traceparent')
+            );
+            $traceValidate = \Illuminate\Support\Facades\Validator::make(
+                ['trace_id' => $this->traceId],
+                [
+                    'trace_id' => ['unique:transactions,trace_id'],
+                ],
+                [
+                    'trace_id' => __('Header traceparent exist'),
+                ]
+            );
 
             if ($traceValidate->fails()) {
                 $validator->messages()->merge($traceValidate->messages());
@@ -192,7 +198,7 @@ class TransactionCreate extends FormRequest
             $geoCodeParts = explode(',', $this->geoCode);
 
             $result['geoCode'] = [
-                'latitude'  => $geoCodeParts[0],
+                'latitude' => $geoCodeParts[0],
                 'longitude' => $geoCodeParts[1],
             ];
         }
@@ -209,7 +215,7 @@ class TransactionCreate extends FormRequest
         if ($this->metadata) {
             $result['extensionList']['extension'] = [
                 [
-                    'key'   => Arr::get($this->metadata, '0.key'),
+                    'key' => Arr::get($this->metadata, '0.key'),
                     'value' => Arr::get($this->metadata, '0.value'),
                 ],
             ];
@@ -226,8 +232,10 @@ class TransactionCreate extends FormRequest
     {
         $checkRecipientKyc = [
             'subjectName.fullName' => 'payee.name',
-            'subjectName.firstName' => 'payee.personalInfo.complexName.firstName',
-            'subjectName.middleName' => 'payee.personalInfo.complexName.middleName',
+            'subjectName.firstName' =>
+                'payee.personalInfo.complexName.firstName',
+            'subjectName.middleName' =>
+                'payee.personalInfo.complexName.middleName',
             'subjectName.lastName' => 'payee.personalInfo.complexName.lastName',
             'dateOfBirth' => 'payee.personalInfo.dateOfBirth',
         ];
@@ -249,7 +257,8 @@ class TransactionCreate extends FormRequest
     {
         $checkData = [
             'subType' => 'transactionType.subScenario',
-            'requestingOrganisationTransactionReference' => 'transactionType.refundInfo.originalTransactionId',
+            'requestingOrganisationTransactionReference' =>
+                'transactionType.refundInfo.originalTransactionId',
             'descriptionText' => 'note',
         ];
 
@@ -266,4 +275,3 @@ class TransactionCreate extends FormRequest
         return $result;
     }
 }
-

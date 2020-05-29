@@ -65,14 +65,10 @@ class BaseRequest implements RequestContract
         $client = new Client();
 
         try {
-            $response = $client->request(
-                $this->method,
-                $this->url,
-                [
-                    'headers' => $this->headers,
-                    'json' => $this->data
-                ]
-            );
+            $response = $client->request($this->method, $this->url, [
+                'headers' => $this->headers,
+                'json' => $this->data,
+            ]);
 
             $responseLog = $response->getBody()->getContents();
         } catch (BadResponseException $e) {
@@ -81,9 +77,14 @@ class BaseRequest implements RequestContract
         }
 
         Log::info(
-            "{$this->method} " . $this->url . ' ' . $response->getStatusCode() . PHP_EOL
-            . json_encode($this->data) . PHP_EOL
-//            . $responseLog
+            "{$this->method} " .
+                $this->url .
+                ' ' .
+                $response->getStatusCode() .
+                PHP_EOL .
+                json_encode($this->data) .
+                PHP_EOL
+            //            . $responseLog
         );
 
         return $response;

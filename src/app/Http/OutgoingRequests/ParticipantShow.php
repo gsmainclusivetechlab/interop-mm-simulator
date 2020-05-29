@@ -26,13 +26,16 @@ class ParticipantShow extends BaseRequest
         parent::__construct(
             $data,
             $headers,
-            Env::get('HOST_ACCOUNT_LOOKUP_SERVICE') . "participants/{$type}/{$id}"
+            Env::get('HOST_ACCOUNT_LOOKUP_SERVICE') .
+                "participants/{$type}/{$id}"
         );
 
         $this->method = 'GET';
 
-        $this->headers['Accept'] = 'application/vnd.interoperability.participants+json';
-        $this->headers['Content-Type'] = 'application/vnd.interoperability.participants+json;version=1.0';
+        $this->headers['Accept'] =
+            'application/vnd.interoperability.participants+json';
+        $this->headers['Content-Type'] =
+            'application/vnd.interoperability.participants+json;version=1.0';
         $this->headers['Date'] = (new Carbon())->toRfc7231String();
         $this->headers['FSPIOP-Source'] = Env::get('FSPIOP_SOURCE');
     }

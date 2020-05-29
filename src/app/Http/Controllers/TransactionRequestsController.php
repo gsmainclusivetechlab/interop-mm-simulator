@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Enums\TransactionRequestStateEnum;
@@ -22,12 +21,15 @@ class TransactionRequestsController extends Controller
     /**
      * @param TransactionRequestUpdate $request
      * @param $id
-	 *
+     *
      * @return Response
      */
     public function update(TransactionRequestUpdate $request, $id)
     {
-        if ($request->transactionRequestState === TransactionRequestStateEnum::REJECTED) {
+        if (
+            $request->transactionRequestState ===
+            TransactionRequestStateEnum::REJECTED
+        ) {
             event(new TransactionFailed());
         }
 
@@ -36,13 +38,10 @@ class TransactionRequestsController extends Controller
             $transaction->update(['transactionId' => $id]);
         }
 
-        return new Response(
-        	200,
-            [
-            	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
-			]
-		);
+        return new Response(200, [
+            'Content-Type' => 'application/json',
+            'X-Date' => Headers::getXDate(),
+        ]);
     }
 
     /**
@@ -54,12 +53,9 @@ class TransactionRequestsController extends Controller
     {
         event(new TransactionFailed());
 
-        return new Response(
-        	200,
-            [
-            	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
-			]
-		);
+        return new Response(200, [
+            'Content-Type' => 'application/json',
+            'X-Date' => Headers::getXDate(),
+        ]);
     }
 }

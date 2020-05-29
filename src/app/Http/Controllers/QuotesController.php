@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Events\TransactionFailed;
@@ -26,18 +25,27 @@ class QuotesController extends Controller
      */
     public function store(QuoteCreate $request)
     {
-        app()->terminating(function() use ($request) {
+        app()->terminating(function () use ($request) {
             if (TriggerRulesSets::amountQuote($request->amount['amount'])) {
-                $response = (new \App\Requests\QuoteError([
-                    'errorInformation' => [
-                        'errorCode' => '5103',
-                        'errorDescription' => 'Payee FSP does not want to proceed with the financial transaction after receiving a quote.'
-                    ]
-                ], [
-                    'traceparent'        => $request->header('traceparent'),
-                    'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
-                    'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
-                ], $request->quoteId))->send();
+                $response = (new \App\Requests\QuoteError(
+                    [
+                        'errorInformation' => [
+                            'errorCode' => '5103',
+                            'errorDescription' =>
+                                'Payee FSP does not want to proceed with the financial transaction after receiving a quote.',
+                        ],
+                    ],
+                    [
+                        'traceparent' => $request->header('traceparent'),
+                        'FSPIOP-Source' => $request->header(
+                            'FSPIOP-Destination'
+                        ),
+                        'FSPIOP-Destination' => $request->header(
+                            'FSPIOP-Source'
+                        ),
+                    ],
+                    $request->quoteId
+                ))->send();
 
                 if ($response->getStatusCode() === 200) {
                     event(new TransactionFailed());
@@ -47,24 +55,30 @@ class QuotesController extends Controller
             }
 
             $transaction = Transaction::getCurrent();
-            if (empty($transaction->transactionId) && !empty($request->transactionRequestId)) {
-                $transaction->update(['transactionId' => $request->transactionRequestId]);
+            if (
+                empty($transaction->transactionId) &&
+                !empty($request->transactionRequestId)
+            ) {
+                $transaction->update([
+                    'transactionId' => $request->transactionRequestId,
+                ]);
             }
 
-            (new \App\Requests\QuoteUpdate($request->mapInTo(), [
-                'traceparent'        => $request->header('traceparent'),
-                'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
-                'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
-            ], $request->quoteId))->send();
+            (new \App\Requests\QuoteUpdate(
+                $request->mapInTo(),
+                [
+                    'traceparent' => $request->header('traceparent'),
+                    'FSPIOP-Source' => $request->header('FSPIOP-Destination'),
+                    'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
+                ],
+                $request->quoteId
+            ))->send();
         });
 
-        return new Response(
-        	202,
-            [
-            	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
-			]
-		);
+        return new Response(202, [
+            'Content-Type' => 'application/json',
+            'X-Date' => Headers::getXDate(),
+        ]);
     }
 
     /**
@@ -74,21 +88,18 @@ class QuotesController extends Controller
      */
     public function update(QuoteUpdate $request, $id)
     {
-        app()->terminating(function() use ($request) {
+        app()->terminating(function () use ($request) {
             (new \App\Requests\TransferStore($request->mapInTo(), [
-                'traceparent'        => $request->header('traceparent'),
-                'FSPIOP-Source'      => $request->header('FSPIOP-Destination'),
+                'traceparent' => $request->header('traceparent'),
+                'FSPIOP-Source' => $request->header('FSPIOP-Destination'),
                 'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
             ]))->send();
         });
 
-        return new Response(
-            200,
-            [
-                'Content-Type' => 'application/json',
-                'X-Date' => Headers::getXDate()
-            ]
-        );
+        return new Response(200, [
+            'Content-Type' => 'application/json',
+            'X-Date' => Headers::getXDate(),
+        ]);
     }
 
     /**
@@ -97,12 +108,9 @@ class QuotesController extends Controller
      */
     public function error(QuoteError $request, $id)
     {
-        return new Response(
-        	200,
-            [
-            	'Content-Type' => 'application/json',
-            	'X-Date' => Headers::getXDate()
-			]
-		);
+        return new Response(200, [
+            'Content-Type' => 'application/json',
+            'X-Date' => Headers::getXDate(),
+        ]);
     }
 }

@@ -19,4 +19,3 @@ class QuoteError extends FormRequest
         return ValidationSets::errorInformation();
     }
 }
-

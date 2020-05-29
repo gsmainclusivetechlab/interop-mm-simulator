@@ -13,12 +13,12 @@ class ParticipantsControllerTest extends TestCase
      */
     public function testUpdate()
     {
-        $response = $this->put(route('participants.update',
-            [
+        $response = $this->put(
+            route('participants.update', [
                 'type' => 'MSISDN',
                 'id' => '+123123123',
-            ]
-        ));
+            ])
+        );
 
         $response->assertStatus(200);
     }
@@ -30,12 +30,12 @@ class ParticipantsControllerTest extends TestCase
      */
     public function testError()
     {
-        $response = $this->put(route('participants.error',
-            [
+        $response = $this->put(
+            route('participants.error', [
                 'type' => 'MSISDN',
                 'id' => '+123123123',
-            ]
-        ));
+            ])
+        );
 
         $response->assertStatus(200);
     }

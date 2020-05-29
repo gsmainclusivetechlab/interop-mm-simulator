@@ -17,8 +17,10 @@ class TransfersControllerTest extends TestCase
     public function testUpdate()
     {
         $this->withoutEvents();
-        $request = new TransferCreate;
-        $completedTimestamp = (new Carbon())->toIso8601ZuluString('millisecond');
+        $request = new TransferCreate();
+        $completedTimestamp = (new Carbon())->toIso8601ZuluString(
+            'millisecond'
+        );
         $data = $request->mapInTo($completedTimestamp);
         $response = $this->put(
             route('transfers.update', ['id' => Str::uuid()]),
@@ -42,7 +44,7 @@ class TransfersControllerTest extends TestCase
                 'errorInformation' => [
                     'errorCode' => '1234',
                     'errorDescription' => 'errorDescription',
-                ]
+                ],
             ]
         );
 
