@@ -3,11 +3,19 @@
 version: 2.1
 orbs:
   coverage-reporter: codacy/coverage-reporter@10.0.3
+executors:
+  # Define a machine who has support for docker compose 3.7
+  standard:
+    machine:
+      image: ubuntu-1604:201903-01
+    working_directory: ~/repo
+  test:
+    docker:
+      - image: gsmainclusivetechlab/interop-php-fpm:latest
+    working_directory: ~/repo
 jobs:
   build:
-    machine:
-      image: ubuntu-1604:201903-01 # Define a machine who has support for docker compose 3.7
-    working_directory: ~/repo
+    executor: standard
     
     steps:
       - checkout
@@ -34,7 +42,7 @@ jobs:
       - save_cache:
           key: composer-v1-{{ checksum "src/composer.lock" }}
           paths:
-            - vendor
+            - src/vendor
 
       - run: 
           name: Check installation
@@ -46,28 +54,75 @@ jobs:
                 echo "Installation fail"
                 exit 2
             fi
+
       - run:
           name: Run Tests
           command: make test
-      
-      - run:
-          name: Run Tests Coverage
-          command: make test-coverage
 
-      - coverage-reporter/send_report:
-          coverage-reports: src/tests/results/coverage-report-clover/clover.xml
-          project-token: $CODACY_PROJECT_TOKEN
-          
-      - run:
-          name: Copy codacy json report to results page
-          command: sudo cp /var/tmp/codacy-coverage-*.json /home/circleci/repo/src/tests/results/
-          
       #store tests and code coverage
       - store_test_results:
           path: src/tests/results
       - store_artifacts:
           path: src/tests/results
+
+  test-coverage-run:
+    executor: test
+    
+    steps:
+      - checkout
+      
+      - run: 
+          name: Generate configuration files
+          command: make init
           
+      - restore_cache: 
+          keys:
+            - composer-v1-test{{ checksum "src/composer.lock" }}
+            - composer-v1-test
+
+      - run: 
+          name: Install Componser dependecies
+          command: |
+            cd src
+            make composer-install
+      
+      - save_cache:
+          key: composer-v1-test{{ checksum "src/composer.lock" }}
+          paths:
+            - src/vendor
+
+      - run:
+          name: Run Tests Coverage
+          command: |
+            cd src
+            make test-coverage
+          
+      - store_artifacts:
+          path: src/tests/results
+          
+      - persist_to_workspace:      
+          root: ~/repo/src/tests
+          paths:
+            - results
+          
+  test-coverage-codacy:
+    executor: test
+    
+    steps:
+      - attach_workspace:
+          at: ~/repo/src/tests
+          
+      - coverage-reporter/send_report:
+          coverage-reports: src/tests/results/coverage-report-clover/clover.xml
+          project-token: $CODACY_PROJECT_TOKEN
+      
+      - run:
+          name: Copy codacy json report to results page
+          command: sudo cp /var/tmp/codacy-coverage-*.json ~/repo/src/tests/results/
+          
+      - store_artifacts:
+          path: src/tests/results
+    
 workflows:
   version: 2
   build_and_test:
@@ -78,4 +133,20 @@ workflows:
               only:
                 - master
                 - develop
-                - codacy-code-coverage
+                - codacy-coverage-test
+      - test-coverage-run:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - codacy-coverage-test
+      - test-coverage-codacy:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - codacy-coverage-test
+          requires:
+            - test-coverage-run
