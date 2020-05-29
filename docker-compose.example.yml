@@ -63,11 +63,3 @@ services:
     volumes:
       - ./runtime/mysql:/var/lib/mysql
       - ./build/my.cnf:/etc/mysql/my.cnf
-
-  nodejs:
-    image: gsmainclusivetechlab/interop-nodejs:latest
-    # enable watch poll mode if not supported by js builder.
-    #    environment:
-    #      CHOKIDAR_USEPOLLING: 1
-    volumes:
-      - ./src:/var/www/html
