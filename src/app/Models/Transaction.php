@@ -60,19 +60,9 @@ class Transaction extends Model
 {
     use ParseTraceId;
 
-    const STATUSES = [
-        'Pending',
-        'Completed',
-        'Failed'
-    ];
+    const STATUSES = ['Pending', 'Completed', 'Failed'];
 
-    const TYPES = [
-        'DEPOSIT',
-        'WITHDRAWAL',
-        'TRANSFER',
-        'PAYMENT',
-        'REFUND'
-    ];
+    const TYPES = ['DEPOSIT', 'WITHDRAWAL', 'TRANSFER', 'PAYMENT', 'REFUND'];
 
     /**
      * The primary key associated with the table.
@@ -144,7 +134,9 @@ class Transaction extends Model
      */
     public static function getCurrent(): ?Transaction
     {
-        $transaction = self::find(self::parseTraceId(resolve(Request::class)->header('traceparent')));
+        $transaction = self::find(
+            self::parseTraceId(resolve(Request::class)->header('traceparent'))
+        );
 
         if (!$transaction) {
             throw new BadRequestHttpException();

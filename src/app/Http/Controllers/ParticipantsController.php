@@ -25,10 +25,12 @@ class ParticipantsController extends Controller
      */
     public function update(Request $request, $type, $id)
     {
-        app()->terminating(function() use ($request, $id) {
+        app()->terminating(function () use ($request, $id) {
             if (TriggerRulesSets::participantMerchant($id)) {
                 $transaction = Transaction::getCurrent();
-                $transactionRequest = (new TransactionCreate())->merge($transaction->attributesToArray());
+                $transactionRequest = (new TransactionCreate())->merge(
+                    $transaction->attributesToArray()
+                );
 
                 (new TransactionRequest($transactionRequest->mapInTo(), [
                     'traceparent' => $request->header('traceparent'),
@@ -42,13 +44,10 @@ class ParticipantsController extends Controller
             }
         });
 
-        return new Response(
-            200,
-            [
-                'Content-Type' => 'application/json',
-                'X-Date' => Headers::getXDate()
-            ]
-        );
+        return new Response(200, [
+            'Content-Type' => 'application/json',
+            'X-Date' => Headers::getXDate(),
+        ]);
     }
 
     /**
@@ -59,12 +58,9 @@ class ParticipantsController extends Controller
      */
     public function error(Request $request, $type, $id)
     {
-        return new Response(
-            200,
-            [
-                'Content-Type' => 'application/json',
-                'X-Date' => Headers::getXDate()
-            ]
-        );
+        return new Response(200, [
+            'Content-Type' => 'application/json',
+            'X-Date' => Headers::getXDate(),
+        ]);
     }
 }

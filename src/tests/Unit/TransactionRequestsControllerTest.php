@@ -27,7 +27,7 @@ class TransactionRequestsControllerTest extends TestCase
             route('transaction_requests.update', ['id' => Str::uuid()]),
             $data,
             [
-                'traceparent' => '00-' . $model->trace_id
+                'traceparent' => '00-' . $model->trace_id,
             ]
         );
 
@@ -51,7 +51,7 @@ class TransactionRequestsControllerTest extends TestCase
             route('transaction_requests.update', ['id' => Str::uuid()]),
             $data,
             [
-                'traceparent' => '00-' . $model->trace_id
+                'traceparent' => '00-' . $model->trace_id,
             ]
         );
 
@@ -72,7 +72,7 @@ class TransactionRequestsControllerTest extends TestCase
                 'errorInformation' => [
                     'errorCode' => '1234',
                     'errorDescription' => 'errorDescription',
-                ]
+                ],
             ]
         );
 

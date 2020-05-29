@@ -21,12 +21,17 @@ class AccountStore extends BaseRequest
      * @param $identifierType
      * @param $identifier
      */
-    public function __construct(array $data, array $headers, $identifierType, $identifier)
-    {
+    public function __construct(
+        array $data,
+        array $headers,
+        $identifierType,
+        $identifier
+    ) {
         parent::__construct(
             $data,
             $headers,
-            Env::get('HOST_SERVICE_PROVIDER') . "accounts/{$identifierType}/{$identifier}/authorisationcodes"
+            Env::get('HOST_SERVICE_PROVIDER') .
+                "accounts/{$identifierType}/{$identifier}/authorisationcodes"
         );
 
         $this->method = 'POST';
