@@ -12,6 +12,12 @@ executors:
   test:
     docker:
       - image: gsmainclusivetechlab/interop-php-fpm:latest
+      - image: circleci/mysql:8.0.4
+        environment:
+          MYSQL_ROOT_PASSWORD: developer
+          MYSQL_DATABASE: itp-mmo-api-control
+          MYSQL_USER: itp-mmo-api-control
+          MYSQL_PASSWORD: developer
     working_directory: ~/repo
 jobs:
   build:
@@ -75,6 +81,17 @@ jobs:
           name: Generate configuration files
           command: make init
           
+      - run:
+          name: Waiting for MySQL to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
+            
       - restore_cache: 
           keys:
             - composer-v1-test{{ checksum "src/composer.lock" }}
@@ -84,7 +101,7 @@ jobs:
           name: Install Componser dependecies
           command: |
             cd src
-            make composer-install
+            make install
       
       - save_cache:
           key: composer-v1-test{{ checksum "src/composer.lock" }}
@@ -106,7 +123,8 @@ jobs:
             - results
           
   test-coverage-codacy:
-    executor: test
+    docker:
+      - image: 'circleci/openjdk:8-jdk'
     
     steps:
       - attach_workspace:
@@ -133,7 +151,6 @@ workflows:
               only:
                 - master
                 - develop
-                - codacy-coverage-test
       - test-coverage-run:
           filters:
             branches:
