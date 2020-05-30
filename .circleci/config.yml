@@ -80,17 +80,6 @@ jobs:
       - run: 
           name: Generate configuration files
           command: make init
-          
-      - run:
-          name: Waiting for MySQL to be ready
-          command: |
-            for i in `seq 1 60`;
-            do
-              nc -z 127.0.0.1 3306 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for MySQL && exit 1
             
       - restore_cache: 
           keys:
@@ -100,6 +89,7 @@ jobs:
       - run: 
           name: Install Componser dependecies
           command: |
+            sleep 15
             cd src
             make install
       
