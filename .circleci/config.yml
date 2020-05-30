@@ -14,11 +14,11 @@ executors:
       - image: gsmainclusivetechlab/interop-php-fpm:latest
       - image: circleci/mysql:5.7
         environment:
-          MYSQL_ROOT_HOST="%"
-          MYSQL_ROOT_PASSWORD=developer
-          MYSQL_DATABASE=itp-mmo-api-control
-          MYSQL_USER=itp-mmo-api-control
-          MYSQL_PASSWORD=developer
+          MYSQL_ROOT_HOST: "%"
+          MYSQL_ROOT_PASSWORD: developer
+          MYSQL_DATABASE: itp-mmo-api-control
+          MYSQL_USER: itp-mmo-api-control
+          MYSQL_PASSWORD: developer
     working_directory: ~/repo
 jobs:
   build:
