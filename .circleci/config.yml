@@ -113,7 +113,7 @@ jobs:
           
   test-coverage-codacy:
     docker:
-      - image: 'circleci/openjdk:8-jdk'
+      - image: gsmainclusivetechlab/interop-php-fpm:latest
     working_directory: ~/repo
     
     steps:
