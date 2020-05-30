@@ -12,12 +12,12 @@ executors:
   test:
     docker:
       - image: gsmainclusivetechlab/interop-php-fpm:latest
-      - image: circleci/mysql:8.0.4
+      - image: mysql:5.7
         environment:
-          MYSQL_ROOT_PASSWORD: developer
-          MYSQL_DATABASE: itp-mmo-api-control
-          MYSQL_USER: itp-mmo-api-control
-          MYSQL_PASSWORD: developer
+          MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+          MYSQL_DATABASE: ${MYSQL_DATABASE}
+          MYSQL_USER: ${MYSQL_USER}
+          MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     working_directory: ~/repo
 jobs:
   build:
