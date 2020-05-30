@@ -14,6 +14,7 @@ executors:
       - image: gsmainclusivetechlab/interop-php-fpm:latest
       - image: circleci/mysql:5.7
         environment:
+          MYSQL_ROOT_HOST=%
           MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
           MYSQL_DATABASE=${MYSQL_DATABASE}
           MYSQL_USER=${MYSQL_USER}
