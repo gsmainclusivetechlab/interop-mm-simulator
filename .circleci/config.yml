@@ -62,17 +62,7 @@ jobs:
                 exit 2
             fi
 
-      - run:
-          name: Run Tests
-          command: make test
-
-      #store tests and code coverage
-      - store_test_results:
-          path: src/tests/results
-      - store_artifacts:
-          path: src/tests/results
-
-  test-coverage-run:
+  test-run:
     executor: test
     
     steps:
@@ -100,11 +90,17 @@ jobs:
             - src/vendor
 
       - run:
+          name: Run Tests
+          command: make test
+          
+      - run:
           name: Run Tests Coverage
           command: |
             cd src
             make test-coverage
-          
+ 
+      - store_test_results:
+          path: src/tests/results
       - store_artifacts:
           path: src/tests/results
           
@@ -130,6 +126,8 @@ jobs:
           name: Copy codacy json report to results page
           command: sudo cp /var/tmp/codacy-coverage-*.json ~/repo/src/tests/results/
           
+      - store_test_results:
+          path: src/tests/results
       - store_artifacts:
           path: src/tests/results
     
@@ -143,7 +141,7 @@ workflows:
               only:
                 - master
                 - develop
-      - test-coverage-run:
+      - test-run:
           filters:
             branches:
               only:
@@ -158,4 +156,4 @@ workflows:
                 - develop
                 - codacy-coverage-test
           requires:
-            - test-coverage-run
+            - test-run
