@@ -26,13 +26,12 @@ endif
 install: chmod composer-install
 	php artisan key:generate
 	php artisan migrate:fresh --seed
-	php artisan test
 
 update: chmod composer-install cache-clear
 	php artisan key:generate
 	php artisan migrate:fresh --seed
 	php artisan queue:restart
-	php artisan test
+    
 test:
 	php artisan test --testdox --log-junit tests/results/results.xml
     
