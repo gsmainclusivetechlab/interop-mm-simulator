@@ -125,7 +125,7 @@ jobs:
           project-token: $CODACY_PROJECT_TOKEN
       
       - run:
-          name: Copy codacy json report to results page
+          name: Copy codacy json report to artifact
           command: sudo cp /var/tmp/codacy-coverage-*.json ~/repo/src/tests/results/
           
       - store_test_results:
