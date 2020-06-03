@@ -158,16 +158,16 @@ jobs:
           command: |
             docker load -i /tmp/image-php.tgz
             docker load -i /tmp/image-mysqldb.tgz
-            docker load -i /tmp/image-web
-      - run:
-          name: Login to Docker Hub
-          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker load -i /tmp/image-web.tgz
       - run:
           name: Re-tag pre built images
           command: |
             docker tag gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_SHA1  gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_TAG
             docker tag gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_SHA1  gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_TAG
             docker tag gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_SHA1  gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_TAG
+      - run:
+          name: Login to Docker Hub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Publish Docker images $CIRCLE_TAG
           command: |
@@ -189,7 +189,7 @@ jobs:
           command: |
             docker load -i /tmp/image-php.tgz
             docker load -i /tmp/image-mysqldb.tgz
-            docker load -i /tmp/image-web
+            docker load -i /tmp/image-web.tgz
       - run:
           name: Deploy images to EC2
           command: "Coming soon!"
