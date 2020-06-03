@@ -1,159 +1,252 @@
 # Interop Mobile Money Simulator CircleCI
 
 version: 2.1
+
 orbs:
   coverage-reporter: codacy/coverage-reporter@10.0.3
+
 executors:
   # Define a machine who has support for docker compose 3.7
   standard:
     machine:
       image: ubuntu-1604:201903-01
-    working_directory: ~/repo
+    working_directory: /home/circleci/project
+
   test:
     docker:
       - image: gsmainclusivetechlab/interop-php-fpm:latest
       - image: circleci/mysql:5.7
         environment:
-          MYSQL_ROOT_HOST: "%"
+          MYSQL_ROOT_HOST: '%'
           MYSQL_ROOT_PASSWORD: developer
           MYSQL_DATABASE: itp-mmo-api-control
           MYSQL_USER: itp-mmo-api-control
           MYSQL_PASSWORD: developer
     working_directory: ~/repo
+
 jobs:
-  build:
+  build-php:
     executor: standard
-    
     steps:
       - checkout
+      - run:
+          name: Copy configuration files
+          command: cp ./src/.env.example ./src/.env
+      - run:
+          name: Build Docker Image
+          command: |
+            echo "Building Docker Image: gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_TAG"
+            docker build -t gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_TAG .
+      - run:
+          name: Save docker images to workspace
+          command: |
+            docker save gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_TAG | gzip > /tmp/image-php.tgz
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./image-php.tgz
 
-      - run: 
-          name: Generate configuration files
-          command: make init
-
-      - run: 
-          name: Run docker containers
-          command: | 
-            make run
-            sleep 15
-          
-      - restore_cache: 
+      - restore_cache:
           keys:
             - composer-v1-{{ checksum "src/composer.lock" }}
             - composer-v1-
 
-      - run: 
-          name: Install Componser dependecies
-          command: make install
-      
-      - save_cache:
-          key: composer-v1-{{ checksum "src/composer.lock" }}
-          paths:
-            - src/vendor
-
-      - run: 
-          name: Check installation
-          command: |
-            FILE=./runtime/installed
-            if test -f "$FILE"; then
-                echo "Installation succesful"
-            else 
-                echo "Installation fail"
-                exit 2
-            fi
-
-  test-run:
-    executor: test
-    
+  build-web:
+    executor: standard
     steps:
       - checkout
-      
-      - run: 
-          name: Generate configuration files
-          command: make init
-            
-      - restore_cache: 
-          keys:
-            - composer-v1-test{{ checksum "src/composer.lock" }}
-            - composer-v1-test
-
-      - run: 
-          name: Install Componser dependecies
+      - run:
+          name: Copy configuration files
+          command: cp ./src/.env.example ./src/.env
+      - run:
+          name: Build Docker Image
           command: |
-            sleep 15
-            cd src
-            make install
-      
-      - save_cache:
-          key: composer-v1-test{{ checksum "src/composer.lock" }}
+            echo "Building Docker Image: gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_TAG"
+            docker build -t gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_TAG .
+      - run:
+          name: Save docker images to workspace
+          command: |
+            docker save gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_TAG | gzip > /tmp/image-web.tgz
+      - persist_to_workspace:
+          root: /tmp
           paths:
-            - src/vendor
+            - ./image-web.tgz
 
+  build-mysqldb:
+    executor: standard
+    steps:
+      - checkout
       - run:
-          name: Run Tests
-          command: |
-            cd src
-            make test
-          
+          name: Copy configuration files
+          command: cp ./src/.env.example ./src/.env
       - run:
-          name: Run Tests Coverage
+          name: Build Docker Image
           command: |
-            cd src
-            make test-coverage
- 
+            echo "Building Docker Image: gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_TAG"
+            docker build -t gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_TAG .
+      - run:
+          name: Save docker images to workspace
+          command: |
+            docker save gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_TAG | gzip > /tmp/image-mysqldb.tgz
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./image-mysqldb.tgz
+
+  test:
+    executor: standard
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built images from workspace
+          command: |
+            docker load -i /tmp/image-php.tgz
+            docker load -i /tmp/image-mysqldb.tgz
+      - run:
+          name: Copy configuration files
+          command: cp .env.example .env
+      - run:
+          name: Run Tests and get coverage
+          command: |
+            docker-compose run -v /tmp/results:/tmp/results php bash -c "\
+              php artisan test --log-junit /tmp/results/results.xml && \
+              phpdbg -qrr vendor/bin/phpunit \
+                --coverage-html /tmp/results/coverage-report-html \
+                --coverage-clover /tmp/results/coverage-report-clover/clover.xml \
+            "
       - store_test_results:
-          path: src/tests/results
+          path: /tmp/results
       - store_artifacts:
-          path: src/tests/results
-          
-      - persist_to_workspace:      
-          root: ~/repo/src/tests
+          path: /tmp/results
+      - persist_to_workspace:
+          root: /tmp
           paths:
-            - results
-          
-  test-coverage-codacy:
-    docker:
-      - image: gsmainclusivetechlab/interop-php-fpm:latest
-    working_directory: ~/repo
-    
+            - ./results
+
+  report-coverage:
+    executor: standard
+
     steps:
       - attach_workspace:
-          at: ~/repo/src/tests
-          
+          at: /tmp
+
       - coverage-reporter/send_report:
-          coverage-reports: src/tests/results/coverage-report-clover/clover.xml
+          coverage-reports: /tmp/results/coverage-report-clover/clover.xml
           project-token: $CODACY_PROJECT_TOKEN
-      
+
       - run:
           name: Copy codacy json report to artifact
-          command: sudo cp /var/tmp/codacy-coverage-*.json ~/repo/src/tests/results/
-          
+          command: sudo cp /var/tmp/codacy-coverage-*.json /tests/results/
+
       - store_test_results:
-          path: src/tests/results
+          path: /tmp/results
       - store_artifacts:
-          path: src/tests/results
-    
+          path: /tmp/results
+
+  publish:
+    executor: standard
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built images from workspace
+          command: |
+            docker load -i /tmp/image-php.tgz
+            docker load -i /tmp/image-mysqldb.tgz
+            docker load -i /tmp/image-web
+      - run:
+          name: Login to Docker Hub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Publish Docker images $CIRCLE_TAG
+          command: |
+            echo "Publishing gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_TAG"
+            docker push gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_TAG
+            echo "Publishing gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_TAG"
+            docker push gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_TAG
+            echo "Publishing gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_TAG"
+            docker push gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_TAG
+
+  deploy:
+    executor: standard
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built images from workspace
+          command: |
+            docker load -i /tmp/image-php.tgz
+            docker load -i /tmp/image-mysqldb.tgz
+            docker load -i /tmp/image-web
+      - run:
+          name: Deploy images to EC2
+          command: "Coming soon!"
+
+  
+
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build:
+      - build-php:
           filters:
             branches:
               only:
                 - master
                 - develop
-      - test-run:
+      - build-web:
           filters:
             branches:
               only:
                 - master
                 - develop
-      - test-coverage-codacy:
+      - build-mysqldb:
           filters:
             branches:
               only:
                 - master
                 - develop
+      - test:
           requires:
-            - test-run
+            - build-mysqldb
+            - build-php
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - report-coverage:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - await-approval:
+          type: approval 
+          requires: 
+            - test
+            - build-php
+            - build-web
+            - build-mysqldb
+          filters:
+            tags:
+              only: /.*/
+      - publish:
+          requires: 
+            - await-approval
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires: 
+            - await-approval
+          filters:
+            tags:
+              only: /.*/
+
