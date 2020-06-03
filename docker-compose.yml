@@ -9,7 +9,7 @@ x-mysql-credentials: &mysql-credentials
 services:
   php:
     # image: gsmainclusivetechlab/interop-php-fpm:latest
-    image: gsmainclusivetechlab/interop-mm-simulator/php:${CIRCLE_TAG:-latest}
+    image: gsmainclusivetechlab/interop-mm-simulator/php:${CIRCLE_SHA1:-latest}
     build: 
       context: src
       dockerfile: build/Dockerfile.php
@@ -33,7 +33,7 @@ services:
           - app
 
   web:
-    image: gsmainclusivetechlab/interop-mm-simulator/web:${CIRCLE_TAG:-latest}
+    image: gsmainclusivetechlab/interop-mm-simulator/web:${CIRCLE_SHA1:-latest}
     build: 
       context: src
       dockerfile: build/Dockerfile.web
@@ -43,7 +43,7 @@ services:
       internal:
 
   mysqldb:
-    image: gsmainclusivetechlab/interop-mm-simulator/mysqldb:${CIRCLE_TAG:-latest}
+    image: gsmainclusivetechlab/interop-mm-simulator/mysqldb:${CIRCLE_SHA1:-latest}
     build: 
       context: src
       dockerfile: build/Dockerfile.mysqldb
