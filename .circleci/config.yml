@@ -198,33 +198,13 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build-php:
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-      - build-web:
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-      - build-mysqldb:
-          filters:
-            branches:
-              only:
-                - master
-                - develop
+      - build-php
+      - build-web
+      - build-mysqldb
       - test:
           requires:
             - build-mysqldb
             - build-php
-          filters:
-            branches:
-              only:
-                - master
-                - develop
       - report-coverage:
           requires:
             - test
