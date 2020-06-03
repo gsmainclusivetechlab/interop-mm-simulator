@@ -26,6 +26,7 @@ executors:
 
 jobs:
   # TODO: The build jobs below do now leverage caching from one run to the next
+  # TODO: consider that this is generally quite slow. Not sure we have enough parallelism to benefit really!
   build-php:
     executor: standard
     steps:
@@ -223,18 +224,24 @@ workflows:
             - build-web
             - build-mysqldb
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /.*/
       - publish:
           requires: 
             - await-approval
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /.*/
       - deploy:
           requires: 
             - await-approval
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /.*/
 
