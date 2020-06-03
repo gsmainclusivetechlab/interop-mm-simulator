@@ -36,7 +36,7 @@ jobs:
           name: Build Docker Image
           command: |
             echo "Building Docker Image: gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_SHA1"
-            docker build -t gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_SHA1 .
+            docker build -t gsmainclusivetechlab/interop-mm-simulator/php:$CIRCLE_SHA1 -f ./src/build/Dockerfile.php ./src
       - run:
           name: Save docker images to workspace
           command: |
@@ -62,7 +62,7 @@ jobs:
           name: Build Docker Image
           command: |
             echo "Building Docker Image: gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_SHA1"
-            docker build -t gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_SHA1 .
+            docker build -t gsmainclusivetechlab/interop-mm-simulator/web:$CIRCLE_SHA1 -f ./src/build/Dockerfile.web ./src
       - run:
           name: Save docker images to workspace
           command: |
@@ -83,7 +83,7 @@ jobs:
           name: Build Docker Image
           command: |
             echo "Building Docker Image: gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_SHA1"
-            docker build -t gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_SHA1 .
+            docker build -t gsmainclusivetechlab/interop-mm-simulator/mysqldb:$CIRCLE_SHA1 -f ./src/build/Dockerfile.mysqldb ./src
       - run:
           name: Save docker images to workspace
           command: |
