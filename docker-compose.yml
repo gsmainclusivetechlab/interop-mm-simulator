@@ -1,0 +1,76 @@
+version: "3.7"
+
+x-mysql-credentials: &mysql-credentials
+  MYSQL_HOST: mysqldb
+  MYSQL_DATABASE: ${DB_DATABASE}
+  MYSQL_USER: ${DB_USERNAME}
+  MYSQL_PASSWORD: ${DB_PASSWORD}
+
+services:
+  php:
+    # image: gsmainclusivetechlab/interop-php-fpm:latest
+    image: gsmainclusivetechlab/interop-mm-simulator/php:${CIRCLE_TAG:-latest}
+    build: 
+      context: src
+      dockerfile: build/Dockerfile.php
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    depends_on:
+      - mysqldb
+    environment:
+      <<: *mysql-credentials
+      FOREGROUND_PROCESS: php-fpm
+      CONTAINER_ENABLED: 1
+      SSHD_ENABLED: ${SSHD_ENABLED}
+      PHP_XDEBUG_ENABLED: ${PHP_XDEBUG_ENABLED}
+      XDEBUG_REMOTE_HOST: ${XDEBUG_REMOTE_HOST}
+      PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+    networks:
+      internal:
+        aliases:
+          - app
+
+  web:
+    image: gsmainclusivetechlab/interop-mm-simulator/web:${CIRCLE_TAG:-latest}
+    build: 
+      context: src
+      dockerfile: build/Dockerfile.web
+    depends_on:
+      - php
+    networks:
+      internal:
+
+  mysqldb:
+    image: gsmainclusivetechlab/interop-mm-simulator/mysqldb:${CIRCLE_TAG:-latest}
+    build: 
+      context: src
+      dockerfile: build/Dockerfile.mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      <<: *mysql-credentials
+    volumes:
+      - ./runtime/mysql:/var/lib/mysql
+    networks:
+      internal:
+
+  migrate:
+    build: 
+      context: .
+      dockerfile: build/Dockerfile.php
+    depends_on:
+      - mysqldb
+    environment:
+      <<: *mysql-credentials
+      FOREGROUND_PROCESS: php-fpm
+      CONTAINER_ENABLED: 1
+      WAIT_HOSTS: mysqldb:3306
+      WAIT_SLEEP_INTERVAL: 5
+    command: bash -c "/wait && php artisan migrate"
+    networks:
+      internal:
+
+networks:
+  internal:
+    driver: bridge
