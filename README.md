@@ -11,15 +11,15 @@ The API simulator is built using micro-services, coordinated using
 `docker-compose`. Our services are:
 
 - `mysqldb`: Provides a database for the app. Uses a lightly-customised
-  off-the-shelf [mysql image](./build/Dockerfile.mysqldb). The customisation is
-  just to inject our [mysql config](./build/my.cnf) into the container.
+  off-the-shelf [mysql image](./src/build/Dockerfile.mysqldb). The customisation is
+  just to inject our [mysql config](./src/build/my.cnf) into the container.
 - `web`: Provides an nginx web server. Uses a lightly-customised [nginx
-  image](./build/Dockerfile.web). The customisation is to add our application
+  image](./src/build/Dockerfile.web). The customisation is to add our application
   code to the container, and similarly adds [server
-  config](./build/nginx-server.conf) and [SSL config](./build/ssl).
+  config](./src/build/nginx-server.conf) and [SSL config](./src/build/ssl).
 - `php`: Provides a PHP interpreter to run our application code. Uses a
   [custom image](http://github.com/gsmainclusivetechlab/interop-php-fpm),
-  further [customised](./build/Dockerfile.php) to add configuration files and
+  further [customised](./src/build/Dockerfile.php) to add configuration files and
   the application code. In addition, PHP dependencies are pre-installed with
   composer and artisan.
 - `migrate`: A short-lived service which simply runs database migrations
@@ -34,8 +34,8 @@ The API simulator is built using micro-services, coordinated using
 2. Navigate to your project directory
 3. Copy the example environment files, and make any adjustments to reflect
    your own environment:
-   - [.env.example](./.env.example) should be copied to .env
-   - [src/.env.example](./src/.env.example) should be copied to src/.env
+   - [.env.example](./.env.example) should be copied to `.env`
+   - [src/.env.example](./src/.env.example) should be copied to `src/.env`
 
 ### First Run
 

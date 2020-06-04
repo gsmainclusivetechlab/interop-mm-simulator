@@ -111,38 +111,24 @@ jobs:
           command: cp .env.example .env
       - run:
           name: Run Tests and get coverage
+          # N.B. We move the `html` to `src` directory so paths are mapped correctly in coverage report
           command: |
             docker-compose run -v /tmp/results:/tmp/results php bash -c "\
-              WAIT_HOSTS=mysqldb:3306 /wait &&
-              php artisan test --log-junit /tmp/results/results.xml &&
+              WAIT_HOSTS=mysqldb:3306 /wait
+              cd ..
+              mv html src
+              cd src
               phpdbg -qrr vendor/bin/phpunit \
                 --coverage-html /tmp/results/coverage-report-html \
                 --coverage-clover /tmp/results/coverage-report-clover/clover.xml \
             "
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./results
-
-  report-coverage:
-    executor: standard
-
-    steps:
-      - attach_workspace:
-          at: /tmp
-
       - coverage-reporter/send_report:
           coverage-reports: /tmp/results/coverage-report-clover/clover.xml
           project-token: $CODACY_PROJECT_TOKEN
 
       - run:
           name: Copy codacy json report to artifact
-          command: sudo cp /var/tmp/codacy-coverage-*.json /tests/results/
-
+          command: sudo cp /var/tmp/codacy-coverage-*.json /tmp/results/
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
@@ -193,7 +179,7 @@ jobs:
             docker load -i /tmp/image-web.tgz
       - run:
           name: Deploy images to EC2
-          command: "Coming soon!"
+          command: echo "Coming soon!"
 
   
 
@@ -208,14 +194,6 @@ workflows:
           requires:
             - build-mysqldb
             - build-php
-      - report-coverage:
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - master
-                - develop
       - await-approval:
           type: approval 
           requires: 
