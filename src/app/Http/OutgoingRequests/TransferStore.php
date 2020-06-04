@@ -3,6 +3,7 @@
 namespace App\Requests;
 
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Support\Env;
 
 /**
@@ -17,14 +18,15 @@ class TransferStore extends BaseRequest
      *
      * @param array $data
      * @param array $headers
-     * @throws \Exception
+     * @param Client $client
      */
-    public function __construct(array $data, array $headers)
+    public function __construct(array $data, array $headers, Client $client)
     {
         parent::__construct(
             $data,
             $headers,
-            Env::get('HOST_ML_API_ADAPTER') . 'transfers'
+            Env::get('HOST_ML_API_ADAPTER') . 'transfers',
+            $client
         );
 
         $this->method = 'POST';

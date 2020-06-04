@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\TransactionFailed;
-use App\Http\Headers;
-use App\Http\Requests\QuoteCreate;
-use App\Http\Requests\QuoteError;
-use App\Http\Requests\QuoteUpdate;
-use App\Http\TriggerRulesSets;
-use App\Models\Transaction;
+use app\Events\TransactionFailed;
+use app\Http\Headers;
+use app\Http\Requests\QuoteCreate;
+use app\Http\Requests\QuoteUpdate;
+use app\Http\TriggerRulesSets;
+use app\Models\Transaction;
+use app\Requests\QuoteError;
+use App\Requests\TransferStore;
+use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -17,6 +19,22 @@ use GuzzleHttp\Psr7\Response;
  */
 class QuotesController extends Controller
 {
+    /**
+     * @var Client
+     */
+    protected $client;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param Client $client
+     * @return void
+     */
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
     /**
      * POST /quotes from mojaloop
      *
@@ -27,7 +45,7 @@ class QuotesController extends Controller
     {
         app()->terminating(function () use ($request) {
             if (TriggerRulesSets::amountQuote($request->amount['amount'])) {
-                $response = (new \App\Requests\QuoteError(
+                $response = (new QuoteError(
                     [
                         'errorInformation' => [
                             'errorCode' => '5103',
@@ -83,17 +101,20 @@ class QuotesController extends Controller
 
     /**
      * @param QuoteUpdate $request
-     * @param $id
      * @return Response
      */
-    public function update(QuoteUpdate $request, $id)
+    public function update(QuoteUpdate $request)
     {
         app()->terminating(function () use ($request) {
-            (new \App\Requests\TransferStore($request->mapInTo(), [
-                'traceparent' => $request->header('traceparent'),
-                'FSPIOP-Source' => $request->header('FSPIOP-Destination'),
-                'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
-            ]))->send();
+            $req = new TransferStore(
+                $request->mapInTo(),
+                [
+                    'traceparent' => $request->header('traceparent'),
+                    'FSPIOP-Source' => $request->header('FSPIOP-Destination'),
+                    'FSPIOP-Destination' => $request->header('FSPIOP-Source'),
+                ],
+                $this->client);
+            $req->send();
         });
 
         return new Response(200, [
@@ -103,10 +124,9 @@ class QuotesController extends Controller
     }
 
     /**
-     * @param QuoteError $request
-     * @param $id
+     * @return Response
      */
-    public function error(QuoteError $request, $id)
+    public function error()
     {
         return new Response(200, [
             'Content-Type' => 'application/json',

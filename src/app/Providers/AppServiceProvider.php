@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Transaction;
+use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -17,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->isLocal()) {
             $this->app->register(TelescopeServiceProvider::class);
         }
+
+        $this->app->bind('Client', function () {
+            return new Client();
+        });
     }
 
     /**

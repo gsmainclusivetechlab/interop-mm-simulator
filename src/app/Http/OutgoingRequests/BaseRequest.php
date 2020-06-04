@@ -44,17 +44,24 @@ class BaseRequest implements RequestContract
     protected $url;
 
     /**
+     * @var Client
+     */
+    protected $client;
+
+    /**
      * BaseRequest constructor.
      *
      * @param array $data
      * @param array $headers
      * @param string $url
+     * @param Client|null $client
      */
-    public function __construct(array $data, array $headers, string $url)
+    public function __construct(array $data, array $headers, string $url, Client $client = null)
     {
         $this->data = $data;
         $this->headers = $headers;
         $this->url = $url;
+        $this->client = $client == null ? new Client() : $client;
     }
 
     /**
@@ -62,29 +69,24 @@ class BaseRequest implements RequestContract
      */
     public function send(): ResponseInterface
     {
-        $client = new Client();
-
         try {
-            $response = $client->request($this->method, $this->url, [
+            $response = $this->client->request($this->method, $this->url, [
                 'headers' => $this->headers,
                 'json' => $this->data,
             ]);
 
-            $responseLog = $response->getBody()->getContents();
         } catch (BadResponseException $e) {
             $response = $e->getResponse();
-            $responseLog = $e->getMessage();
         }
 
         Log::info(
             "{$this->method} " .
-                $this->url .
-                ' ' .
-                $response->getStatusCode() .
-                PHP_EOL .
-                json_encode($this->data) .
-                PHP_EOL
-            //            . $responseLog
+            $this->url .
+            ' ' .
+            $response->getStatusCode() .
+            PHP_EOL .
+            json_encode($this->data) .
+            PHP_EOL
         );
 
         return $response;
