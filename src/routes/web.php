@@ -11,6 +11,8 @@
 |
 */
 
+Route::get('/health', 'HealthCheckController@getStatus');
+
 // Logs
 Artisan::command('logs:clear', function() {
     exec('rm ' . storage_path('logs/laravel*'));
