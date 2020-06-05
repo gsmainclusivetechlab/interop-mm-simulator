@@ -77,12 +77,13 @@ Additional configuration files have been set up to cover two such cases:
   volumes between your local files and the files inside the running containers,
   which allows your local changes to immediately be reflected in the running
   code.
-- [`development/local-network.yml`](./development/local-network.yml): Connect
+- [`development/network.yml`](./development/network.yml): Connect
   to an existing docker network. This is useful when you also have the test
   platform running locally, as it will allow all services to communicate across
-  the same docker network. Additionally, this will expose the app on your
-  local machine under port 8087 (or whatever is configured as `HOST_WEB_PORT`
-  in [.env](./.env.example)).
+  the same docker network.
+- [`development/expose-web.yml`](./development/expose-web.yml):, this will
+  expose the app on your local machine under port 8087 (or whatever is
+  configured as `HOST_WEB_PORT` in [.env](./.env.example)).
 
 To use these configurations, select the config files when running `docker-compose up`:
 
@@ -123,7 +124,7 @@ Inside PHP container run
 -->
 
 
-## Running Tests
+### Running Tests
 
 ```
 # Ensure our services are running using a local volume to share results with the host
@@ -140,3 +141,51 @@ $ docker-compose run -v "$(pwd)"/results:/tmp/results php bash
 Note that you must use a local volume to see test results on the host machine.
 
 TODO: Consider adding shortcut scripts for these long-winded commands
+
+### Use as a SUT
+
+It's possible to use the simulator running locally as a SUT. To do this, we first need 
+to make the simulator accessible to the wider internet. This is possible with a tunneling
+tool such as ngrok. 
+
+1. Start the simulator locally. We will need to use the `volumes.yml`
+  docker-compose config in order to allow us to edit the .env configuration
+  locally, and the `./expose-web.yml` configuration in order to expose the
+  simulator to our host machine.
+  ```
+  docker-compose -f ./docker-compose.yml \
+                -f ./development/volumes.yml \
+                -d ./development/expose-web.yml up web
+  ```
+
+2. Make your local port 8087 accessible to the internet with ngrok (requires
+   node/npx installed on your machine):
+   ```
+   npx ngrok http 8087
+   ```
+   Copy the forwarding address (should look like `http://xxxxxxxxxxx.ngrok.io`),
+   and create a new session, selecting Mobile Money Operator 1 as the SUT, and 
+   paste in the ngrok URL.
+
+
+3. Edit the `./src/env` file to replace the following URLs with the Mojaloop
+   URL given in the test platform. Make sure that the URLs end with a "/"!
+   ```
+   HOST_ACCOUNT_LOOKUP_ADMIN=
+   HOST_ACCOUNT_LOOKUP_SERVICE=
+   HOST_CENTRAL_LEDGER=
+   HOST_CENTRAL_SETTLEMENT=
+   HOST_SIMULATOR=
+   HOST_TRANSACTION_REQUESTS_SERVICE=
+   HOST_ML_API_ADAPTER=
+   HOST_QUOTING_SERVICE=
+   ```
+
+4. Edit the `./src/env` file to replace the following URLs with the service provider
+   URL given in the test platform. Make sure that the URLs end with a "/"!
+   ```
+   HOST_SERVICE_PROVIDER=
+   ```
+
+5. Click "Run Test Case" in the test platform, and optionally watch the
+   requests coming in through the ngrok interface.
