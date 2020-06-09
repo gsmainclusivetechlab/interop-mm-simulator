@@ -22,11 +22,12 @@ The API simulator is built using micro-services, coordinated using
   further [customised](./src/build/Dockerfile.php) to add configuration files and
   the application code. In addition, PHP dependencies are pre-installed with
   composer and artisan.
-- `migrate`: A short-lived service which simply runs database migrations
+- `migrate` and `seed`: Two short-lived services which simply runs database migrations
   before exiting. Uses the same image as `app`, which contains
   [wait](https://github.com/ufoscout/docker-compose-wait), allowing the
   service to wait for the `mysqldb` container to be running before attempting
-  the migrations.
+  the migrations. These services are defined separately so they do not build/run
+  when calling `docker-compose up` without specifying the config files to use.
 
 ## Project Setup
 
@@ -45,7 +46,7 @@ The API simulator is built using micro-services, coordinated using
    ```
 2. Set up the database using Laravel's migration tool
    ```
-   $ docker-compose run migrate bash -c "/wait && php artisan migrate:refresh --seed"
+   $ docker-compose -f ./docker-compose.yml -f ./development/migrate.yml run seed
    ```
 3. Launch containers using the new images:
    ```
@@ -54,15 +55,16 @@ The API simulator is built using micro-services, coordinated using
 
 ### Updates
 
-After making changes to the code, you can deploy your changes by running almost the same steps as the first run. The only difference is the migration script, which should
-not seed the database with initial contents:
+After making changes to the code, you can deploy your changes by running
+almost the same steps as the first run. The only difference is the migration
+service to run, which should not seed the database with initial contents:
 
 ```
 # rebuild all images to include the new code
 $ docker-compose build
 
 # run the default migration script, which does not seed
-$ docker-compose run migrate
+$ docker-compose -f ./docker-compose.yml -f ./development/migrate.yml run migrate
 
 # stop and destroy existing containers, then recreate using the new images
 $ docker-compose up -d web
@@ -71,8 +73,10 @@ $ docker-compose up -d web
 ## Local development
 
 When running locally, we may want our services to operate in a slightly different way.
-Additional configuration files have been set up to cover two such cases:
+Additional configuration files have been set up to cover some such cases:
 
+- [`development/migrate.yml`](./development/migrate.yml): Defines two short-lived
+  services `migrate` and `seed` to update or setup the database respectively.
 - [`development/volumes.yml`](./development/volumes.yml): Set up shared
   volumes between your local files and the files inside the running containers,
   which allows your local changes to immediately be reflected in the running
@@ -85,7 +89,8 @@ Additional configuration files have been set up to cover two such cases:
   expose the app on your local machine under port 8087 (or whatever is
   configured as `HOST_WEB_PORT` in [.env](./.env.example)).
 
-To use these configurations, select the config files when running `docker-compose up`:
+To use these configurations, select the config files when running any
+`docker-compose` command:
 
 ```
 $ docker-compose -f ./docker-compose.yml \
