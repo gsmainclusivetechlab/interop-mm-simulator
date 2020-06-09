@@ -57,7 +57,7 @@ services:
 
   migrate:
     build: 
-      context: .
+      context: src
       dockerfile: build/Dockerfile.php
     depends_on:
       - mysqldb

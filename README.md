@@ -89,7 +89,8 @@ To use these configurations, select the config files when running `docker-compos
 
 ```
 $ docker-compose -f ./docker-compose.yml \
-                 -f ./development/local-network.yml
+                 -f ./development/expose-web.yml
+                 -f ./development/network.yml
                  -f ./development/volumes.yml
                  up web
 ```
@@ -155,7 +156,7 @@ tool such as ngrok.
   ```
   docker-compose -f ./docker-compose.yml \
                 -f ./development/volumes.yml \
-                -d ./development/expose-web.yml up web
+                -f ./development/expose-web.yml up web
   ```
 
 2. Make your local port 8087 accessible to the internet with ngrok (requires
