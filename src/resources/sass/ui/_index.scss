@@ -1,80 +1,80 @@
 body {
-    font-family: gotham,sans-serif;
-    background-color: #f8f8f9;
-    font-size: .875rem;
+  font-family: gotham, sans-serif;
+  background-color: #f8f8f9;
+  font-size: .875rem;
 }
 
 .index-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .h1 {
-    font-size: 2rem;
-    font-weight: 500;
+  font-size: 2rem;
+  font-weight: 500;
 }
 
 .h3 {
-    font-size: 1.125rem;
-    font-weight: 500;
+  font-size: 1.125rem;
+  font-weight: 500;
 }
 
 .text-muted {
-    color: #7c7c7c !important;
+  color: #7c7c7c !important;
 }
 
 p {
-    text-align: center;
+  text-align: center;
 }
 
 a {
-    text-align: center;
-    display: inherit;
-    height: 40px
+  text-align: center;
+  display: inherit;
+  height: 40px
 }
 
 .button {
-    background-color: #E50000;
-    font-weight: 500;
-    color: white;
-    border-style: solid;
-    border-color: white;
-    border-radius: 10px;
-    height: 40px
+  background-color: #e50000;
+  font-weight: 500;
+  color: white;
+  border-style: solid;
+  border-color: white;
+  border-radius: 10px;
+  height: 40px
 }
 
 .button:hover {
-    background-color: #BD0000;
+  background-color: #BD0000;
 }
 
 .button-inner-wrap {
-    width: 200px;
-    margin: auto;
+  width: 200px;
+  margin: auto;
 }
 
 .button span {
-    cursor: pointer;
-    display: inline-block;
-    position: relative;
-    transition: 0.5s;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
 }
 
 .button span:after {
-    content: '\2192';
-    position: absolute;
-    opacity: 0;
-    top: 0;
-    right: -20px;
-    transition: 0.5s;
+  content: '\2192';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
 }
 
 .button:hover span {
-    padding-right: 25px;
+  padding-right: 25px;
 }
 
 .button:hover span:after {
-    opacity: 1;
-    right: 0;
+  opacity: 1;
+  right: 0;
 }
