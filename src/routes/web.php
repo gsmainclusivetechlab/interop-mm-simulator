@@ -11,6 +11,8 @@
 |
 */
 
+Route::get('/', 'HomeController');
+
 Route::get('/health', 'HealthCheckController@getStatus');
 
 // Logs
