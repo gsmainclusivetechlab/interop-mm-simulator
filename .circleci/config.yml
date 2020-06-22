@@ -39,8 +39,8 @@ jobs:
           
       - restore_cache: 
           keys:
-            - composer-v1-{{ checksum "src/composer.lock" }}
-            - composer-v1-
+            - composer-v2-{{ checksum "src/composer.lock" }}
+            - composer-v2-
 
       - run: 
           name: Install Componser dependecies
