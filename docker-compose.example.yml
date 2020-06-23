@@ -36,8 +36,6 @@ services:
       PHP_XDEBUG_ENABLED: ${PHP_XDEBUG_ENABLED}
       XDEBUG_REMOTE_HOST: ${XDEBUG_REMOTE_HOST}
       PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
-    ports:
-      - "${HOST_SSHD_PORT}:22"
 
   web:
     image: nginx:latest
@@ -53,8 +51,6 @@ services:
   mysqldb:
     image: mysql:5.7
     restart: always
-    ports:
-      - "${HOST_DB_PORT}:3306"
     environment:
       MYSQL_ROOT_PASSWORD: developer
       MYSQL_DATABASE: ${DB_DATABASE}
